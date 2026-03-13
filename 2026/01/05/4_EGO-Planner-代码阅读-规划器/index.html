@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#3367D6"/>
+  <link rel="apple-touch-icon" href="/icons-192.png">
+  <link rel="manifest" href="/manifest.json">
+  
+  <meta name="generator" content="Hexo 7.3.0">
+
+  
+    <meta name="description" content="Mian的个人博客">
+  
+
+  
+
+  
+    <meta name="author" content="Mian">
+  
+
+  
+
+  
+
+  <title>4_EGO-Planner 代码阅读 规划器 | Mian的笔记</title>
+
+  
+
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+  <div class="root-container">
+    
+<!-- header container -->
+<header class="header-container post">
+  
+    <div class="post-image" style="background-image: url(/images/banner.png)"></div>
+  
+
+  <!-- navbar -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <!-- logo -->
+    <div class="navbar-logo">
+      <a href="/">
+        
+          Mian的笔记
+        
+      </a>
+    </div>
+    <!-- link -->
+    <div class="navbar-link">
+      <div class="navbar-btn">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <ul class="navbar-list">
+        
+          <li class="navbar-list-item"><a href="/">首页</a></li>
+        
+          <li class="navbar-list-item"><a href="/archives">归档</a></li>
+        
+          <li class="navbar-list-item"><a href="/links">友链</a></li>
+        
+          <li class="navbar-list-item"><a href="/about">关于</a></li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+    <div class="header-content">
+      <div class="post-text layout-block">
+        <div class="layout-margin">
+          <h1 class="title-wrap">4_EGO-Planner 代码阅读 规划器</h1>
+          <h2 class="title-sub-wrap">
+            <strong>Mian</strong>
+            <span>发布于</span>
+            <time  class="article-date" datetime="2026-01-04T16:00:00.000Z" itemprop="datePublished">2026-01-05</time>
+          </h2>
+          
+          
+          <ul class="wrap-list dark">
+  
+</ul>
+          <ul class="wrap-list dark">
+  
+    <li><a href="/tags/ego-planner/">🏷️ ego_planner</a></li>
+  
+    <li><a href="/tags/reading/">🏷️ reading</a></li>
+  
+    <li><a href="/tags/planner/">🏷️ planner</a></li>
+  
+</ul>
+        </div>
+      </div>
+    </div>
+  
+
+  
+  
+  
+</header>
+
+    <!-- 文章 -->
+
+<!-- 文章内容 -->
+<div class="body-container">
+  <article class="content-container layout-block post-container">
+    <div class="article-info">
+      
+      
+      
+      
+      <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>参考<a target="_blank" rel="noopener" href="https://github.com/Littlestarluo/Notebooks/blob/main/EGO-planner%E5%8F%8A%E5%85%B6v2%E7%9A%84%E5%AD%A6%E4%B9%A0%E5%8F%8A%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB.md">Notebooks&#x2F;EGO-planner及其v2的学习及代码阅读.md at main · Littlestarluo&#x2F;Notebooks</a><br>整个EGO-Planner的代码内容并不小，想要读懂所有部分耗时很多，在阅读时一定要抓住一个主线，了解到每一部分是在做什么</p>
+<hr>
+<h3 id="文件结构"><a href="#文件结构" class="headerlink" title="文件结构"></a>文件结构</h3><img src="/2026/01/05/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego%20%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84.png" class="">
+<p>planner为规划器相关功能包，而uav_simulator为在模拟时的仿真环境相关功能包。planner下可分为以下部分</p>
+<ul>
+<li>bspline为优化函数相关</li>
+<li>path_searching为A* 相关</li>
+<li>plan_env为建立栅格图和膨胀图</li>
+<li>plan_manage为整个项目的入口（其下src中有一个ego_planner_node文件，其中有main函数）</li>
+<li>traj为轨迹相关代码</li>
+</ul>
+<p>使用plan manage的launch文件中的run in sim启动文件，会调用advanced param.xml文件中的高级参数设置</p>
+<hr>
+<h3 id="建图-plan-env"><a href="#建图-plan-env" class="headerlink" title="建图 plan_env"></a>建图 plan_env</h3><img src="/2026/01/05/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego-planner%E4%BB%A3%E7%A0%81plan_env%E7%BB%93%E6%9E%84.png" class="">
+<p>grid_map.cpp完成了建图功能，程序主体就是地图初始化函数<code>void GridMap::initMap(ros::NodeHandle &amp;nh)</code>，程序的其余部分就是initMap中各个发布器、订阅器的回调函数，最后是这些回调函数中使用的功能函数，形成非常清晰的三级结构。</p>
+<blockquote>
+<p>ROS工程的文件结构有许多使用技巧，可以从此一窥</p>
+</blockquote>
+<p>发现<code>class grid_map</code>在<code>grid_map.h</code>中被声明，而在<code>grid_map.cpp</code>中声明了其<code>init</code>函数。首先，为了编译方便与再次调用等原因，在ROS工程中的一个节点的使用往往遵循<strong>分离主义</strong>，具体情况如下。</p>
+<ul>
+<li>首先类的主体声明写在.h文件并放置于<code>ws/src/ros_pkg/include/</code>下<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//include/grid_map.h内</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">GridMap</span> &#123;</span><br><span class="line">	<span class="keyword">public</span>:</span><br><span class="line">		parameters;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>其入口例如<code>class_name::init</code>则写为.cpp文件放在<code>ws/src/ros_pkg/src</code>下，而在入口函数中会调用的其他函数也写在该.cpp文件中<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//src/gird_map.cpp内</span></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&quot;plan_env/gird_map.h&quot;</span></span></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">GridMap::initMap</span><span class="params">(ros::NodeHandle &amp;nh)</span></span>&#123;</span><br><span class="line">	node_ = nh;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>在项目整体的入口文件c.pp的<code>main</code>函数中会调用类的入口<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//在plan.cpp内</span></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta"># <span class="keyword">include</span> <span class="string">&quot;plan_env/grid_map.h&quot;</span></span></span><br><span class="line">GridMap::Ptr grid_map_test_;</span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span>** argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	ros::<span class="built_in">init</span>(arc, argv, <span class="string">&quot;gridmap_test_node&quot;</span>);</span><br><span class="line">	<span class="function">ros::NodeHandle <span class="title">nh_</span><span class="params">(<span class="string">&quot;~&quot;</span>)</span></span>;</span><br><span class="line">	gird_map_test_-&gt;<span class="built_in">initMap</span>(nh_);</span><br><span class="line">	ros::<span class="built_in">spin</span>();</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>最后通过<code>launch</code>文件启动项目入口cpp文件</li>
+</ul>
+<p>其次，关于<strong>类的智能指针</strong>的使用见下文</p>
+<p>最后，关于<code>CMakeList</code>中需要做出修改，例如plan_env功能包中并没有可以直接运行的文件，而都是作为库文件存在，需要修改该功能包的CMake代码。首先需要将两个cpp文件编译为一个动态链接库.so文件，但此时该文件也只是在<code>plan_env</code>的编译目录中</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_library</span>( plan_env </span><br><span class="line">    src/grid_map.cpp </span><br><span class="line">    src/raycast.cpp</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>而为了让其他功能包也使用这个库，需要向系统“注册”（通常在上述代码之前）</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">catkin_package(</span><br><span class="line">  INCLUDE_DIRS <span class="keyword">include</span>       <span class="comment"># 告诉别人：我的头文件在这里（菜单在这里）</span></span><br><span class="line">  LIBRARIES plan_env         <span class="comment"># 告诉别人：我的二进制库是这个（菜在这里）</span></span><br><span class="line">  CATKIN_DEPENDS roscpp ...  <span class="comment"># 告诉别人：用我也得装这些依赖</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>它告诉 ROS 系统：“我生产了一个叫 plan_env 的库，头文件在 include 文件夹，库文件叫 plan_env。谁想用我，就按这个信息来找。”</p>
+<p>而在其他功能包中，如果想要使用<code>plan_env</code>库，需要对<code>CMakeList</code>进行修改。首先是查找，找到<code>plan_env</code>注册的信息，然后将其头文件路径加入到<code>$&#123;catkin_INCLUDE_DIRS&#125;</code> 变量中，然后把 <code>libplan_env.so</code> 的路径加入到 <code>$&#123;catkin_LIBRARIES&#125;</code> 变量中</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">find_package</span>(catkin REQUIRED COMPONENTS</span><br><span class="line">  roscpp</span><br><span class="line">  plan_env    <span class="comment"># &lt;--- 关键！去ROS系统里找这个包</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>然后是包含头文件</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include_directories</span>(</span><br><span class="line">  <span class="variable">$&#123;catkin_INCLUDE_DIRS&#125;</span> </span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>最后是链接库</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_executable</span>(ego_planner_node src/plan.cpp ...)</span><br><span class="line"></span><br><span class="line"><span class="keyword">target_link_libraries</span>(ego_planner_node</span><br><span class="line">  <span class="variable">$&#123;catkin_LIBRARIES&#125;</span>  <span class="comment"># &lt;--- 关键！</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+<p>最终，还需要在调用者的<code>package.xml</code>中添加声明</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">build_depend</span>&gt;</span>plan_env<span class="tag">&lt;/<span class="name">build_depend</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">exec_depend</span>&gt;</span>plan_env<span class="tag">&lt;/<span class="name">exec_depend</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- 或者直接用 &lt;depend&gt;plan_env&lt;/depend&gt; --&gt;</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>现在回到该功能包本身的内容上来</p>
+</blockquote>
+<p>EGO为了维持一个动态局部地图以及高速的查询，没有使用传统的<code>octomap</code>等建图工具，而是自己写了一个建图功能包</p>
+<hr>
+<h3 id="plan-manage"><a href="#plan-manage" class="headerlink" title="plan_manage"></a>plan_manage</h3><p>run in sim.launch逻辑，运行 advanced param.xml（只要看开头与结尾是launch标签，那么xml文件就可以作为launch文件运行；这样写是为了层级化和结构化），运行ego planner节点，运行simulator仿真器。<br>——&gt;关键在于第二步ego planner节点。查看cmake文件可以知道，ego planner节点是由三个文件拼接而成</p>
+<img src="/2026/01/05/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego%20planner%20node%E6%8B%BC%E6%8E%A5.png" class="">
+<p>其中，ego planner node cpp中包含了main函数，为整体入口</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> ego_planner;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;ego_planner_node&quot;</span>);</span><br><span class="line">  <span class="function">ros::NodeHandle <span class="title">nh</span><span class="params">(<span class="string">&quot;~&quot;</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">  EGOReplanFSM rebo_replan;</span><br><span class="line">  </span><br><span class="line">  rebo_replan.<span class="built_in">init</span>(nh);</span><br><span class="line"></span><br><span class="line">  ros::<span class="built_in">Duration</span>(<span class="number">1.0</span>).<span class="built_in">sleep</span>();</span><br><span class="line">  ros::<span class="built_in">spin</span>();</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在main中，首先初始化了一个节点，然后声明了一个<code>EGOReplanFSM</code>类实体（FSM表示finite state machine有限状态机），然后运行其初始化函数。发现该类是一个在自定义库文件<code>ego_replan_fsm.h</code>中的类，但是其<code>init</code>函数则是在<code>ego_replan_fsm.cpp</code>中定义，于是查看<code>init</code>的内容。<br>发现首先是设定了句柄的参数，其次初始化了一些模组，最后设置了回调函数，于是在去寻找设定的模组与回调，首先是模组。<br>其中<code>visualization_</code>来自tra_utils包，执行可视化操作，而<code>planner_manager_</code>自然来自planner_manager.cpp，句柄nh传递到两个模块中，同时<code>visualization_</code>也和句柄传递到<code>planner_manager_</code>内，再加上状态机本身，可以看到携带句柄的节点有三个了。</p>
+<p>其实<code>traj_server</code>是一个单独的.cpp，它的内部也有一个主函数，负责订阅轨迹和时间信息，再发布控制指令。因此，可以说实质上规划功能是两个部分组成的：状态机和轨迹服务器。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">/* initialize main modules */</span></span><br><span class="line">    visualization_.<span class="built_in">reset</span>(<span class="keyword">new</span> <span class="built_in">PlanningVisualization</span>(nh));</span><br><span class="line">    planner_manager_.<span class="built_in">reset</span>(<span class="keyword">new</span> EGOPlannerManager);</span><br><span class="line">    planner_manager_-&gt;<span class="built_in">initPlanModules</span>(nh, visualization_);</span><br></pre></td></tr></table></figure>
+<p>去寻找其最初被声明的位置，发现是在类的私有元素中。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    <span class="comment">/* planning utils */</span></span><br><span class="line">    EGOPlannerManager::Ptr planner_manager_;</span><br><span class="line">    PlanningVisualization::Ptr visualization_;</span><br><span class="line">    ego_planner::DataDisp data_disp_;</span><br></pre></td></tr></table></figure>
+<p>听起来很绕，先解析一下语法，理清楚关键字的作用，文件的结构，起作用的顺序，以<code>planner_manager_</code>为例。</p>
+<blockquote>
+<p>ROS工程规范：分离化</p>
+</blockquote>
+<p>首先是扩起来的作用域 <code>namespace ego_planner</code>，增加一个变量的作用域，防止变量重名，即如果在不同的作用域下要使用<code>EGOPlannerManager</code>类，则需要使用完整名<code>ego_planner::EGOPlannerManager</code>，而在<code>fsm.h</code>中也使用了同样的作用域，则不必使用完整名。<br>其次，和类名同名的函数表示构造函数与析构函数（与python的init函数区分，这里的init函数是一个自己定义的函数）。<br>第三，在<code>EGOPlannerManager</code>类成员中写了两次public，语法上是没有问题，只是不太规范。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">EGOPlannerManager</span>&#123;</span><br><span class="line">  <span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">typedef</span> unique_ptr&lt;EGOPlannerManager&gt; Ptr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第四，关于Ptr的使用，在<code>EGOPlannerManager</code>类中有这样的定义<code>typedef unique_ptr&lt;EGOPlannerManager&gt; Ptr;</code>，首先要清楚这是定义了一个类型的别名，即这是一个类型成员而不是对象成员，而在cpp中对于类型成员使用<code>ClassName::Type</code>来进行访问（类型成员和函数则用点进行分隔）。其次，什么是<code>unique_ptr</code>？这是cpp11中引入的智能指针（区别于裸指针），可以自动删除指向的对象（而不必手动delete），其次同一时间只会有一个指针指向被管理的对象，其作用基本与裸指针相同。此处相当于定义了一个指向类自身的指针类型。<br>第五，关于<code>reset</code>的使用。首先<code>reset</code>是智能指针的成员函数，使用方式如<code>p.reset(q) //q为智能指针要指向的新对象</code>，其实此处就是为指针分配空间。于是梳理一下整个流程：<code>main</code>函数声明了一个<code>FSM</code>类的实例，该类中有两个指向成员类的指针，调用<code>init</code>函数为这两个成员类分配空间</p>
+<p><strong>为什么如此设计？</strong><br>为什么要绕一大圈用指针来表示类成员呢？而不是作为直接类成员？有以下几点原因。<br>首先是控制初始化时机，使用指针之后可以控制类成员的初始化时间，例如设计在ros节点句柄nh准备好之后。<br>其次是可扩展性，使用指针那么之后只需要更改类中的内容而不必更改变量名。</p>
+<p>最终可以梳理得到<code>EGOReplanFSM::init</code>函数的作用：① 声明变量，获取参数；② 初始化主模块；③ 设置定时器循环；④ 设置发布者与接收者；</p>
+<hr>
+<h4 id="主循环-状态机回调execFSMCallback"><a href="#主循环-状态机回调execFSMCallback" class="headerlink" title="主循环-状态机回调execFSMCallback()"></a>主循环-状态机回调execFSMCallback()</h4><p>在<code>init</code>函数中通过定时器开启主循环</p>
+<blockquote>
+<p>ROS中的定时器使用</p>
+</blockquote>
+<p><code>nh.createTimer</code>的作用。和之前基础内容中的循环类似，之前是用rate和while中的sleep来控制循环的时间，定时器也是用于循环，但是是一种更安全的循环</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ros::Rate <span class="title">r</span><span class="params">(<span class="number">10</span>)</span></span>; <span class="comment">// 10 hz</span></span><br><span class="line"><span class="keyword">while</span> (ros::<span class="built_in">ok</span>())</span><br><span class="line">&#123;</span><br><span class="line">  ... <span class="keyword">do</span> some work ...</span><br><span class="line">  r.<span class="built_in">sleep</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>首先定时器的定义方式如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ros::Timer timer = nh.<span class="built_in">createTimer</span>(ros::<span class="built_in">Duration</span>(<span class="number">0.1</span>), timerCallback);</span><br></pre></td></tr></table></figure>
+<p>而官方代码中的形式为</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> exec_timer_ = nh.<span class="built_in">createTimer</span>(ros::<span class="built_in">Duration</span>(<span class="number">0.01</span>), &amp;EGOReplanFSM::execFSMCallback, <span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+<p>其中回调函数的部分有些不同，这里使用的是一个成员函数指针，而this则代表使用当前实例的函数。Q：如果实际执行时间超出设定的间隔会怎样？A：只会错过运行周期，接着继续运行但是不会崩溃.<br>而对于回调函数的形式基本固定如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">EGOReplanFSM::execFSMCallback</span><span class="params">(<span class="type">const</span> ros::TimerEvent &amp;e)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其参数内容为固定写法，e包含上一次与这一次回调函数应该和实际发生的时间<br>Q：两个timer之间的关系如何？A：回调函数相当于向队列中加入了一个任务，然后由main中的spin逐个取出然后执行；两个timer会共享一个任务队列，同样由spin逐个执行，相当于串行执行。</p>
+<p><code>execFSMCallback()</code>是整个规划过程的状态机，每过若干循环发布一次状态；每一次执行<code>exec_timer</code>，会根据当前的状态（一个枚举类型变量）进行切换行为，相当于一个有限状态机。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">switch</span> (fsm_state_)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">case</span> INIT:</span><br><span class="line">        <span class="comment">// 初始化状态</span></span><br><span class="line">        <span class="built_in">changeFSMExecState</span>();</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> WAIT_TARGET:</span><br><span class="line">        <span class="comment">// 等待目标</span></span><br><span class="line">        <span class="built_in">changeFSMExecState</span>();</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> GEN_NEW_TRAJ:</span><br><span class="line">        <span class="comment">// 生成新轨迹</span></span><br><span class="line">        <span class="built_in">changeFSMExecState</span>();</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> REPLAN_TRAJ:</span><br><span class="line">        <span class="comment">// 重新规划轨迹</span></span><br><span class="line">        <span class="built_in">changeFSMExecState</span>();</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> EXEC_TRAJ:</span><br><span class="line">        <span class="comment">// 执行轨迹</span></span><br><span class="line">        <span class="built_in">changeFSMExecState</span>();</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> EMERGENCY_STOP:</span><br><span class="line">	    <span class="comment">// 紧急停止</span></span><br><span class="line">	    <span class="built_in">changeFSMExecState</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>前两个状态<code>INIT</code>，<code>WAIT_TARGET</code>是纯粹的时序状态，单纯根据标识来等待和执行状态切换，而<code>GEN_NEW_TRAJ</code>，<code>REPLAN_TRAJ</code>和<code>EXEC_TRAJ</code>则是具体的规划状态，对应生成、重规划和执行轨迹；</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">stateDiagram-v2</span><br><span class="line">    direction TB</span><br><span class="line"></span><br><span class="line">    %% 1. 初始化流程</span><br><span class="line">    INIT --&gt; WAIT_TARGET</span><br><span class="line">    WAIT_TARGET --&gt; GEN_NEW_TRAJ</span><br><span class="line"></span><br><span class="line">    %% 2. 生成新轨迹（起飞阶段）</span><br><span class="line">    GEN_NEW_TRAJ --&gt; EXEC_TRAJ</span><br><span class="line">    GEN_NEW_TRAJ --&gt; GEN_NEW_TRAJ : 自身循环（规划失败重试）</span><br><span class="line"></span><br><span class="line">    %% 3. 核心飞行循环</span><br><span class="line">    EXEC_TRAJ --&gt; REPLAN_TRAJ</span><br><span class="line">    REPLAN_TRAJ --&gt; EXEC_TRAJ</span><br><span class="line">    REPLAN_TRAJ --&gt; REPLAN_TRAJ : 自身循环（规划失败重试）</span><br><span class="line"></span><br><span class="line">    %% 4. 结束与异常处理</span><br><span class="line">    EXEC_TRAJ --&gt; WAIT_TARGET</span><br><span class="line">    EMERGENCY_STOP --&gt; GEN_NEW_TRAJ</span><br></pre></td></tr></table></figure>
+<p> <strong>关键逻辑解析</strong></p>
+<ol>
+<li><p><strong>启动流程</strong>：</p>
+<ul>
+<li>INIT -&gt; WAIT_TARGET: 系统启动，等待里程计数据和触发信号。</li>
+<li>WAIT_TARGET -&gt; GEN_NEW_TRAJ: 收到目标点，生成第一条轨迹。</li>
+</ul>
+</li>
+<li><p>**核心飞行循环 (The Loop)**：</p>
+<ul>
+<li><strong>EXEC_TRAJ (执行)</strong>: 这是无人机正常飞行时的状态，不断检查进度。</li>
+<li><strong>重规划判定</strong>:<ul>
+<li>如果离起点太近（刚出发）或者离终点太近（快到了），为了防止轨迹抖动或不必要的计算，<strong>不进行重规划</strong>，保持 EXEC_TRAJ。</li>
+<li>如果处于中间段，代码进入 else 分支，状态切换到 REPLAN_TRAJ。</li>
+</ul>
+</li>
+<li><strong>REPLAN_TRAJ (重规划)</strong>: 在这里调用 planFromCurrentTraj()。如果成功，马上切回 EXEC_TRAJ 继续飞；如果失败，保持在当前状态下一轮继续试。</li>
+</ul>
+</li>
+<li><p><strong>异常与结束</strong>：</p>
+<ul>
+<li><strong>结束</strong>: 在 EXEC_TRAJ 中，如果时间超过了轨迹总时长 (duration)，说明到达目的地，切回 WAIT_TARGET 等待下一个指令。</li>
+<li><strong>急停复位</strong>: 如果进入 EMERGENCY_STOP（通常由外部碰撞检测触发），无人机会刹车。只有当速度降到几乎为 0 (&lt; 0.1) 时，才会切回 GEN_NEW_TRAJ 尝试重新生成轨迹恢复飞行。</li>
+</ul>
+</li>
+</ol>
+<p>至此，状态机可以归纳为一个2+3+1的结构，其主体为<code>EXEC_TRAJ</code></p>
+<hr>
+<h5 id="GEN-NEW-TRAJ"><a href="#GEN-NEW-TRAJ" class="headerlink" title="GEN_NEW_TRAJ"></a>GEN_NEW_TRAJ</h5><p>刚启动时和急停之后，规划初始路线</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"> <span class="keyword">case</span> GEN_NEW_TRAJ:</span><br><span class="line"> &#123;</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">   <span class="type">bool</span> flag_random_poly_init;</span><br><span class="line">   <span class="keyword">if</span> (<span class="built_in">timesOfConsecutiveStateCalls</span>().first == <span class="number">1</span>)</span><br><span class="line">     flag_random_poly_init = <span class="literal">false</span>;</span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">     flag_random_poly_init = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">   <span class="type">bool</span> success = <span class="built_in">callReboundReplan</span>(<span class="literal">true</span>, flag_random_poly_init);</span><br><span class="line">   <span class="keyword">if</span> (success)</span><br><span class="line">   &#123;</span><br><span class="line">     <span class="built_in">changeFSMExecState</span>(EXEC_TRAJ, <span class="string">&quot;FSM&quot;</span>);</span><br><span class="line">     flag_escape_emergency_ = <span class="literal">true</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">else</span></span><br><span class="line">   &#123;</span><br><span class="line">     <span class="built_in">changeFSMExecState</span>(GEN_NEW_TRAJ, <span class="string">&quot;FSM&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">break</span>;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>可见其中关键的部分是<code>timesOfConsecutiveStateCalls</code>和<code>callReboundReplan</code>。首先查看<code>timesOfConsecutiveStateCalls</code></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">std::pair&lt;<span class="type">int</span>, EGOReplanFSM::FSM_EXEC_STATE&gt; <span class="title">EGOReplanFSM::timesOfConsecutiveStateCalls</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">return</span> std::<span class="built_in">pair</span>&lt;<span class="type">int</span>, FSM_EXEC_STATE&gt;(continously_called_times_, exec_state_);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>发现该函数作用是一次性返回当前状态和在这个状态中循环了多少次</p>
+<blockquote>
+<p>std::pair的作用</p>
+</blockquote>
+<p>cpp标准库中的一个容器，将两个不同类型的数据打包成一个对象，固定只有两个成员变量，固定名称为<code>first</code>和<code>second</code>。尖括号的作用是 模板 语法，指定pair中元素的类型</p>
+<p>再看<code>callReboundReplan</code>，发现调用了<code>planner_manager_-&gt;reboundReplan</code>，且要求传入起点坐标和速度、终点坐标和速度等参数，看起是关键部分，共有近200行内容。</p>
+<p><strong>reboundReplan</strong><br>首先该函数可以拆分为四部分：准备阶段，生成轨迹，核心优化，时间重分配</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">bool</span> <span class="title">EGOPlannerManager::reboundReplan</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">/*STEP 0: pre-check*/</span></span><br><span class="line">	打印日志;</span><br><span class="line">	检查终点，如果太近就不规划;</span><br><span class="line">	计算B样条时间步长;</span><br><span class="line">	<span class="comment">/*STEP 1: INIT*/</span></span><br><span class="line">	生成一串初始点，作为B样条初值;</span><br><span class="line">	策略A：从零规划;</span><br><span class="line">	策略B：基于当前轨迹规划;</span><br><span class="line">	将串点转换为B样条控制点;</span><br><span class="line">	<span class="comment">/*STEP 2: OPTIMIZE*/</span></span><br><span class="line">	进行梯度优化，实现避障;</span><br><span class="line">	<span class="comment">/*STEP 3: REFINEMENT*/</span></span><br><span class="line">	检查物理可行性;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后对<code>INIT</code>部分进行分析，这里有一些不理解的地方：1是为什么一开始是用多项式去寻找路径 2是这个多项式路径是如何规划的，是否会考虑障碍物 3是采样点为什么不能直接是控制点 4是何时会启动A* 。<br>在阅读代码之后发现，冷启动（策略A）的部分使用<code>/planner/traj_utils/src/polynomial_traj.cpp</code>所生成的轨迹都是不考虑障碍物，仅满足起点与终点约束的多项式曲线。这是一个乐观的策略，即EGO假设在许多空旷场景下直接飞过去没问题。那障碍物与A* 在哪里体现？——在整个<code>INIT</code>的最后，热启动也结束之后。将多项式轨迹点转换为控制点，此时有如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;vector&lt;Eigen::Vector3d&gt;&gt; a_star_pathes;</span><br><span class="line">a_star_pathes = bspline_optimizer_rebound_-&gt;<span class="built_in">initControlPoints</span>(ctrl_pts, <span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+<p>查看来自<code>/planner/bspline_opt/src/bspline_optimzier.cpp</code>的<code>bspline_optimizer_rebound::initcontrolpoint</code>，发现也有近200行内容，大概也是关键代码，阅读后发现是论文中关键部分，{p, v} pairs的具体实现。于是想到，此处只是生成新轨迹的代码，那么下面的<code>REPLAN_TRAJ</code>部分是否也有相同的代码呢？查看后发现确实也使用了<code>reboundReplan</code>，可见这部分的确是关键代码。</p>
+<p>而<code>initcontrolpoints</code>也可以拆分为以下几个步骤：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">std::vector&lt;std::vector&lt;Eigen::Vector3d&gt;&gt; BsplineOptimizer::<span class="built_in">initControlPoints</span>()</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">/*1.找出碰撞的路段*/</span></span><br><span class="line">	<span class="comment">/*2.生成引导路径A**/</span></span><br><span class="line">	<span class="comment">/*3.确定受影响的控制点范围*/</span></span><br><span class="line">	<span class="comment">/*4.生成pv对*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分步解析该函数，首先是第一步，找到碰撞的路径</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 遍历控制点，从第 order_ (通常是3) 个点开始，到倒数几个点结束</span></span><br><span class="line"><span class="comment">// 因为 B 样条的头尾是固定的，不需要动</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> i = order_; i &lt;= i_end; ++i)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 对每一段控制点连线进行细分检查 (Collision Check)</span></span><br><span class="line">    <span class="comment">// a 从 1.0 到 0.0，相当于从 init_points.col(i-1) 到 init_points.col(i)</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">double</span> a = <span class="number">1.0</span>; a &gt;= <span class="number">0.0</span>; a -= step_size)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 调用 grid_map 检查占据情况</span></span><br><span class="line">        occ = grid_map_-&gt;<span class="built_in">getInflateOccupancy</span>(...);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 状态机逻辑：</span></span><br><span class="line">        <span class="comment">// 1. 如果当前是障碍物 (occ)，且上一个点不是 (last_occ=false) -&gt; 进入障碍物 (in_id)</span></span><br><span class="line">        <span class="keyword">if</span> (occ &amp;&amp; !last_occ) &#123; ... in_id = i - <span class="number">1</span>; ... &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 2. 如果当前是自由空间 (!occ)，且上一个点是障碍物 (last_occ=true) -&gt; 离开障碍物 (out_id)</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (!occ &amp;&amp; last_occ) &#123; ... out_id = i; ... &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 记录这一段撞墙的区间 [in_id, out_id]</span></span><br><span class="line">        <span class="keyword">if</span> (flag_got_start &amp;&amp; flag_got_end) &#123;</span><br><span class="line">            segment_ids.<span class="built_in">push_back</span>(std::<span class="built_in">pair</span>&lt;<span class="type">int</span>, <span class="type">int</span>&gt;(in_id, out_id));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>结果</strong>：segment_ids 存储了所有穿过障碍物的轨迹片段的索引。比如 [(3, 5), (10, 12)] 表示第 3-5 个控制点撞墙了，第 10-12 个控制点也撞墙了。</p>
+<p>第二步，用A* 找出不撞墙的路径</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">vector&lt;vector&lt;Eigen::Vector3d&gt;&gt; a_star_pathes;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">size_t</span> i = <span class="number">0</span>; i &lt; segment_ids.<span class="built_in">size</span>(); ++i)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// 起点：撞墙片段进入前的点 (in)</span></span><br><span class="line">    <span class="comment">// 终点：撞墙片段出来后的点 (out)</span></span><br><span class="line">    <span class="function">Eigen::Vector3d <span class="title">in</span><span class="params">(init_points.col(segment_ids[i].first))</span>, <span class="title">out</span><span class="params">(...)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 运行 A* 搜索</span></span><br><span class="line">    <span class="keyword">if</span> (a_star_-&gt;<span class="built_in">AstarSearch</span>(..., in, out)) &#123;</span><br><span class="line">        <span class="comment">// 保存这条绕过障碍物的安全折线路径</span></span><br><span class="line">        a_star_pathes.<span class="built_in">push_back</span>(a_star_-&gt;<span class="built_in">getPath</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第三步，确定受影响的点的范围</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 逻辑：</span></span><br><span class="line"><span class="comment">// 保证每一段要优化的控制点数量不少于 minimum_points</span></span><br><span class="line"><span class="comment">// 这样可以保证生成的排斥力足够平滑，不会造成局部突变</span></span><br><span class="line"><span class="keyword">if</span> (num_points &lt; minimum_points) &#123;</span><br><span class="line">    <span class="comment">// 向两边扩展范围，直到达到最小点数，或者碰到轨迹边界</span></span><br><span class="line">    final_segment_ids[i].first = ...;</span><br><span class="line">    final_segment_ids[i].second = ...;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>第四步，生成pv对</p>
+<ol>
+<li>首先寻找投影点<br>对于每一个需要调整的控制点，设想一个经过该点且垂直于轨迹切线的平面，计算该平面与A* 的交点，这个交点被认为是该控制点应该去的位置<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这是一个二分查找或者步进搜索的过程</span></span><br><span class="line"><span class="keyword">while</span> (Astar_id &gt;= <span class="number">0</span> ...) &#123;</span><br><span class="line">    <span class="comment">// 计算点积，判断平面是否与 A* 路径的某一段线段相交</span></span><br><span class="line">    val = (a_star_pathes[i][Astar_id] - cps_.points.<span class="built_in">col</span>(j)).<span class="built_in">dot</span>(ctrl_pts_law);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 如果符号相反 (val * last_val &lt;= 0)，说明相交了</span></span><br><span class="line">    <span class="keyword">if</span> (...) &#123;</span><br><span class="line">        <span class="comment">// 计算具体的交点坐标 (线性插值)</span></span><br><span class="line">        intersection_point = ...;</span><br><span class="line">        got_intersection_id = j; <span class="comment">// 标记第 j 个点找到了对应的锚点</span></span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>射线检测细化<br>有时投影出来的点虽然在A* 路径上，单直接推过去困难并不安全<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从安全点向当前点回溯</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">double</span> a = length; a &gt;= <span class="number">0.0</span>; a -= resolution) &#123;</span><br><span class="line">    occ = grid_map_-&gt;<span class="built_in">getInflateOccupancy</span>(...);</span><br><span class="line">    <span class="keyword">if</span> (occ) &#123;</span><br><span class="line">        <span class="comment">// 找到了障碍物表面！</span></span><br><span class="line">        <span class="comment">// 记录锚点 base_point (即 p)</span></span><br><span class="line">        cps_.base_point[j].<span class="built_in">push_back</span>(...);</span><br><span class="line">        <span class="comment">// 记录斥力方向 direction (即 v)</span></span><br><span class="line">        cps_.direction[j].<span class="built_in">push_back</span>((intersection_point - cps_.points.<span class="built_in">col</span>(j)).<span class="built_in">normalized</span>());</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>邻居赋值<br>对于那些没有找到交点的邻居点（例如在第三步中被扩展进来的点），直接复用最近的有效pv对<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 向后传播</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> j = got_intersection_id + <span class="number">1</span>; ...)</span><br><span class="line">    cps_.base_point[j].<span class="built_in">push_back</span>(cps_.base_point[j<span class="number">-1</span>].<span class="built_in">back</span>());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 向前传播</span></span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> j = got_intersection_id - <span class="number">1</span>; ...)</span><br><span class="line">    ...</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h5 id="REPLAN-TRAJ"><a href="#REPLAN-TRAJ" class="headerlink" title="REPLAN_TRAJ"></a>REPLAN_TRAJ</h5><h5 id="EXEC-TRAJ"><a href="#EXEC-TRAJ" class="headerlink" title="EXEC_TRAJ"></a>EXEC_TRAJ</h5><hr>
+<h4 id="副循环-检碰回调checkCollisionCallback"><a href="#副循环-检碰回调checkCollisionCallback" class="headerlink" title="副循环-检碰回调checkCollisionCallback()"></a>副循环-检碰回调checkCollisionCallback()</h4><hr>
+<h3 id="代码相关问题"><a href="#代码相关问题" class="headerlink" title="代码相关问题"></a>代码相关问题</h3><p><strong>Eigen库</strong><br>cpp中的线性代数库，使用该库可以完成例如矩阵乘法等运算。其中根据头文件不同，其导入方式也不一致。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">- <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Eigen/Core&gt;</span> <span class="comment">//只引入最基础的矩阵和数组功能（编译快）。</span></span></span><br><span class="line">- <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Eigen/Dense&gt;</span> <span class="comment">//引入所有稠密矩阵运算（最常用）。</span></span></span><br><span class="line">- <span class="meta">#<span class="keyword">include</span> <span class="string">&lt;Eigen/Eigen&gt;</span> <span class="comment">//引入所有模块（包括稀疏矩阵 Sparse、几何模块 Geometry 等）。</span></span></span><br></pre></td></tr></table></figure>
+<p>因为此处用了许多高级功能，故直接导入所有模块。而编译器默认是找不到 <code>&lt;Eigen/Eigen&gt;</code> 在哪里的，因为它通常安装在 <code>/usr/include/eigen3</code> 这种非标准路径下。需要告诉 CMake 去哪里找。通常在camkelist中有如下部分</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 查找 Eigen 库包</span></span><br><span class="line"><span class="keyword">find_package</span>(Eigen3 REQUIRED)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 将 Eigen 的头文件路径加入到编译器的搜索路径中</span></span><br><span class="line"><span class="comment"># 这步之后，编译器才能看懂 &lt;Eigen/Eigen&gt; 到底在硬盘的哪个位置</span></span><br><span class="line"><span class="keyword">include_directories</span>(</span><br><span class="line">    <span class="variable">$&#123;EIGEN3_INCLUDE_DIRS&#125;</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 编译节点 (回顾刚才学的)</span></span><br><span class="line"><span class="keyword">add_executable</span>(ego_planner_node src/ego_planner_node.cpp)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 链接库</span></span><br><span class="line"><span class="comment"># 注意：Eigen 是 &quot;Header-only&quot; (纯头文件) 库！</span></span><br><span class="line"><span class="comment"># 它通常不需要 target_link_libraries 链接 .so 文件，</span></span><br><span class="line"><span class="comment"># 只要 include 了头文件，代码其实就已经包含进去了。</span></span><br><span class="line"><span class="comment"># (不过为了保险或某些特定模块，有时也会写在链接里，或者只链接 catkin_LIBRARIES)</span></span><br></pre></td></tr></table></figure>
+
+
+
+      </section>
+
+      
+      
+        <nav class="article-nav">
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+    <div class="card-text">
+      
+        <a href="/2026/01/15/5_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E4%BB%BF%E7%9C%9F%E5%99%A8/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">5_EGO-Planner 代码阅读 仿真器</h2>
+        </a>
+      
+      <div class="card-text--row">Newer</div>
+    </div>
+  </article>
+</div>
+          
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+    <div class="card-text">
+      
+        <a href="/2025/12/25/3_%E5%AE%8C%E6%95%B4%E5%9B%9E%E8%B7%AF%E6%B5%8B%E8%AF%95-NUC+D435+Pixhawk/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">3_完整回路测试 NUC+D435+Pixhawk</h2>
+        </a>
+      
+      <div class="card-text--row">Older</div>
+    </div>
+  </article>
+</div>
+          
+        </nav>
+      
+
+      <section class="page-message-container layout-padding">
+        
+
+
+  
+  
+
+  
+  
+
+
+      </section>
+    </div>
+    <div class="widget-info">
+      <section class="widget-author widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-body">
+    
+    
+      <h2>Mian</h2>
+    
+    
+      <p>每天成长一点</p>
+    
+
+    <div class="count-box">
+      <div class="count-box--item">
+        <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
+</svg>
+        <span>9</span>
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+        0
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+        14
+      </div>
+    </div>
+  </div>
+</section>
+
+      
+<section class="widget-toc widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-toc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M134.50666666 767.46666668H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.23999999v50.13333333c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H134.50666666c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.13333333c0.10666668-27.73333333 22.50666668-50.24000001 50.24000001-50.24000001zM84.37333332 541.65333333h326.18666669c27.73333333 0 50.24000001 22.39999999 50.23999999 50.13333334v50.24000001c0 27.73333333-22.50666668 50.24000001-50.24000002 50.23999999H84.37333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.23999999v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333334zM134.50666666 315.83999999H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.24000001v50.24000001c0 27.73333333-22.50666668 50.13333334-50.24000001 50.13333333H134.50666666c-27.73333333 0-50.24000001-22.39999999-50.23999999-50.13333333v-50.24000001c0.10666668-27.84000001 22.50666668-50.24000001 50.24000001-50.23999999zM209.81333332 89.91999999h326.18666671c27.73333333 0 50.24000001 22.39999999 50.23999997 50.13333335v50.23999999c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H209.81333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333333zM692.05333333 623.36l274.66666669 176.00000002c23.36000001 14.93333333 30.08 45.97333334 15.14666666 69.33333332L954.77333334 910.93333333c-14.93333333 23.25333334-45.97333334 30.08-69.33333335 15.14666667l-274.66666666-176c-23.36000001-14.93333333-30.08-45.97333334-15.14666667-69.33333333l27.09333334-42.24000001c14.93333333-23.36000001 46.08000001-30.08 69.33333333-15.14666666z" fill="currentColor"></path>
+</svg>
+    <span>TOC</span>
+  </div>
+  <div class="widget-body">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">文件结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E5%9B%BE-plan-env"><span class="toc-number">3.</span> <span class="toc-text">建图 plan_env</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#plan-manage"><span class="toc-number">4.</span> <span class="toc-text">plan_manage</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E7%9B%B8%E5%85%B3%E9%97%AE%E9%A2%98"><span class="toc-number">5.</span> <span class="toc-text">代码相关问题</span></a></li></ol>
+  </div>
+</section>
+
+
+      
+
+      <section class="widget-categories widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+      <span>CATEGORIES</span>
+  </div>
+  <div class="widget-body">
+    <ul class="categories-list">
+      
+    </ul>
+  </div>
+</section>
+
+      <section class="widget-tags widget-item  layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+    <span>TAGS</span>
+  </div>
+  <div class="widget-body">
+    <div class="tags-cloud">
+      <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 20px;" class="tags-cloud-10">NUC13</a> <a href="/tags/Ubuntu20-04/" style="font-size: 15px;" class="tags-cloud-5">Ubuntu20-04</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/ego-planner/" style="font-size: 15px;" class="tags-cloud-5">ego_planner</a> <a href="/tags/offb-node/" style="font-size: 15px;" class="tags-cloud-5">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 10px;" class="tags-cloud-0">px4</a> <a href="/tags/reading/" style="font-size: 15px;" class="tags-cloud-5">reading</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 15px;" class="tags-cloud-5">vins</a> <a href="/tags/wifi/" style="font-size: 10px;" class="tags-cloud-0">wifi</a> <a href="/tags/%E6%B5%8B%E8%AF%95/" style="font-size: 10px;" class="tags-cloud-0">测试</a>
+    </div>
+  </div>
+</section>
+    </div>
+  </article>
+</div>
+
+    <!-- footer container -->
+<footer id="footer" class="footer">
+  <div class="footer-container">
+    
+    <div class="social-icons">
+      
+        
+      
+        
+      
+        
+      
+        
+          <a href="https://github.com/astrigent-orange/astrigent-orange" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
+            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
+</svg>
+          </a>
+        
+      
+        
+      
+    </div>
+     
+    <p>&copy; 2026 <a href="/" target="_blank">Mian</a></p>
+
+    
+
+    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+
+    <p>
+      <a href="javascript:;" id="theme-light">🌞 浅色</a>
+      <a href="javascript:;" id="theme-dark">🌛 深色</a>
+      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
+    </p>
+  </div>
+</footer>
+  </div>
+
+  <div class="back-to-top-fixed soft-size--round soft-style--box">
+    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
+      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
+      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
+    </svg>
+  </div>
+
+  
+  
+
+
+
+
+
+
+
+
+<!-- copy button  -->
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+
+<!-- https://clipboardjs.com/ -->
+
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  
+  <!-- 尾部用户自定义相关内容 -->
+</body>
+</html>

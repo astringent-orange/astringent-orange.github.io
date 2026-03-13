@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#3367D6"/>
+  <link rel="apple-touch-icon" href="/icons-192.png">
+  <link rel="manifest" href="/manifest.json">
+  
+  <meta name="generator" content="Hexo 7.3.0">
+
+  
+    <meta name="description" content="Mian的个人博客">
+  
+
+  
+
+  
+    <meta name="author" content="Mian">
+  
+
+  
+
+  
+
+  <title>6_搭载NUC实机起飞测试 | Mian的笔记</title>
+
+  
+
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+  <div class="root-container">
+    
+<!-- header container -->
+<header class="header-container post">
+  
+    <div class="post-image" style="background-image: url(/images/banner.png)"></div>
+  
+
+  <!-- navbar -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <!-- logo -->
+    <div class="navbar-logo">
+      <a href="/">
+        
+          Mian的笔记
+        
+      </a>
+    </div>
+    <!-- link -->
+    <div class="navbar-link">
+      <div class="navbar-btn">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <ul class="navbar-list">
+        
+          <li class="navbar-list-item"><a href="/">首页</a></li>
+        
+          <li class="navbar-list-item"><a href="/archives">归档</a></li>
+        
+          <li class="navbar-list-item"><a href="/links">友链</a></li>
+        
+          <li class="navbar-list-item"><a href="/about">关于</a></li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+    <div class="header-content">
+      <div class="post-text layout-block">
+        <div class="layout-margin">
+          <h1 class="title-wrap">6_搭载NUC实机起飞测试</h1>
+          <h2 class="title-sub-wrap">
+            <strong>Mian</strong>
+            <span>发布于</span>
+            <time  class="article-date" datetime="2026-01-19T16:00:00.000Z" itemprop="datePublished">2026-01-20</time>
+          </h2>
+          
+          
+          <ul class="wrap-list dark">
+  
+</ul>
+          <ul class="wrap-list dark">
+  
+    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
+  
+    <li><a href="/tags/offb-node/">🏷️ offb_node</a></li>
+  
+    <li><a href="/tags/drone/">🏷️ drone</a></li>
+  
+</ul>
+        </div>
+      </div>
+    </div>
+  
+
+  
+  
+  
+</header>
+
+    <!-- 文章 -->
+
+<!-- 文章内容 -->
+<div class="body-container">
+  <article class="content-container layout-block post-container">
+    <div class="article-info">
+      
+      
+      
+      
+      <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
+        <p>将NUC与摄像头粘贴到无人机上，并安装桨叶尝试运行offb文件</p>
+<h1 id="查漏补缺"><a href="#查漏补缺" class="headerlink" title="查漏补缺"></a>查漏补缺</h1><p>首先对于里程计配置进行补充和修改，在相机外参中可以设置output文件夹，其中可以导出vins自动修正过的外参。即一开始相机的外参只需要大致正确，然后启动里程计，拿着无人机在无人机场地中缓慢地绕圈最后放回原处，然后将vins自动修正的外参粘贴至相机设置中。如此反复，直至当无人机放回原处时里程计的偏差在可以接受的范围内。</p>
+<p>此外为了保证安全，需要通过QGC对飞控参数进行修改，对于<code>VEL</code>相关参数，设置最大速度为0.5m&#x2F;s</p>
+<p>最后，之前的offb文件也需要进行修改。因为通过设定位置来控制无人机的话，一开始无人机检测到距离目标点的差距过大，可能使用最大加速度来冲向目标点。改为使用渐进的方式来起飞和降落。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @file offb_node.cpp</span></span><br><span class="line"><span class="comment"> * @brief 闭环平稳起降节点 - 分离起降拉力 + 完整调试输出</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;geometry_msgs/PoseStamped.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mavros_msgs/CommandBool.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mavros_msgs/SetMode.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mavros_msgs/State.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 全局变量</span></span><br><span class="line">mavros_msgs::State current_state;</span><br><span class="line">geometry_msgs::PoseStamped current_local_pose;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">state_cb</span><span class="params">(<span class="type">const</span> mavros_msgs::State::ConstPtr&amp; msg)</span></span>&#123;</span><br><span class="line">    current_state = *msg;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">pose_cb</span><span class="params">(<span class="type">const</span> geometry_msgs::PoseStamped::ConstPtr&amp; msg)</span></span>&#123;</span><br><span class="line">    current_local_pose = *msg;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;offb_node&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 订阅器</span></span><br><span class="line">    ros::Subscriber state_sub = nh.<span class="built_in">subscribe</span>&lt;mavros_msgs::State&gt;(<span class="string">&quot;mavros/state&quot;</span>, <span class="number">10</span>, state_cb);</span><br><span class="line">    ros::Subscriber pose_sub = nh.<span class="built_in">subscribe</span>&lt;geometry_msgs::PoseStamped&gt;(<span class="string">&quot;mavros/local_position/pose&quot;</span>, <span class="number">10</span>, pose_cb);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 发布器</span></span><br><span class="line">    ros::Publisher local_pos_pub = nh.<span class="built_in">advertise</span>&lt;geometry_msgs::PoseStamped&gt;(<span class="string">&quot;mavros/setpoint_position/local&quot;</span>, <span class="number">10</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 服务客户端</span></span><br><span class="line">    ros::ServiceClient arming_client = nh.<span class="built_in">serviceClient</span>&lt;mavros_msgs::CommandBool&gt;(<span class="string">&quot;mavros/cmd/arming&quot;</span>);</span><br><span class="line">    ros::ServiceClient set_mode_client = nh.<span class="built_in">serviceClient</span>&lt;mavros_msgs::SetMode&gt;(<span class="string">&quot;mavros/set_mode&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="function">ros::Rate <span class="title">rate</span><span class="params">(<span class="number">20.0</span>)</span></span>; <span class="comment">// 必须大于 2Hz</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. 等待飞控连接</span></span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;34mConnecting to FCU...\033[0m&quot;</span>);</span><br><span class="line">    <span class="keyword">while</span>(ros::<span class="built_in">ok</span>() &amp;&amp; !current_state.connected)&#123;</span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">        rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;32mFCU Connected\033[0m&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化设定点</span></span><br><span class="line">    geometry_msgs::PoseStamped pose;</span><br><span class="line">    pose.pose.position.x = <span class="number">0</span>;</span><br><span class="line">    pose.pose.position.y = <span class="number">0</span>;</span><br><span class="line">    pose.pose.position.z = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2. 预发设定点（Offboard 切换前提）</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">100</span>; ros::<span class="built_in">ok</span>() &amp;&amp; i &gt; <span class="number">0</span>; --i)&#123;</span><br><span class="line">        local_pos_pub.<span class="built_in">publish</span>(pose);</span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">        rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 任务参数</span></span><br><span class="line">    <span class="type">const</span> <span class="type">float</span> target_z = <span class="number">1.0</span>;      <span class="comment">// 目标高度</span></span><br><span class="line">    <span class="type">const</span> <span class="type">float</span> takeoff_dist = <span class="number">0.2</span>; <span class="comment">// 起飞拉力距离（越大起飞越快）</span></span><br><span class="line">    <span class="type">const</span> <span class="type">float</span> land_dist = <span class="number">0.05</span>;    <span class="comment">// 降落压紧距离（越小降落越慢越稳）</span></span><br><span class="line">    </span><br><span class="line">    <span class="type">bool</span> is_landing = <span class="literal">false</span>;</span><br><span class="line">    <span class="type">bool</span> timer_started = <span class="literal">false</span>;</span><br><span class="line">    ros::Time mission_start_time;</span><br><span class="line">    ros::Time last_request = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">    ros::Time last_print = ros::Time::<span class="built_in">now</span>();</span><br><span class="line"></span><br><span class="line">    mavros_msgs::SetMode offb_set_mode;</span><br><span class="line">    offb_set_mode.request.custom_mode = <span class="string">&quot;OFFBOARD&quot;</span>;</span><br><span class="line">    mavros_msgs::CommandBool arm_cmd;</span><br><span class="line">    arm_cmd.request.value = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;32mStarting Main Loop\033[0m&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(ros::<span class="built_in">ok</span>())&#123;</span><br><span class="line">        <span class="comment">// A. 周期性打印当前状态 (每 4 秒)</span></span><br><span class="line">        <span class="keyword">if</span> (ros::Time::<span class="built_in">now</span>() - last_print &gt; ros::<span class="built_in">Duration</span>(<span class="number">4.0</span>)) &#123;</span><br><span class="line">             <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Current Mode: %s, Armed: %d, Actual_Z: %.2f&quot;</span>, </span><br><span class="line">                      current_state.mode.<span class="built_in">c_str</span>(), current_state.armed, current_local_pose.pose.position.z);</span><br><span class="line">             last_print = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 逻辑：如果我们已经进入了降落阶段(timer_started)，且飞控已经上锁(Armed=0)</span></span><br><span class="line">        <span class="keyword">if</span>(timer_started &amp;&amp; !current_state.armed)&#123;</span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;32mDisarm Detected. Mission Accomplished! Exiting...\033[0m&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>; </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// B. 模式切换与解锁逻辑</span></span><br><span class="line">        <span class="keyword">if</span>( current_state.mode != <span class="string">&quot;OFFBOARD&quot;</span> &amp;&amp; (ros::Time::<span class="built_in">now</span>() - last_request &gt; ros::<span class="built_in">Duration</span>(<span class="number">5.0</span>)))&#123;</span><br><span class="line">            <span class="keyword">if</span>(!is_landing)&#123; <span class="comment">// 降落阶段不再强切模式</span></span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;34mAttempting to switch to OFFBOARD mode...\033[0m&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span>( set_mode_client.<span class="built_in">call</span>(offb_set_mode) &amp;&amp; offb_set_mode.response.mode_sent)&#123;</span><br><span class="line">                    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;32mOffboard enabled\033[0m&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;\033[1;31mFailed to set OFFBOARD mode!\033[0m&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                last_request = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span>( !current_state.armed &amp;&amp; (ros::Time::<span class="built_in">now</span>() - last_request &gt; ros::<span class="built_in">Duration</span>(<span class="number">5.0</span>)))&#123;</span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;34mAttempting to ARM...\033[0m&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span>( arming_client.<span class="built_in">call</span>(arm_cmd) &amp;&amp; arm_cmd.response.success)&#123;</span><br><span class="line">                    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;32mVehicle armed\033[0m&quot;</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;\033[1;31mFailed to ARM!\033[0m&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                last_request = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// C. 闭环跟随控制逻辑</span></span><br><span class="line">        <span class="keyword">if</span>(current_state.mode == <span class="string">&quot;OFFBOARD&quot;</span> &amp;&amp; current_state.armed)&#123;</span><br><span class="line">            <span class="comment">// 1. 起飞检测与悬停计时</span></span><br><span class="line">            <span class="keyword">if</span>(!timer_started &amp;&amp; current_local_pose.pose.position.z &gt; (target_z - <span class="number">0.05</span>))&#123;</span><br><span class="line">                mission_start_time = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">                timer_started = <span class="literal">true</span>;</span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;32mReached target altitude. Hovering for 10 seconds...\033[0m&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 2. 悬停结束判断</span></span><br><span class="line">            <span class="keyword">if</span>(timer_started &amp;&amp; !is_landing &amp;&amp; (ros::Time::<span class="built_in">now</span>() - mission_start_time &gt; ros::<span class="built_in">Duration</span>(<span class="number">10.0</span>)))&#123;</span><br><span class="line">                is_landing = <span class="literal">true</span>;</span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;\033[1;32mHovering finished. Initiating slow landing...\033[1;32m&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 3. 计算设定点 Z 轴</span></span><br><span class="line">            <span class="keyword">if</span>(!is_landing)&#123;</span><br><span class="line">                <span class="comment">// --- 起飞阶段使用 takeoff_dist ---</span></span><br><span class="line">                <span class="type">float</span> next_z = current_local_pose.pose.position.z + takeoff_dist;</span><br><span class="line">                <span class="keyword">if</span>(next_z &gt; target_z) next_z = target_z;</span><br><span class="line">                pose.pose.position.z = next_z;</span><br><span class="line">            &#125; </span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// --- 降落阶段使用较小的 land_dist ---</span></span><br><span class="line">                <span class="type">float</span> next_z = current_local_pose.pose.position.z - land_dist;</span><br><span class="line">                <span class="keyword">if</span>(next_z &lt; <span class="number">0.05</span>) next_z = <span class="number">0</span>; <span class="comment">// 压向地面</span></span><br><span class="line">                pose.pose.position.z = next_z;</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 4. 落地切换逻辑：当高度低于 0.2m 时，调用 PX4 自带的降落模式</span></span><br><span class="line">                <span class="keyword">if</span>(current_local_pose.pose.position.z &lt; <span class="number">0.20</span> &amp;&amp; current_state.mode != <span class="string">&quot;AUTO.LAND&quot;</span>)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(ros::Time::<span class="built_in">now</span>() - last_request &gt; ros::<span class="built_in">Duration</span>(<span class="number">2.0</span>))&#123; <span class="comment">// 2秒冷却</span></span><br><span class="line">                        mavros_msgs::SetMode land_set_mode;</span><br><span class="line">                        land_set_mode.request.custom_mode = <span class="string">&quot;AUTO.LAND&quot;</span>;</span><br><span class="line">                        <span class="keyword">if</span>(set_mode_client.<span class="built_in">call</span>(land_set_mode) &amp;&amp; land_set_mode.response.mode_sent)&#123;</span><br><span class="line">                            <span class="built_in">ROS_WARN</span>(<span class="string">&quot;\033[1;34mSwitching to AUTO.LAND...\033[0m&quot;</span>);</span><br><span class="line">                        &#125;</span><br><span class="line">                        last_request = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 如果不在 Offboard 或没解锁，设定高度归零</span></span><br><span class="line">            pose.pose.position.z = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// D. 核心发布：始终发送位置指令，维持心跳</span></span><br><span class="line">        local_pos_pub.<span class="built_in">publish</span>(pose);</span><br><span class="line"></span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">        rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后最好先在仿真环境中运行节点。但要注意，仿真环境中能运行是最低要求，要放到真机运行可能还需要调整参数。</p>
+<h1 id="测试过程"><a href="#测试过程" class="headerlink" title="测试过程"></a>测试过程</h1><h2 id="阶段一"><a href="#阶段一" class="headerlink" title="阶段一"></a>阶段一</h2><p>直接尝试运行起飞节点，发现电机声音很大，直接使用遥控器紧急断电。推测原因一是测试空间在狭窄室内，回声较大；第二是之前没有修改起飞逻辑，电机可能直接输出最大功率</p>
+<p>于是在修改了起飞文件后，尝试先用遥控器控制无人机起飞，观察需要多大的推力，电机的声音有多大。但是即使最大输出，无人机也无法起飞，推测是电脑含有外壳过重。拆卸外壳后尝试重新起飞，但是仍然无法起飞，发现可能桨叶受损。</p>
+<p>检查后发现是桨叶装配方向与电机转向相反，所以推力越大反而越不能起飞。修正后尝试用遥控器起飞，发现无人机起飞十分不稳定，会左右颠簸，于是尝试调整飞控。</p>
+<p>参考高飞自主无人机教程 <a target="_blank" rel="noopener" href="https://github.com/ZJU-FAST-Lab/Fast-Drone-250/tree/master">https://github.com/ZJU-FAST-Lab/Fast-Drone-250/tree/master</a> 修改部分飞控参数。此外注意到一点，碳纤维板导电，NUC拆掉外壳后不能直接接触，最好是阻隔，故重新将外壳安装。</p>
+<h2 id="阶段二"><a href="#阶段二" class="headerlink" title="阶段二"></a>阶段二</h2><p>再次尝试用遥控器起飞无人机，结果发现起飞后无人机会直给自己“摔”一圈，怀疑是电机推力不平衡。结果检查后发现一件之前没有注意过的事：在QGC中设置传感器旋转方向为180°并不能将飞行方向调整180°；即事实上，无人机的飞行方向由电机的连线决定（物理方向），当前结构下，1号电机一定在无人机飞行方向的右前方；而传感器中所设置的方向是飞控安装角度（飞控方向）与物理方向的差值；而最终摄像头的角度只能遵守物理方向。故当该角度设定有问题时，例如无人机一旦想要增大右侧电机推力，但接受的是左侧电机的数据，就会一直增大，导致瞬时翻滚。</p>
+<p>发现px4飞控与电调之间有一个可以调整电机序号的接口，尝试更改序号后修改电机转向。结果使用dshot修改电机转向存在问题，无法保存。而电机转向是根据与电调的连线（焊接）决定的，不好修改。因此只能在既有的电机转向上修改电机的序号。</p>
+<h2 id="阶段三"><a href="#阶段三" class="headerlink" title="阶段三"></a>阶段三</h2><p>起飞节点尝试切换无人机飞行模型，但是一直是ALTCTL，且查看<code>/mavros/local_position/pose</code>发现其中xy恒等于0，然后z轴发散，但是里程计读数正常。于是可知问题出现在飞控的EKF2数据融合。</p>
+<p>使用QGC检查EKF2相关参数，发现是EKF2_AID_MASK（使用什么数据进行融合）值为1，选择的是GPS而不是vision。修改EKF2_AID_MASK&#x3D;28（使用视觉、yaw、imu），EKF2_HDG_MODE（初始位置信息源）&#x3D;vision（不使用气压计）。</p>
+<p>再次运行，发现里程计正常，且local position的xyz轴都有正常读数，但是z轴初始在负值（-1.7）。需检查HDG_MODE是否还是气压计。</p>
+<p>更改为vision后再次运行，发现z轴读数只有厘米级误差，显示正常。但是当多次用一个launch文件启动所有节点时，发现读数有时会发散。查阅后得知，launch文件不保证启动顺序，于是vins可能在摄像头之前启动，导致读数异常。改为用bash脚本启动多个launch文件，每个launch文件最好只负责一个功能，且内部没有先后顺序。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1.启动mavros</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Activating Mavros...\033[0m&quot;</span></span><br><span class="line">roslaunch mavros px4.launch gcs_url:=udp://@192.168.8.50 &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测飞控是否连接</span></span><br><span class="line"><span class="keyword">until</span> rostopic <span class="built_in">echo</span> /mavros/state -n 1 2&gt;/dev/null | grep -q <span class="string">&quot;connected: True&quot;</span>; <span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Waiting for FCU connection...\e[0m&quot;</span></span><br><span class="line">    <span class="built_in">sleep</span> 1</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;32m[INFO] FCU connected!\e[0m&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2.启动相机</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Starting camera...\e[0m&quot;</span></span><br><span class="line">roslaunch vins d435_run.launch &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测相机是否启动</span></span><br><span class="line"><span class="keyword">until</span> rostopic <span class="built_in">echo</span> /camera/infra1/image_rect_raw -n 1 &gt; /dev/null 2&gt;&amp;1;<span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Waiting for camera stream...\e[0m&quot;</span></span><br><span class="line">    <span class="built_in">sleep</span> 1</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;32m[INFO] Camera stream detected!\e[0m&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 3.启动vins</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Starting VINS-Fusion...\e[0m&quot;</span></span><br><span class="line">roslaunch vins vins_run.launch &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测vins是否启动</span></span><br><span class="line"><span class="keyword">until</span> rostopic <span class="built_in">echo</span> /vins_node/odometry -n 1 &gt; /dev/null 2&gt;&amp;1;<span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Waiting for VINS to initialize...\e[0m&quot;</span></span><br><span class="line">    <span class="built_in">sleep</span> 1</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;32m[INFO] VINS initialized!Odometry is ready\e[0m&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 4.启动转换节点</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Starting transfer node...\e[0m&quot;</span></span><br><span class="line">rosrun offb vins2mavros.py &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测转换节点是否启动</span></span><br><span class="line"><span class="keyword">until</span> rostopic <span class="built_in">echo</span> /mavros/vision_pose/pose -n 1 &gt;/dev/null 2&gt;&amp;1;<span class="keyword">do</span></span><br><span class="line">    <span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Waiting for transfer node to publish data...\e[0m&quot;</span></span><br><span class="line">    <span class="built_in">sleep</span> 1</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 5.设置伪原点</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Setting origin node\e[0m&quot;</span></span><br><span class="line">rosrun offb set_origin.py &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 6.重启EKF2</span></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;34m[INFO] Resetting PX4 EKF2 estimator...\e[0m&quot;</span></span><br><span class="line">rosservice call /mavros/cmd/command <span class="string">&quot;&#123;command: 241, param1: 1, param2: 0, param3: 0, param4: 0, param5: 0, param6: 0, param7: 0&#125;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;32m[INFO] All system started,ready to fly!\e[0m&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 保持脚本不退出</span></span><br><span class="line"><span class="built_in">wait</span></span><br></pre></td></tr></table></figure>
+
+<p>抱着无人机进行绕圈检查里程计误差。发现里程计数据误差小，但是local position误差大，于是在QGC中减小<code>EKF2_EVP_NOISE</code> <code>EKF2_EVV_NOISE</code> <code>EKF2_EVA_NOISE</code>，让飞控更相信视觉信息。同样将<code>EKF2_EV_DELAY</code>也缩小，因为是有线连接，所以可以在20~50ms。</p>
+<p>此外，修改<code>EKF2_MAG_TYPE</code>&#x3D;0，<code>SYS_HAS_MAG</code>&#x3D;0，不在室内环境启用磁力计</p>
+<p>最后尝试启动offb_node节点，观察到无人机成功切换模式并解锁，但是解锁后没有起飞。发现当目标位置太低（当前高度+0.15）时在起飞之前无人机就会上锁，修改到+0.2后成功起飞并降落。</p>
+<p>观察到无人机的水平方向上基本没有位移，且起飞降落非常稳定；而降落时目标点为-0.05稍微有些慢，但是不影响。但是最后切换到<code>AUTO.LAND</code>后</p>
+
+      </section>
+
+      
+      
+        <nav class="article-nav">
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+    <div class="card-text">
+      
+        <a href="/2026/03/09/Test/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">Test</h2>
+        </a>
+      
+      <div class="card-text--row">Newer</div>
+    </div>
+  </article>
+</div>
+          
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+    <div class="card-text">
+      
+        <a href="/2026/01/15/5_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E4%BB%BF%E7%9C%9F%E5%99%A8/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">5_EGO-Planner 代码阅读 仿真器</h2>
+        </a>
+      
+      <div class="card-text--row">Older</div>
+    </div>
+  </article>
+</div>
+          
+        </nav>
+      
+
+      <section class="page-message-container layout-padding">
+        
+
+
+  
+  
+
+  
+  
+
+
+      </section>
+    </div>
+    <div class="widget-info">
+      <section class="widget-author widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-body">
+    
+    
+      <h2>Mian</h2>
+    
+    
+      <p>每天成长一点</p>
+    
+
+    <div class="count-box">
+      <div class="count-box--item">
+        <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
+</svg>
+        <span>9</span>
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+        0
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+        14
+      </div>
+    </div>
+  </div>
+</section>
+
+      
+<section class="widget-toc widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-toc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M134.50666666 767.46666668H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.23999999v50.13333333c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H134.50666666c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.13333333c0.10666668-27.73333333 22.50666668-50.24000001 50.24000001-50.24000001zM84.37333332 541.65333333h326.18666669c27.73333333 0 50.24000001 22.39999999 50.23999999 50.13333334v50.24000001c0 27.73333333-22.50666668 50.24000001-50.24000002 50.23999999H84.37333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.23999999v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333334zM134.50666666 315.83999999H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.24000001v50.24000001c0 27.73333333-22.50666668 50.13333334-50.24000001 50.13333333H134.50666666c-27.73333333 0-50.24000001-22.39999999-50.23999999-50.13333333v-50.24000001c0.10666668-27.84000001 22.50666668-50.24000001 50.24000001-50.23999999zM209.81333332 89.91999999h326.18666671c27.73333333 0 50.24000001 22.39999999 50.23999997 50.13333335v50.23999999c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H209.81333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333333zM692.05333333 623.36l274.66666669 176.00000002c23.36000001 14.93333333 30.08 45.97333334 15.14666666 69.33333332L954.77333334 910.93333333c-14.93333333 23.25333334-45.97333334 30.08-69.33333335 15.14666667l-274.66666666-176c-23.36000001-14.93333333-30.08-45.97333334-15.14666667-69.33333333l27.09333334-42.24000001c14.93333333-23.36000001 46.08000001-30.08 69.33333333-15.14666666z" fill="currentColor"></path>
+</svg>
+    <span>TOC</span>
+  </div>
+  <div class="widget-body">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%80"><span class="toc-number">1.</span> <span class="toc-text">阶段一</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%B6%E6%AE%B5%E4%BA%8C"><span class="toc-number">2.</span> <span class="toc-text">阶段二</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%98%B6%E6%AE%B5%E4%B8%89"><span class="toc-number">3.</span> <span class="toc-text">阶段三</span></a></li></ol>
+  </div>
+</section>
+
+
+      
+
+      <section class="widget-categories widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+      <span>CATEGORIES</span>
+  </div>
+  <div class="widget-body">
+    <ul class="categories-list">
+      
+    </ul>
+  </div>
+</section>
+
+      <section class="widget-tags widget-item  layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+    <span>TAGS</span>
+  </div>
+  <div class="widget-body">
+    <div class="tags-cloud">
+      <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 20px;" class="tags-cloud-10">NUC13</a> <a href="/tags/Ubuntu20-04/" style="font-size: 15px;" class="tags-cloud-5">Ubuntu20-04</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/ego-planner/" style="font-size: 15px;" class="tags-cloud-5">ego_planner</a> <a href="/tags/offb-node/" style="font-size: 15px;" class="tags-cloud-5">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 10px;" class="tags-cloud-0">px4</a> <a href="/tags/reading/" style="font-size: 15px;" class="tags-cloud-5">reading</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 15px;" class="tags-cloud-5">vins</a> <a href="/tags/wifi/" style="font-size: 10px;" class="tags-cloud-0">wifi</a> <a href="/tags/%E6%B5%8B%E8%AF%95/" style="font-size: 10px;" class="tags-cloud-0">测试</a>
+    </div>
+  </div>
+</section>
+    </div>
+  </article>
+</div>
+
+    <!-- footer container -->
+<footer id="footer" class="footer">
+  <div class="footer-container">
+    
+    <div class="social-icons">
+      
+        
+      
+        
+      
+        
+      
+        
+          <a href="https://github.com/astrigent-orange/astrigent-orange" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
+            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
+</svg>
+          </a>
+        
+      
+        
+      
+    </div>
+     
+    <p>&copy; 2026 <a href="/" target="_blank">Mian</a></p>
+
+    
+
+    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+
+    <p>
+      <a href="javascript:;" id="theme-light">🌞 浅色</a>
+      <a href="javascript:;" id="theme-dark">🌛 深色</a>
+      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
+    </p>
+  </div>
+</footer>
+  </div>
+
+  <div class="back-to-top-fixed soft-size--round soft-style--box">
+    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
+      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
+      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
+    </svg>
+  </div>
+
+  
+  
+
+
+
+
+
+
+
+
+<!-- copy button  -->
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+
+<!-- https://clipboardjs.com/ -->
+
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  
+  <!-- 尾部用户自定义相关内容 -->
+</body>
+</html>
