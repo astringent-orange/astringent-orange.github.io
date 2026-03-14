@@ -71,18 +71,90 @@
       </div>
       <ul class="navbar-list">
         
-          <li class="navbar-list-item"><a href="/">首页</a></li>
+
+          
+
+            <li class="navbar-list-item">
+              <a href="/">首页</a>
+            </li>
+
+          
+
         
-          <li class="navbar-list-item"><a href="/archives">文档</a></li>
+
+          
+
+            <li class="navbar-list-item dropdown">
+              <a href="#" class="dropdown-toggle">
+                文档 <span class="arrow">▾</span>
+              </a>
+
+              <ul class="dropdown-menu">
+                
+                  <li>
+                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
+                      无人机实验
+                    </a>
+                  </li>
+                
+              </ul>
+            </li>
+
+          
+
         
-          <li class="navbar-list-item"><a href="/links">友链</a></li>
+
+          
+
+            <li class="navbar-list-item">
+              <a href="/links">友链</a>
+            </li>
+
+          
+
         
-          <li class="navbar-list-item"><a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a></li>
+
+          
+
+            <li class="navbar-list-item">
+              <a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a>
+            </li>
+
+          
+
         
       </ul>
     </div>
   </div>
 </nav>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const dropdown = document.querySelector(".dropdown");
+  if (!dropdown) return;
+
+  const menu = dropdown.querySelector(".dropdown-menu");
+  const toggle = dropdown.querySelector(".dropdown-toggle");
+  const arrow = dropdown.querySelector(".arrow");
+
+  toggle.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const opened = menu.style.display === "block";
+
+    if (opened) {
+      menu.style.display = "none";
+      arrow.style.transform = "rotate(0deg)";
+    } else {
+      menu.style.display = "block";
+      arrow.style.transform = "rotate(180deg)";
+    }
+
+  });
+
+});
+</script>
 
   
   
@@ -120,11 +192,13 @@
       <div class="article-item layout-padding">
         <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
           
+            <div class="card-cover" background-image-lazy data-img="/images/cover/gnosia.png"></div>
+          
 
           <div class="card-text">
             
-              <a href="/2025/12/23/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/" itemprop="url">
-                <h2 class="card-text--title">1_Intel NUC13ANKi7-1360P 调试</h2>
+              <a href="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" itemprop="url">
+                <h2 class="card-text--title">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</h2>
               </a>
             
             <div class="card-text--row">
@@ -132,16 +206,18 @@
               <time  class="article-date" datetime="2025-12-22T16:00:00.000Z" itemprop="datePublished">2025-12-23</time>
             </div>
             
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
-  
-    <li><a href="/tags/wifi/">🏷️ wifi</a></li>
+            <ul class="wrap-list dark">
   
     <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
+  
+    <li><a href="/tags/vins/">🏷️ vins</a></li>
+  
+    <li><a href="/tags/d435/">🏷️ d435</a></li>
   
 </ul>
           </div>
@@ -151,11 +227,13 @@
       <div class="article-item layout-padding">
         <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
           
+            <div class="card-cover" background-image-lazy data-img="/images/cover/SlaytheSpire.png"></div>
+          
 
           <div class="card-text">
             
-              <a href="/2025/12/22/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" itemprop="url">
-                <h2 class="card-text--title">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</h2>
+              <a href="/2025/12/22/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/" itemprop="url">
+                <h2 class="card-text--title">1_Intel NUC13ANKi7-1360P 调试</h2>
               </a>
             
             <div class="card-text--row">
@@ -163,16 +241,18 @@
               <time  class="article-date" datetime="2025-12-21T16:00:00.000Z" itemprop="datePublished">2025-12-22</time>
             </div>
             
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
+  
+    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
+  
+    <li><a href="/tags/wifi/">🏷️ wifi</a></li>
   
     <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
-  
-    <li><a href="/tags/vins/">🏷️ vins</a></li>
-  
-    <li><a href="/tags/d435/">🏷️ d435</a></li>
   
 </ul>
           </div>

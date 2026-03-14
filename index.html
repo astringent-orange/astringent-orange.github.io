@@ -71,18 +71,90 @@
       </div>
       <ul class="navbar-list">
         
-          <li class="navbar-list-item"><a href="/">首页</a></li>
+
+          
+
+            <li class="navbar-list-item">
+              <a href="/">首页</a>
+            </li>
+
+          
+
         
-          <li class="navbar-list-item"><a href="/archives">文档</a></li>
+
+          
+
+            <li class="navbar-list-item dropdown">
+              <a href="#" class="dropdown-toggle">
+                文档 <span class="arrow">▾</span>
+              </a>
+
+              <ul class="dropdown-menu">
+                
+                  <li>
+                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
+                      无人机实验
+                    </a>
+                  </li>
+                
+              </ul>
+            </li>
+
+          
+
         
-          <li class="navbar-list-item"><a href="/links">友链</a></li>
+
+          
+
+            <li class="navbar-list-item">
+              <a href="/links">友链</a>
+            </li>
+
+          
+
         
-          <li class="navbar-list-item"><a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a></li>
+
+          
+
+            <li class="navbar-list-item">
+              <a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a>
+            </li>
+
+          
+
         
       </ul>
     </div>
   </div>
 </nav>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const dropdown = document.querySelector(".dropdown");
+  if (!dropdown) return;
+
+  const menu = dropdown.querySelector(".dropdown-menu");
+  const toggle = dropdown.querySelector(".dropdown-toggle");
+  const arrow = dropdown.querySelector(".arrow");
+
+  toggle.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const opened = menu.style.display === "block";
+
+    if (opened) {
+      menu.style.display = "none";
+      arrow.style.transform = "rotate(0deg)";
+    } else {
+      menu.style.display = "block";
+      arrow.style.transform = "rotate(180deg)";
+    }
+
+  });
+
+});
+</script>
 
   
   
@@ -138,14 +210,16 @@
             
             <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
             <ul class="wrap-list dark">
+  
+    <li><a href="/tags/%E5%AE%9E%E6%9C%BA/">🏷️ 实机</a></li>
   
     <li><a href="/tags/%E5%BB%BA%E5%9B%BE/">🏷️ 建图</a></li>
   
     <li><a href="/tags/octomap/">🏷️ octomap</a></li>
-  
-    <li><a href="/tags/%E5%AE%9E%E6%9C%BA/">🏷️ 实机</a></li>
   
 </ul>
           </div>
@@ -154,6 +228,74 @@
     
       <div class="article-item layout-padding">
         <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
+          
+            <div class="card-cover" background-image-lazy data-img="/images/cover/chen.png"></div>
+          
+
+          <div class="card-text">
+            
+              <a href="/2026/02/04/8_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95&%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" itemprop="url">
+                <h2 class="card-text--title">8_实机绕圈测试&amp;场地搭建</h2>
+              </a>
+            
+            <div class="card-text--row">
+              <span>发布于</span>
+              <time  class="article-date" datetime="2026-02-03T16:00:00.000Z" itemprop="datePublished">2026-02-04</time>
+            </div>
+            
+            <ul class="wrap-list dark">
+  
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
+</ul>
+            <ul class="wrap-list dark">
+  
+    <li><a href="/tags/%E5%AE%9E%E6%9C%BA/">🏷️ 实机</a></li>
+  
+    <li><a href="/tags/%E7%BB%95%E5%9C%88/">🏷️ 绕圈</a></li>
+  
+</ul>
+          </div>
+        </article>
+      </div>
+    
+      <div class="article-item layout-padding">
+        <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
+          
+            <div class="card-cover" background-image-lazy data-img="/images/cover/laevatin.png"></div>
+          
+
+          <div class="card-text">
+            
+              <a href="/2026/01/28/7_%E5%B0%8F%E5%9E%8B%E4%BB%BF%E7%9C%9F%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E5%AE%9E%E9%AA%8C/" itemprop="url">
+                <h2 class="card-text--title">7_小型仿真强化学习实验</h2>
+              </a>
+            
+            <div class="card-text--row">
+              <span>发布于</span>
+              <time  class="article-date" datetime="2026-01-27T16:00:00.000Z" itemprop="datePublished">2026-01-28</time>
+            </div>
+            
+            <ul class="wrap-list dark">
+  
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
+</ul>
+            <ul class="wrap-list dark">
+  
+    <li><a href="/tags/simulation/">🏷️ simulation</a></li>
+  
+    <li><a href="/tags/RL/">🏷️ RL</a></li>
+  
+</ul>
+          </div>
+        </article>
+      </div>
+    
+      <div class="article-item layout-padding">
+        <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
+          
+            <div class="card-cover" background-image-lazy data-img="/images/cover/zangief.jpg"></div>
           
 
           <div class="card-text">
@@ -167,10 +309,12 @@
               <time  class="article-date" datetime="2026-01-19T16:00:00.000Z" itemprop="datePublished">2026-01-20</time>
             </div>
             
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
     <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
   
@@ -186,6 +330,8 @@
       <div class="article-item layout-padding">
         <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
           
+            <div class="card-cover" background-image-lazy data-img="/images/cover/Hippolyta.jpg"></div>
+          
 
           <div class="card-text">
             
@@ -198,10 +344,12 @@
               <time  class="article-date" datetime="2026-01-14T16:00:00.000Z" itemprop="datePublished">2026-01-15</time>
             </div>
             
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
     <li><a href="/tags/ego-planner/">🏷️ ego_planner</a></li>
   
@@ -217,6 +365,8 @@
       <div class="article-item layout-padding">
         <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
           
+            <div class="card-cover" background-image-lazy data-img="/images/cover/YeShunguang.png"></div>
+          
 
           <div class="card-text">
             
@@ -229,10 +379,12 @@
               <time  class="article-date" datetime="2026-01-04T16:00:00.000Z" itemprop="datePublished">2026-01-05</time>
             </div>
             
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
     <li><a href="/tags/ego-planner/">🏷️ ego_planner</a></li>
   
@@ -248,6 +400,8 @@
       <div class="article-item layout-padding">
         <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
           
+            <div class="card-cover" background-image-lazy data-img="/images/cover/zhao.jpg"></div>
+          
 
           <div class="card-text">
             
@@ -260,10 +414,12 @@
               <time  class="article-date" datetime="2025-12-24T16:00:00.000Z" itemprop="datePublished">2025-12-25</time>
             </div>
             
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
     <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
   
@@ -283,11 +439,13 @@
       <div class="article-item layout-padding">
         <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
           
+            <div class="card-cover" background-image-lazy data-img="/images/cover/gnosia.png"></div>
+          
 
           <div class="card-text">
             
-              <a href="/2025/12/23/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/" itemprop="url">
-                <h2 class="card-text--title">1_Intel NUC13ANKi7-1360P 调试</h2>
+              <a href="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" itemprop="url">
+                <h2 class="card-text--title">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</h2>
               </a>
             
             <div class="card-text--row">
@@ -295,16 +453,18 @@
               <time  class="article-date" datetime="2025-12-22T16:00:00.000Z" itemprop="datePublished">2025-12-23</time>
             </div>
             
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
-  
-    <li><a href="/tags/wifi/">🏷️ wifi</a></li>
+            <ul class="wrap-list dark">
   
     <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
+  
+    <li><a href="/tags/vins/">🏷️ vins</a></li>
+  
+    <li><a href="/tags/d435/">🏷️ d435</a></li>
   
 </ul>
           </div>
@@ -314,11 +474,13 @@
       <div class="article-item layout-padding">
         <article class="card-container article-card content-padding--large soft-size--large soft-style--box">
           
+            <div class="card-cover" background-image-lazy data-img="/images/cover/SlaytheSpire.png"></div>
+          
 
           <div class="card-text">
             
-              <a href="/2025/12/22/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" itemprop="url">
-                <h2 class="card-text--title">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</h2>
+              <a href="/2025/12/22/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/" itemprop="url">
+                <h2 class="card-text--title">1_Intel NUC13ANKi7-1360P 调试</h2>
               </a>
             
             <div class="card-text--row">
@@ -326,16 +488,18 @@
               <time  class="article-date" datetime="2025-12-21T16:00:00.000Z" itemprop="datePublished">2025-12-22</time>
             </div>
             
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
   
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
 </ul>
-            <ul class="wrap-list light">
+            <ul class="wrap-list dark">
+  
+    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
+  
+    <li><a href="/tags/wifi/">🏷️ wifi</a></li>
   
     <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
-  
-    <li><a href="/tags/vins/">🏷️ vins</a></li>
-  
-    <li><a href="/tags/d435/">🏷️ d435</a></li>
   
 </ul>
           </div>

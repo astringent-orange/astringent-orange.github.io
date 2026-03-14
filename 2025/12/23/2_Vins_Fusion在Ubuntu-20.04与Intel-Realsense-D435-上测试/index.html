@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#3367D6"/>
+  <link rel="apple-touch-icon" href="/icons-192.png">
+  <link rel="manifest" href="/manifest.json">
+  
+  <meta name="generator" content="Hexo 7.3.0">
+
+  
+    <meta name="description" content="Mian的个人博客">
+  
+
+  
+
+  
+    <meta name="author" content="Mian">
+  
+
+  
+
+  
+
+  <title>2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试 | Mian的笔记</title>
+
+  
+
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+  <div class="root-container">
+    
+<!-- header container -->
+<header class="header-container post">
+  
+    <div class="post-image" style="background-image: url(/images/cover/gnosia.png)"></div>
+  
+
+  <!-- navbar -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <!-- logo -->
+    <div class="navbar-logo">
+      <a href="/">
+        
+          Mian的笔记
+        
+      </a>
+    </div>
+    <!-- link -->
+    <div class="navbar-link">
+      <div class="navbar-btn">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <ul class="navbar-list">
+        
+
+          
+
+            <li class="navbar-list-item">
+              <a href="/">首页</a>
+            </li>
+
+          
+
+        
+
+          
+
+            <li class="navbar-list-item dropdown">
+              <a href="#" class="dropdown-toggle">
+                文档 <span class="arrow">▾</span>
+              </a>
+
+              <ul class="dropdown-menu">
+                
+                  <li>
+                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
+                      无人机实验
+                    </a>
+                  </li>
+                
+              </ul>
+            </li>
+
+          
+
+        
+
+          
+
+            <li class="navbar-list-item">
+              <a href="/links">友链</a>
+            </li>
+
+          
+
+        
+
+          
+
+            <li class="navbar-list-item">
+              <a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a>
+            </li>
+
+          
+
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+
+  const dropdown = document.querySelector(".dropdown");
+  if (!dropdown) return;
+
+  const menu = dropdown.querySelector(".dropdown-menu");
+  const toggle = dropdown.querySelector(".dropdown-toggle");
+  const arrow = dropdown.querySelector(".arrow");
+
+  toggle.addEventListener("click", function(e) {
+    e.preventDefault();
+
+    const opened = menu.style.display === "block";
+
+    if (opened) {
+      menu.style.display = "none";
+      arrow.style.transform = "rotate(0deg)";
+    } else {
+      menu.style.display = "block";
+      arrow.style.transform = "rotate(180deg)";
+    }
+
+  });
+
+});
+</script>
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+    <div class="header-content">
+      <div class="post-text layout-block">
+        <div class="layout-margin">
+          <h1 class="title-wrap">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</h1>
+          <h2 class="title-sub-wrap">
+            <strong>Mian</strong>
+            <span>发布于</span>
+            <time  class="article-date" datetime="2025-12-22T16:00:00.000Z" itemprop="datePublished">2025-12-23</time>
+          </h2>
+          
+          
+          <ul class="wrap-list dark">
+  
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    
+</ul>
+          <ul class="wrap-list dark">
+  
+    <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
+  
+    <li><a href="/tags/vins/">🏷️ vins</a></li>
+  
+    <li><a href="/tags/d435/">🏷️ d435</a></li>
+  
+</ul>
+        </div>
+      </div>
+    </div>
+  
+
+  
+  
+  
+</header>
+
+    <!-- 文章 -->
+
+<!-- 文章内容 -->
+<div class="body-container">
+  <article class="content-container layout-block post-container">
+    <div class="article-info">
+      
+      
+      
+      
+      <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
+        <h3 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h3><p><strong>1.vins适配版本</strong><br>首先要注意原项目只支持ubuntu 16.04与18.04，在20.04 及以上版本因为默认的opencv库从opencv3升级为4，导致许多库文件不再适配（部分变量名称改变），强行使用编译时会报错，需要自己修改库文件<br><a target="_blank" rel="noopener" href="https://github.com/HKUST-Aerial-Robotics/VINS-Fusion">https://github.com/HKUST-Aerial-Robotics/VINS-Fusion</a></p>
+<p>Ubuntu 20.04支持版<br><a target="_blank" rel="noopener" href="https://github.com/Geneta2580/Geneta_vins_fusion">https://github.com/Geneta2580/Geneta_vins_fusion</a><br>本次使用20.04适配版，该版本中已经默认修改了库文件，可以直接编译。</p>
+<p><strong>2.硬件准备</strong><br>(1) 本次使用intel realsense d435，而非d435i，vins项目对后者提供了默认的配置文件，而前者需要在其基础上修改<br>(2) 为了传输相机的视频数据，需要使用usb3.0支持，即要求用支持usb3.0的线缆将相机接在nuc的usb3.0接口。（ps：可以观察usb接口来判断是否为usb3.0。usb3.0接口通常为蓝色胶芯，且除了4个较长的黄色金属弹片外还有5个较短的弹片）</p>
+<hr>
+<h3 id="1-安装Realsense驱动与ROS接口"><a href="#1-安装Realsense驱动与ROS接口" class="headerlink" title="1. 安装Realsense驱动与ROS接口"></a>1. 安装Realsense驱动与ROS接口</h3><ul>
+<li>**SDK (Librealsense)**：这是底层驱动，负责通过 USB 协议与摄像头硬件通信，获取原始数据流。即通过代码调用该库向相机发送命令。</li>
+<li><strong>ROS Wrapper</strong>：这是一个“翻译官”。它将 SDK 获取的原始数据封装成 ROS 格式的消息（Topic），让 VINS 能够订阅和读取。可以通过指令<code>roslaunch realsense2_camera rs_camera.launch</code> 启动了一个C++程序，调用SDK初始化硬件，然后开启一个死循环：不断从 USB 接口读取图像数据 -&gt; 转换成 ROS 格式的消息 (<code>sensor_msgs/Image</code>) -&gt; 发布到话题 (<code>Topic</code>) 上。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1. 更新软件源</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get update</span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. 安装 RealSense 的 ROS 驱动包 (包含 SDK 和 ROS 节点)</span></span><br><span class="line"><span class="comment"># 相比源码编译，直接用 apt 安装最稳定，不容易出现内核版本冲突</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install ros-noetic-realsense2-camera ros-noetic-realsense2-description</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h3 id="2-安装Ceres-Solver优化库"><a href="#2-安装Ceres-Solver优化库" class="headerlink" title="2. 安装Ceres Solver优化库"></a>2. 安装Ceres Solver优化库</h3><ul>
+<li><strong>VINS 的本质</strong>：VINS 是一个巨大的数学优化问题（非线性最小二乘问题）。它在不断计算：“根据我看到的图像变化，我移动了多少，才能让误差最小？”</li>
+<li><strong>Ceres Solver</strong>：这是 Google 开发的数学库，专门用来解这种复杂的方程。VINS 的核心算法严重依赖它。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Ubuntu 20.04 的软件源里已经包含了 Ceres，直接安装开发库即可</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install libceres-dev libgoogle-glog-dev</span><br></pre></td></tr></table></figure></li>
+</ul>
+<hr>
+<h3 id="3-下载并编译VINS-Fusion"><a href="#3-下载并编译VINS-Fusion" class="headerlink" title="3. 下载并编译VINS_Fusion"></a>3. 下载并编译VINS_Fusion</h3><p>按照官方readme文档进行操作</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 首先创建一个工作空间</span></span><br><span class="line"><span class="built_in">mkdir</span> -p vins_ws/src &amp; <span class="built_in">cd</span> vins_ws/src</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载vins_fusion</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/Geneta2580/Geneta_vins_fusion</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编译代码</span></span><br><span class="line"><span class="built_in">cd</span> ..</span><br><span class="line">catkin_make</span><br><span class="line"><span class="built_in">source</span> ./devel/setup.bash</span><br></pre></td></tr></table></figure>
+
+<p>存在问题<br>(1) 如电脑配置过低，如内存大小&lt;2G，编译时可能因内存空间不足停止。可以使用<code>catkin_make -j1</code>来编译，不过可能导致编译速度过慢<br>(2) 如果强行在Ubuntu 20.04上编译原版的vins_fusion，可能会出现两种报错导致编译停止。都是因为Ubuntu 自带的opencv版本改变了，Ubuntu 18.04为opencv3，Ubuntu 20.04 为opencv4</p>
+<p>&lt;1&gt; 变量名因版本升级改变。<br>报错示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/home/sunrise/UAV/catkin_ws_vins/src/VINS-Fusion/vins_estimator/src/KITTIOdomTest.cpp:95:39: error: ‘CV_LOAD_IMAGE_GRAYSCALE’ was not declared <span class="keyword">in</span> this scope  </span><br><span class="line">95 | imLeft = cv::imread(leftImagePath, CV_LOAD_IMAGE_GRAYSCALE );  </span><br><span class="line">| ^~~~~~~~~~~~~~~~~~~~~~~</span><br></pre></td></tr></table></figure>
+<p>打开报错的文件<code>vim ~/UAV/catkin_ws_vins/src/VINS-Fusion/vins_estimator/src/KITTIOdomTest.cpp</code> 将其中所有的<code>CV_LOAD_IMAGE_GRAYSCALE</code> 替换为 <code>cv::IMREAD_GRAYSCALE</code></p>
+<p>&lt;2&gt; 缺少头文件<br>报错示例：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/home/sunrise/UAV/catkin_ws_vins/src/VINS-Fusion/loop_fusion/src/ThirdParty/DVision/BRIEF.cpp: In member <span class="keyword">function</span> ‘void DVision::BRIEF::compute(const cv::Mat&amp;, const std::vector[cv::KeyPoint]&amp;, std::vector&lt;boost::dynamic_bitset&lt;&gt; &gt;&amp;, bool) const’:  </span><br><span class="line">/home/sunrise/UAV/catkin_ws_vins/src/VINS-Fusion/loop_fusion/src/ThirdParty/DVision/BRIEF.cpp:53:32: error: ‘CV_RGB2GRAY’ was not declared <span class="keyword">in</span> this scope  </span><br><span class="line">53 | cv::cvtColor(image, aux, CV_RGB2GRAY);  </span><br><span class="line">| ^~~~~~~~~~~</span><br></pre></td></tr></table></figure>
+<p>打开报错的文件<code>vim ~/UAV/catkin_ws_vins/src/VINS-Fusion/loop_fusion/src/ThirdParty/DVision/BRIEF.cpp</code><br>在开头添加以下两行</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;opencv2/imgproc/types_c.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;opencv2/imgproc/imgproc_c.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<h3 id="4-修改vins配置文件"><a href="#4-修改vins配置文件" class="headerlink" title="4. 修改vins配置文件"></a>4. 修改vins配置文件</h3><p>编译完成后需要自己手动编写.yaml的配置文件。vins的官方代码中规定了需要.yaml文件，且写死了其中一些变量的名称，但是.yaml文件的位置则并不固定，可以作为main函数参数传入。虽然配置文件的位置没有规定，但是一般放在config文件夹中<br>而vins官方代码为d435i提供了默认的配置文件，可以直接运行。而本次使用d435，需要在d435i配置文件的基础上进行一定的修改方可运行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入项目默认的d435i配置文件库，复制一份d435i配置文件并修改</span></span><br><span class="line"><span class="built_in">cd</span> ~/UAV/vins_ws/src/Geneta_vins_fusion/config/realsense_d435i</span><br><span class="line"><span class="built_in">cp</span> realsense_stereo_imu_config.yaml d435_stereo_no_imu.yaml</span><br><span class="line">vim d435_stere0_no_imu.yaml</span><br></pre></td></tr></table></figure>
+<p>修改配置文件的部分参数</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">%YAML:1.0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 1. IMU 设置 ---</span></span><br><span class="line"><span class="attr">imu:</span> <span class="number">0</span>         <span class="comment"># 【重要】改成 0，表示不使用 IMU</span></span><br><span class="line"><span class="comment"># imu_topic: &quot;/camera/imu&quot;  # 注释掉或留着都没事，反正上面关了</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 2. 图像 Topic 设置 ---</span></span><br><span class="line"><span class="comment"># 确保和 roslaunch 启动的话题一致</span></span><br><span class="line"><span class="attr">image0_topic:</span> <span class="string">&quot;/camera/infra1/image_rect_raw&quot;</span></span><br><span class="line"><span class="attr">image1_topic:</span> <span class="string">&quot;/camera/infra2/image_rect_raw&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 3. 相机参数 ---</span></span><br><span class="line"><span class="attr">model_type:</span> <span class="string">PINHOLE</span></span><br><span class="line"><span class="attr">camera_name:</span> <span class="string">camera</span></span><br><span class="line"><span class="attr">image_width:</span> <span class="number">640</span></span><br><span class="line"><span class="attr">image_height:</span> <span class="number">480</span></span><br><span class="line"><span class="comment"># 这里的内参(fx, fy, cx, cy)最好后续做一次标定，目前先用文件里默认的测试</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --- 4. 外参 (Extrinsic) ---</span></span><br><span class="line"><span class="comment"># 因为没有 IMU，相机到 IMU 的外参变得不重要，但为了防止报错，</span></span><br><span class="line"><span class="comment"># 建议保持默认或设为 estimate_extrinsic: 0</span></span><br></pre></td></tr></table></figure>
+
+
+<hr>
+<h3 id="5-运行与测试"><a href="#5-运行与测试" class="headerlink" title="5. 运行与测试"></a>5. 运行与测试</h3><p><strong>(1) 命令行启动相机</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 最短命令 roslaunch realsense_camera rs_camera.launch</span></span><br><span class="line">roslaunch realsense2_camera rs_camera.launch \</span><br><span class="line">  enable_infra1:=<span class="literal">true</span> \</span><br><span class="line">  enable_infra2:=<span class="literal">true</span> \</span><br><span class="line">  infra_rgb:=<span class="literal">false</span> \</span><br><span class="line">  enable_gyro:=<span class="literal">false</span> \</span><br><span class="line">  enable_accel:=<span class="literal">false</span> \</span><br><span class="line">  emitter_enabled:=<span class="literal">false</span> \</span><br><span class="line">  enable_sync:=<span class="literal">true</span> \</span><br><span class="line">  unite_imu_method:=none \</span><br><span class="line">  depth_width:=640 \</span><br><span class="line">  depth_height:=480 \</span><br><span class="line">  depth_fps:=30</span><br></pre></td></tr></table></figure>
+<p>正常启动会提示<code>RealSense Node Is Up! </code></p>
+<p>存在问题<br>&lt;1&gt; 出现异常<code>fail to open usb interface: 0, error: RS2_USB_STATUS_ACCESS</code>。解决方案参考CSDN <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_32618327/article/details/120730198">https://blog.csdn.net/qq_32618327/article/details/120730198</a> 。</p>
+<p><strong>(2) 启动vins</strong><br>根据vins官方readme启动ros节点</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> ~/catkin_ws/devel/setup.bash</span><br><span class="line">rosrun vins vins_node &lt;path_to_your_config_file&gt;/config.yaml</span><br></pre></td></tr></table></figure>
+
+
+<p><strong>(3) 检测</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查相机是否正常启动</span></span><br><span class="line">rostopic list | grep camera</span><br><span class="line">rostopic hz /camera/infra1/image_rect_raw</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查里程计是否正常启动</span></span><br><span class="line">rostopic list | grep vins</span><br><span class="line">rostopic <span class="built_in">echo</span> /vins_estimator/odometry</span><br></pre></td></tr></table></figure>
+<p>正常情况下，相机话题输出频率在30hz左右，而里程计话题可能如下</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">header:</span> </span><br><span class="line">  <span class="attr">seq:</span> <span class="number">125</span></span><br><span class="line">  <span class="attr">stamp:</span> </span><br><span class="line">    <span class="attr">secs:</span> <span class="number">1703666666</span></span><br><span class="line">    <span class="attr">nsecs:</span> <span class="number">123456789</span></span><br><span class="line">  <span class="attr">frame_id:</span> <span class="string">&quot;world&quot;</span></span><br><span class="line"><span class="attr">child_frame_id:</span> <span class="string">&quot;body&quot;</span></span><br><span class="line"><span class="attr">pose:</span> </span><br><span class="line">  <span class="attr">pose:</span> </span><br><span class="line">    <span class="attr">position:</span> </span><br><span class="line">      <span class="attr">x:</span> <span class="number">0.01234</span>      <span class="string">&lt;---</span> <span class="string">关注这里</span></span><br><span class="line">      <span class="attr">y:</span> <span class="number">-0.05678</span>     <span class="string">&lt;---</span> <span class="string">关注这里</span></span><br><span class="line">      <span class="attr">z:</span> <span class="number">0.10111</span>      <span class="string">&lt;---</span> <span class="string">关注这里</span></span><br><span class="line">    <span class="attr">orientation:</span> </span><br><span class="line">      <span class="attr">x:</span> <span class="number">0.0</span><span class="string">...</span></span><br><span class="line">      <span class="attr">y:</span> <span class="number">0.0</span><span class="string">...</span></span><br><span class="line">      <span class="attr">z:</span> <span class="number">0.0</span><span class="string">...</span></span><br><span class="line">      <span class="attr">w:</span> <span class="number">0.9</span><span class="string">...</span></span><br><span class="line"><span class="attr">twist:</span> </span><br><span class="line">  <span class="string">...</span></span><br></pre></td></tr></table></figure>
+
+<p>存在问题<br>&lt;1&gt; 相机可以正常启动，但是检测话题频率为0。可能是因为使用了usb2.0的数据线与电脑接口。使用<code>lsusb -t</code> 查看<code>class=video</code>一项的最后的数据是否是480M，若是则代表了使用的是usb 2.0协议；如果是5000M则是3.0协议。尝试更换数据线与电脑接口后重新检测。</p>
+<hr>
+<h3 id="6-进阶配置"><a href="#6-进阶配置" class="headerlink" title="6. 进阶配置"></a>6. 进阶配置</h3><p><strong>(1) 使用launch文件启动相机和vins节点</strong><br>将两者分别写为launch文件</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/UAV/vins_ws/src/Geneta_vins_fusion/vins_estimator/launch</span><br><span class="line">vim d435_run.launch</span><br><span class="line">vim vins_run.launch</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> ~/UAV/vins_ws</span><br><span class="line"><span class="built_in">source</span> ./devel/setup.bash</span><br></pre></td></tr></table></figure>
+
+<p>相机启动文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 定义相机名称 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;camera_name&quot;</span>       <span class="attr">default</span>=<span class="string">&quot;camera&quot;</span>/&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">&lt;!-- 核心配置：640x480 @ 30fps (USB 3.0 模式下最稳) --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;image_width&quot;</span>       <span class="attr">default</span>=<span class="string">&quot;640&quot;</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;image_height&quot;</span>      <span class="attr">default</span>=<span class="string">&quot;480&quot;</span>/&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;fps&quot;</span>               <span class="attr">default</span>=<span class="string">&quot;30&quot;</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- 调用官方驱动 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">include</span> <span class="attr">file</span>=<span class="string">&quot;$(find realsense2_camera)/launch/rs_camera.launch&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;camera&quot;</span>          <span class="attr">value</span>=<span class="string">&quot;$(arg camera_name)&quot;</span>/&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- 1. 开启双目红外 (VINS 需要) --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_infra&quot;</span>    <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_infra1&quot;</span>   <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_infra2&quot;</span>   <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;infra_rgb&quot;</span>       <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>/&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- 2. 关闭不需要的流 (节省带宽) --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_color&quot;</span>    <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_depth&quot;</span>    <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>/&gt;</span> <span class="comment">&lt;!-- 关掉深度流，减轻 CPU 负担 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_gyro&quot;</span>     <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_accel&quot;</span>    <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 3. 设置分辨率 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;infra_width&quot;</span>     <span class="attr">value</span>=<span class="string">&quot;$(arg image_width)&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;infra_height&quot;</span>    <span class="attr">value</span>=<span class="string">&quot;$(arg image_height)&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;infra_fps&quot;</span>       <span class="attr">value</span>=<span class="string">&quot;$(arg fps)&quot;</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 4. 关键设置 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_sync&quot;</span>     <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span>  <span class="comment">&lt;!-- 开启硬件时间同步 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;align_depth&quot;</span>     <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;initial_reset&quot;</span>   <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span>  <span class="comment">&lt;!-- 每次启动强制复位 USB，防止僵尸状态 --&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- 注意：不要在这里写 emitter_enabled，因为你的驱动版本不支持 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">include</span>&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- 5. 强行关闭结构光 (防止红点干扰 VINS) --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">group</span> <span class="attr">ns</span>=<span class="string">&quot;$(arg camera_name)&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">rosparam</span> <span class="attr">param</span>=<span class="string">&quot;stereo_module/emitter_enabled&quot;</span>&gt;</span>false<span class="tag">&lt;/<span class="name">rosparam</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">group</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>里程计启动文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;config_path&quot;</span> <span class="attr">default</span>=<span class="string">&quot;/home/drone/UAV/vins_ws/src/Geneta_vins_fusion/config/realsense_d435i/d435_stereo_no_imu.yaml&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;vins&quot;</span> <span class="attr">type</span>=<span class="string">&quot;vins_node&quot;</span> <span class="attr">name</span>=<span class="string">&quot;vins_node&quot;</span> <span class="attr">args</span>=<span class="string">&quot;$(arg config_path)&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>存在问题：<br>launch文件的位置防止不正确，例如放在了<code>/Geneta_vins_fusion/launch/</code>下。如果位置不正确则尝试运行roslaunch时报错无法找到launch文件。</p>
+<p>原因：<br><code>Geneta_vins_fusion</code>文件夹并不是一个ros包，其下的<code>vins_estimator</code>和<code>camera_models</code>才是真正的ros包，判断依据是该文件夹下是否有<code>package.xml</code>文件。故ros无法将其<code>Geneta_vins_fusion</code>识别为一个ros包，更不用提其下的launch文件夹了。</p>
+<p>解决方法：<br>将launch文件放在<code>/vins_estimator/launch</code>下</p>
+<p>ps：为什么文件夹名称是<code>vins_estimator</code>但是在运行vins节点时却使用了包名为vins？因为报名并不是由文件夹名称来决定的，而是由<code>package.xml</code>文件决定，其中规定了<code>&lt;name&gt;vins&lt;/name&gt;</code>。即ros是通过识别<code>package.xml</code>来识别一个ros包</p>
+<p><strong>(2) 使用Rviz可视化</strong></p>
+<p><strong>(3) 结合飞控IMU</strong></p>
+
+      </section>
+
+      
+      
+        <nav class="article-nav">
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+      <div class="card-cover" background-image-lazy data-img="/images/cover/zhao.jpg"></div>
+    
+    <div class="card-text">
+      
+        <a href="/2025/12/25/3_%E5%AE%8C%E6%95%B4%E5%9B%9E%E8%B7%AF%E6%B5%8B%E8%AF%95-NUC+D435+Pixhawk/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">3_完整回路测试 NUC+D435+Pixhawk</h2>
+        </a>
+      
+      <div class="card-text--row">Newer</div>
+    </div>
+  </article>
+</div>
+          
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+      <div class="card-cover" background-image-lazy data-img="/images/cover/SlaytheSpire.png"></div>
+    
+    <div class="card-text">
+      
+        <a href="/2025/12/22/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">1_Intel NUC13ANKi7-1360P 调试</h2>
+        </a>
+      
+      <div class="card-text--row">Older</div>
+    </div>
+  </article>
+</div>
+          
+        </nav>
+      
+
+      <section class="page-message-container layout-padding">
+        
+
+
+  
+  
+
+  
+  
+
+
+      </section>
+    </div>
+    <div class="widget-info">
+      <section class="widget-author widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-body">
+    
+      <img src="https://github.com/astringent-orange.png" class="soft-size--round soft-style--box" alt="Mian">
+    
+    
+      <h2>Mian</h2>
+    
+    
+      <p>每天成长一点</p>
+    
+
+    <div class="count-box">
+      <div class="count-box--item">
+        <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
+</svg>
+        <span>9</span>
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+        1
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+        19
+      </div>
+    </div>
+  </div>
+</section>
+
+      
+<section class="widget-toc widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-toc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M134.50666666 767.46666668H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.23999999v50.13333333c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H134.50666666c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.13333333c0.10666668-27.73333333 22.50666668-50.24000001 50.24000001-50.24000001zM84.37333332 541.65333333h326.18666669c27.73333333 0 50.24000001 22.39999999 50.23999999 50.13333334v50.24000001c0 27.73333333-22.50666668 50.24000001-50.24000002 50.23999999H84.37333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.23999999v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333334zM134.50666666 315.83999999H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.24000001v50.24000001c0 27.73333333-22.50666668 50.13333334-50.24000001 50.13333333H134.50666666c-27.73333333 0-50.24000001-22.39999999-50.23999999-50.13333333v-50.24000001c0.10666668-27.84000001 22.50666668-50.24000001 50.24000001-50.23999999zM209.81333332 89.91999999h326.18666671c27.73333333 0 50.24000001 22.39999999 50.23999997 50.13333335v50.23999999c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H209.81333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333333zM692.05333333 623.36l274.66666669 176.00000002c23.36000001 14.93333333 30.08 45.97333334 15.14666666 69.33333332L954.77333334 910.93333333c-14.93333333 23.25333334-45.97333334 30.08-69.33333335 15.14666667l-274.66666666-176c-23.36000001-14.93333333-30.08-45.97333334-15.14666667-69.33333333l27.09333334-42.24000001c14.93333333-23.36000001 46.08000001-30.08 69.33333333-15.14666666z" fill="currentColor"></path>
+</svg>
+    <span>TOC</span>
+  </div>
+  <div class="widget-body">
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">1.</span> <span class="toc-text">注意事项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85Realsense%E9%A9%B1%E5%8A%A8%E4%B8%8EROS%E6%8E%A5%E5%8F%A3"><span class="toc-number">2.</span> <span class="toc-text">1. 安装Realsense驱动与ROS接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%AE%89%E8%A3%85Ceres-Solver%E4%BC%98%E5%8C%96%E5%BA%93"><span class="toc-number">3.</span> <span class="toc-text">2. 安装Ceres Solver优化库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E4%B8%8B%E8%BD%BD%E5%B9%B6%E7%BC%96%E8%AF%91VINS-Fusion"><span class="toc-number">4.</span> <span class="toc-text">3. 下载并编译VINS_Fusion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E4%BF%AE%E6%94%B9vins%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">5.</span> <span class="toc-text">4. 修改vins配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-%E8%BF%90%E8%A1%8C%E4%B8%8E%E6%B5%8B%E8%AF%95"><span class="toc-number">6.</span> <span class="toc-text">5. 运行与测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-%E8%BF%9B%E9%98%B6%E9%85%8D%E7%BD%AE"><span class="toc-number">7.</span> <span class="toc-text">6. 进阶配置</span></a></li></ol>
+  </div>
+</section>
+
+
+      
+
+      <section class="widget-categories widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+      <span>CATEGORIES</span>
+  </div>
+  <div class="widget-body">
+    <ul class="categories-list">
+      
+        <li class="categories-list-item">
+          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
+            无人机实验 (9)
+          </a>
+        </li>
+        
+    </ul>
+  </div>
+</section>
+
+      <section class="widget-tags widget-item  layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+    <span>TAGS</span>
+  </div>
+  <div class="widget-body">
+    <div class="tags-cloud">
+      <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 20px;" class="tags-cloud-10">NUC13</a> <a href="/tags/RL/" style="font-size: 10px;" class="tags-cloud-0">RL</a> <a href="/tags/Ubuntu20-04/" style="font-size: 15px;" class="tags-cloud-5">Ubuntu20-04</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/ego-planner/" style="font-size: 15px;" class="tags-cloud-5">ego_planner</a> <a href="/tags/octomap/" style="font-size: 10px;" class="tags-cloud-0">octomap</a> <a href="/tags/offb-node/" style="font-size: 15px;" class="tags-cloud-5">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 10px;" class="tags-cloud-0">px4</a> <a href="/tags/reading/" style="font-size: 15px;" class="tags-cloud-5">reading</a> <a href="/tags/simulation/" style="font-size: 10px;" class="tags-cloud-0">simulation</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 15px;" class="tags-cloud-5">vins</a> <a href="/tags/wifi/" style="font-size: 10px;" class="tags-cloud-0">wifi</a> <a href="/tags/%E5%AE%9E%E6%9C%BA/" style="font-size: 15px;" class="tags-cloud-5">实机</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 10px;" class="tags-cloud-0">绕圈</a>
+    </div>
+  </div>
+</section>
+    </div>
+  </article>
+</div>
+<div class="comments" style="max-width:1200px;margin:40px auto;">
+<script src="https://giscus.app/client.js"
+        data-repo="astringent-orange/astringent-orange.github.io"
+        data-repo-id="R_kgDORiSglw"
+        data-category="General"
+        data-category-id="DIC_kwDORiSgl84C4XZB"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+</div> 
+
+    <!-- footer container -->
+<footer id="footer" class="footer">
+  <div class="footer-container">
+    
+    <div class="social-icons">
+      
+        
+      
+        
+      
+        
+      
+        
+          <a href="https://github.com/astrigent-orange/astrigent-orange" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
+            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
+</svg>
+          </a>
+        
+      
+        
+      
+    </div>
+     
+    <p>&copy; 2026 <a href="/" target="_blank">Mian</a></p>
+
+    
+
+    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+
+    <p>
+      <a href="javascript:;" id="theme-light">🌞 浅色</a>
+      <a href="javascript:;" id="theme-dark">🌛 深色</a>
+      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
+    </p>
+  </div>
+</footer>
+  </div>
+
+  <div class="back-to-top-fixed soft-size--round soft-style--box">
+    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
+      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
+      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
+    </svg>
+  </div>
+
+  
+  
+
+
+
+
+
+
+
+
+<!-- copy button  -->
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+
+<!-- https://clipboardjs.com/ -->
+
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  
+  <!-- 尾部用户自定义相关内容 -->
+</body>
+</html>
