@@ -24,7 +24,7 @@
 
   
 
-  <title>7_小型仿真强化学习实验 | Mian的笔记</title>
+  <title>cmake &amp; catkin make &amp; build | Mian的笔记</title>
 
   
 
@@ -48,7 +48,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(/images/cover/laevatin.png)"></div>
+    <div class="post-image" style="background-image: url(/images/banner.png)"></div>
   
 
   <!-- navbar -->
@@ -181,24 +181,24 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">7_小型仿真强化学习实验</h1>
+          <h1 class="title-wrap">cmake &amp; catkin make &amp; build</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2026-01-27T16:00:00.000Z" itemprop="datePublished">2026-01-28</time>
+            <time  class="article-date" datetime="2026-03-16T16:00:00.000Z" itemprop="datePublished">2026-03-17</time>
           </h2>
           
           
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
     
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/simulation/">🏷️ simulation</a></li>
+    <li><a href="/tags/catkin/">🏷️ catkin</a></li>
   
-    <li><a href="/tags/RL/">🏷️ RL</a></li>
+    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
   
 </ul>
         </div>
@@ -222,19 +222,28 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>尝试完成一个微型实验，在Ubuntu 20.04 + ROS noetic的环境中，使用PX4 firmware + mavros + gazebo，GPU nvidia rtx 2060 6G + CPU intel i7-10875H实现一个RL的过程。输入为64×64深度图像，输出为水平速度（高度固定）+ 旋转速度。模型选择基本的CNN处理图像后获得特征向量，与无人机状态向量进行拼接，经过MLP后输出。</p>
-<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>构建工作空间，并安装PX4、配置gazebo模型、运行mavros通信。</p>
-<h2 id="source覆盖问题"><a href="#source覆盖问题" class="headerlink" title="source覆盖问题"></a>source覆盖问题</h2><p>以前下载过PX4 firmware且配置过bashrc文件，这次尝试运行时发现，如果<code>source ./devel/setup.bash</code>之后则会找不到px4，再去<code>source ~/.bashrc</code>则会找不到功能包。<br>原因是两次source的内容互相覆盖了。解决方法一是修改<code>./devel/setup.bash</code>的内容，在其中加入px4的路径（不推荐修改bashrc文件）；解决方法二，单独为该项目安装一个px4固件。–&gt;相当于增加了一个controller文件夹</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> catkin_ws</span><br><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/PX4/PX4-Autopilot.git -b v1.13.3</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> PX4-Autopilot</span><br><span class="line"><span class="comment"># 安装依赖 (如果你之前装过可能不需要，但为了保险跑一下)  </span></span><br><span class="line">bash ./Tools/setup/ubuntu.sh </span><br><span class="line"><span class="comment"># 编译仿真环境 (这一步会生成 Gazebo 插件) </span></span><br><span class="line">DONT_RUN=1 make px4_sitl_default gazebo</span><br></pre></td></tr></table></figure>
-<p>然后需要构建一个完整的启动脚本</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/catkin_ws</span><br><span class="line">gedit setup_env.bash</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 获取当前脚本所在的目录 </span></span><br><span class="line"><span class="comment"># 这一步保证了不管你把项目拷到哪，路径都是对的</span></span><br><span class="line">PROJECT_ROOT=<span class="string">&quot;<span class="subst">$( cd <span class="string">&quot;<span class="subst">$( dirname <span class="string">&quot;<span class="variable">$&#123;BASH_SOURCE[0]&#125;</span>&quot;</span> )</span>&quot;</span> &amp;&amp; pwd )</span>&quot;</span></span><br><span class="line">PX4_DIR=<span class="string">&quot;<span class="variable">$PROJECT_ROOT</span>/PX4-Autopilot&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. Source Catkin 工作空间</span></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$PROJECT_ROOT</span>/devel/setup.bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 配置 PX4 环境</span></span><br><span class="line"><span class="comment"># 加载 PX4 的 gazebo 设置</span></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$PX4_DIR</span>/Tools/setup_gazebo.bash <span class="variable">$PX4_DIR</span> <span class="variable">$PX4_DIR</span>/build/px4_sitl_default</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 强制路径融合 (解决 ROS 和 PX4 打架的问题)</span></span><br><span class="line"><span class="comment"># 我们把 本地PX4路径 和 本地src路径 显式地加进去</span></span><br><span class="line"><span class="built_in">export</span> ROS_PACKAGE_PATH=<span class="variable">$ROS_PACKAGE_PATH</span>:<span class="variable">$PX4_DIR</span>:<span class="variable">$PX4_DIR</span>/Tools/sitl_gazebo:<span class="variable">$PROJECT_ROOT</span>/src</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 设置 GAZEBO 模型路径 (防止找不到模型)</span></span><br><span class="line"><span class="built_in">export</span> GAZEBO_MODEL_PATH=<span class="variable">$GAZEBO_MODEL_PATH</span>:<span class="variable">$PX4_DIR</span>/Tools/sitl_gazebo/models</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;=================================================&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;✅ Project Environment Loaded!&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   - Workspace: <span class="variable">$PROJECT_ROOT</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   - PX4 Path:  <span class="variable">$PX4_DIR</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;=================================================&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="补充内容"><a href="#补充内容" class="headerlink" title="补充内容"></a>补充内容</h2><p>事后发现这样每次都要下载一个PX4源码，虽然对于打包程序来说很好，但是对于自己本地使用还是不方便。于是提出来了方法三。<br>发现之前的问题是source bashrc和&#x2F;devel&#x2F;setup会分别覆盖对方的结果，更具体而言，是source &#x2F;devel&#x2F;setup和PX4&#x2F;Tools&#x2F;setup_gazebo.bash时，因为两者不知道对方的层级，所以会清空对方的<code>$ROS_PACKAGE_PATH</code>，然后添加自己的导致的路径导致的。而PX4的路径其实并不是在bash文件中添加的，而是export添加的，所以可以写一个如下的启动脚本set_env.sh，每次source该脚本即可。注意一定是source，而不是sh执行。因为source的作用是将脚本内容复制到当前终端中执行，而sh或者bash是另外开一个终端来执行。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载ROS基础环境</span></span><br><span class="line"><span class="built_in">source</span> /opt/ros/noetic/setup.bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># PX4 Autopilot路径</span></span><br><span class="line"><span class="built_in">export</span> PX4_ROOT_DIR=~/UAV/PX4-Autopilot</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载PX4环境</span></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$PX4_ROOT_DIR</span>/Tools/setup_gazebo.bash <span class="variable">$PX4_ROOT_DIR</span> <span class="variable">$PX4_ROOT_DIR</span>/build/px4_sitl_default</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载当前工作空间的环境</span></span><br><span class="line"><span class="built_in">source</span> ./devel/setup.bash</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> ROS_PACKAGE_PATH=<span class="variable">$ROS_PACKAGE_PATH</span>:<span class="variable">$PX4_ROOT_DIR</span></span><br><span class="line"><span class="built_in">export</span> ROS_PACKAGE_PATH=<span class="variable">$ROS_PACKAGE_PATH</span>:<span class="variable">$PX4_ROOT_DIR</span>/Tools/sitl_gazebo</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;32m[INFO] Environment setup complete.\e[0m&quot;</span></span><br></pre></td></tr></table></figure>
-<p>分析该脚本，注意到是最后才去exportPX4的位置，这样就可以避免被刷掉。</p>
-<h1 id="基础通信与控制"><a href="#基础通信与控制" class="headerlink" title="基础通信与控制"></a>基础通信与控制</h1><p>image_transport<br>cv_bridge</p>
+        <p>简单来说，三者都是cpp的编译工具。<br>首先，因为ros项目非常依赖本地环境且要进行自主修改，所以基本都需要在本地对源码进行编译。（拓展：对于一个cpp的应用程序，其是否需要上述内容？并不需要，一个应用程序可以以编译后的二进制形式发布。一种方式是静态连接，将依赖抄进exe文件；第二种方式是动态链接，例如使用win的dll，在运行时编译，这样只需要一个安装程序，在安装时将这些文件放到指定文件夹中）</p>
+<h3 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h3><p>对于简单的cpp文件编译，例如只有两个文件，可以用命令行手动编译</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ main.cpp lib.cpp -o final</span><br></pre></td></tr></table></figure>
+<p>但是实际中，ros项目的可能有几十上百个需编译的文件，分布在不同文件夹中，且有极多路径不同的依赖和头文件。每次手动敲指令编译太过困难。</p>
+<p>因而有了<code>makefile</code>文本文件，将编译指令输进去，之后每次输入make即可执行编译过程。<br>但是<code>makefile</code>也有问题。例如不同平台的文件路径不同，相同的依赖可能在不同的路径中，且每次新加一个文件就需要手动修改<code>makefile</code></p>
+<p>于是有了cmake工具，根据电脑环境自动生成<code>makefile</code>。相当于多了一个中间层，使用者通过更高层的<code>CMakeList.txt</code>去自动生成更底层的makefile。cmake有几大特点：首先会自动寻找依赖，第二可以跨平台使用，第三其通过让顶层cmakelist指挥底层cmakelist可以管理超大项目。</p>
+<h3 id="catkin-make"><a href="#catkin-make" class="headerlink" title="catkin make"></a>catkin make</h3><p>可以视为cmake的高阶封装版，ROS1自带的编译工具，用于高效地构建众多相互依赖但独立开发的CMake项目。有一个workspace，将ws下视为一个巨大的cmake项目。</p>
+<p>缺点在于没有实现包的隔离，会导致变量名冲突，以及修改一个包需要重新检查整个工作空间的依赖关系</p>
+<h3 id="catkin-build"><a href="#catkin-build" class="headerlink" title="catkin build"></a>catkin build</h3><p>由<code>catkin_tools</code>提供的更现代ROS1的编译工具，需要自己下载。<br><code>sudo apt-get install python3-catkin-tools</code><br>可以实现多个包并行的单独编译，提供单独的build文件夹和日志等，有更好的输出结果展示。</p>
+<h3 id="catkin-config"><a href="#catkin-config" class="headerlink" title="catkin config"></a>catkin config</h3><p>在使用<code>catkin init</code>初始化工作空间后，可以对工作空间进行一些配置，以优化操作</p>
+<p><code>catkin config --extend /opt/ros/$ROS_DISTRO</code></p>
+<p><code>catkin config --merge-devel</code><br>合并编译结果的空间。本来catkin build默认每一个功能包都有单独的devel空间，从而可以单独删除某一个包的编译结果，但是这样python的依赖路径可能很深。</p>
+<p><code>catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release</code><br>给底层的编译器传递参数。默认模式为debug或空，而<code>Release</code>模式会开启编译器优化（-O3），代码运行速度比 Debug 模式快数倍</p>
+<p><code>catkin config --cmake-args -DCMAKE_CXX_FLAGS=-fdiagnostics-color</code><br>让编译器输出的错误信息带颜色。</p>
+<p><code>catkin config --install</code><br>安装模式，在编译完成之后会生成一个可执行的二进制包，这样可以直接发送到服务器上并用docker执行，避免了巨大的源码拷贝</p>
+<p><code>catkin config --blacklist/whitelist bag_name</code><br>黑&#x2F;白名单，不编译&#x2F;只编译某个包</p>
+<p><code>catkin config -j/--jobs number</code><br>手动限制并行编译的线程数，默认编译会占满所有资源</p>
+<p><strong>参考文档</strong><br><a target="_blank" rel="noopener" href="https://catkin-tools.readthedocs.io/en/latest/verbs/catkin_config.html">catkin config – 配置工作空间 — catkin_tools 0.0.0 文档</a></p>
+<h2 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h2><p>catkin工具都是ROS1专用的，即仅能用于ROS项目（其他工具无法识别package.xml文件），且只适用于1代。</p>
+<p>ROS2则使用<code>colcon</code>，在继承了catkin build的并行隔离编译的基础上，还支持多种语言的项目</p>
+<p>而其他大型cpp项目，一般可以用<code>Ninja+CMake</code>进行编译</p>
+<p><strong>cmakelist多个文件编译为一个节点</strong><br>单独编译每一个文件，然后将各个文件链接在一起。那么为什么要写成三个文件？第一是提高编译速度（增量编译），如果全部写在一个文件中，那么即使有一行代码改变那么整个文件都要重新编译；而分为多个文件，则只用重新编译那个修改的文件。第二是为了模块化与可读性，实现逻辑分离。第三是为了代码复用。第四是为了多人协作。</p>
 
       </section>
 
@@ -242,32 +251,16 @@ document.addEventListener("DOMContentLoaded", function() {
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-      <div class="card-cover" background-image-lazy data-img="/images/cover/chen.png"></div>
-    
-    <div class="card-text">
-      
-        <a href="/2026/02/04/8_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95&%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">8_实机绕圈测试&amp;场地搭建</h2>
-        </a>
-      
-      <div class="card-text--row">Newer</div>
-    </div>
-  </article>
-</div>
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
-      <div class="card-cover" background-image-lazy data-img="/images/cover/zangief.jpg"></div>
+      <div class="card-cover" background-image-lazy data-img="/images/cover/regent.jpg"></div>
     
     <div class="card-text">
       
-        <a href="/2026/01/20/6_%E6%90%AD%E8%BD%BDNUC%E5%AE%9E%E6%9C%BA%E8%B5%B7%E9%A3%9E%E6%B5%8B%E8%AF%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">6_搭载NUC实机起飞测试</h2>
+        <a href="/2026/03/03/9_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">9_基础建图测试</h2>
         </a>
       
       <div class="card-text--row">Older</div>
@@ -336,7 +329,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <span>TOC</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#source%E8%A6%86%E7%9B%96%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">source覆盖问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E5%86%85%E5%AE%B9"><span class="toc-number">2.</span> <span class="toc-text">补充内容</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#cmake"><span class="toc-number">1.</span> <span class="toc-text">cmake</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#catkin-make"><span class="toc-number">2.</span> <span class="toc-text">catkin make</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#catkin-build"><span class="toc-number">3.</span> <span class="toc-text">catkin build</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#catkin-config"><span class="toc-number">4.</span> <span class="toc-text">catkin config</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95"><span class="toc-number"></span> <span class="toc-text">扩展</span></a>
   </div>
 </section>
 
