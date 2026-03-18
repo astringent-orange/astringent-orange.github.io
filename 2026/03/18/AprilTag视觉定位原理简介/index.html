@@ -24,7 +24,7 @@
 
   
 
-  <title>1_Intel NUC13ANKi7-1360P 调试 | Mian的笔记</title>
+  <title>AprilTag视觉定位原理简介 | Mian的笔记</title>
 
   
 
@@ -48,7 +48,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(/images/cover/SlaytheSpire.png)"></div>
+    <div class="post-image" style="background-image: url(/images/banner.png)"></div>
   
 
   <!-- navbar -->
@@ -181,26 +181,24 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">1_Intel NUC13ANKi7-1360P 调试</h1>
+          <h1 class="title-wrap">AprilTag视觉定位原理简介</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2025-12-21T16:00:00.000Z" itemprop="datePublished">2025-12-22</time>
+            <time  class="article-date" datetime="2026-03-17T16:00:00.000Z" itemprop="datePublished">2026-03-18</time>
           </h2>
           
           
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
     
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
+    <li><a href="/tags/AprilTag/">🏷️ AprilTag</a></li>
   
-    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
+    <li><a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/">🏷️ 视觉定位</a></li>
   
 </ul>
         </div>
@@ -224,33 +222,48 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>无人机机载电脑 Intel NUC13ANKi7-1360P安装系统过程记录</p>
-<h2 id="1-安装Ubuntu-20-04"><a href="#1-安装Ubuntu-20-04" class="headerlink" title="1.  安装Ubuntu 20.04"></a>1.  安装Ubuntu 20.04</h2><p>(1) 烧录镜像安装盘，ubuntu 20.04 amd64 桌面版<br>(2) 安装镜像：连接显示器，键盘，鼠标以及无线网卡<br>存在问题：<br>&lt;1&gt;显卡驱动未安装导致分辨率异常，无法看到完整的安装界面，从而不能点击进行下一步：<br>① 尝试直接拖动窗口顶部；<br>② 或alt+f7+鼠标左键直接拖动窗口本身；<br>③ 或按win键打开搜索栏寻找setting，找到display选项修改分辨率；<br>④ 或ctrl+alt+t 调出终端 <code>xrandr</code>查看分辨率相关信息 <code>xrandr -s 1920x1080</code> 修改分辨率</p>
-<p>(3) 完成安装，下载如<code>openssh</code>等必要软件</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载openssh</span></span><br><span class="line"><span class="built_in">sudo</span> apt install openssh-server -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查服务状态，若为绿色的active则表示已启动</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl status ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 允许防火墙通过</span></span><br><span class="line"><span class="built_in">sudo</span> ufw allow ssh</span><br></pre></td></tr></table></figure>
-
-<p>存在问题<br>&lt;1&gt; 系统安装过程中安装了libreoffice以及媒体等不必要软件：<br>① 卸载libreoffice <code>sudo apt remove --purge libreoffice* -y</code><br>② 卸载邮件客户端 <code>sudo apt remove --purge thunderbird -y</code><br>③ 卸载播放器与小游戏 <code>sudo apt remove --purge rhythmbox totem aisleriot gnome-mahjongg gnome-mines gnome-sudoku transmission-common simple-scan -y</code><br>④ 卸载应用商店 <code>sudo snap remove snap-store</code><br>⑤ 自动清理 <code>sudo apt autoremove -y</code></p>
-<p>(4) 额外设置。可关闭图形化界面以提升性能</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 关闭图形化界面</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl set-default multi-user.target</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启生效</span></span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果想要打开图形化界面</span></span><br><span class="line"><span class="built_in">sudo</span> systemctl set-default graphical.target</span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br></pre></td></tr></table></figure>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在阅读无人机跟踪论文<a target="_blank" rel="noopener" href="http://arxiv.org/abs/2011.03968">Fast-Tracker</a>时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a>进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。</p>
+<img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B/fast-tracker01.png" class="">
+<p>补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。</p>
+<p>关于ApirlTag，其是由密歇根大学的Edwin Olson于2011年发表的，虽然看起来像是二维码，但是于日常中常见的二维码有许多不同。即AprilTag的核心目的不是为了存储大量数据，而是为了<strong>在极端的环境（光照不均、距离很远、角度倾斜、部分被遮挡）下，依然能被摄像头瞬间认出来，并精确计算出它在三维空间中的位置和姿态（即 6个自由度：前后、左右、上下，以及俯仰、偏航、滚转）。</strong> 所以AprilTag看起来比一般的二维码简单许多。</p>
+<img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B/AprilTag01.png" class="">
+<p><em>注意AprilTag不仅是一种标签生成的方式，也是一种标签检测系统</em></p>
 <hr>
-<h2 id="2-基础调试"><a href="#2-基础调试" class="headerlink" title="2. 基础调试"></a>2. 基础调试</h2><p>(1) 连接网络。<br>存在问题：<br>&lt;1&gt; 安装完成后发现有线网络与蓝牙都可以正常工作，但是找不到wifi图标，系统设置中也没有wifi选项；<code>ip addr</code> 也找不到无线接口。<br>原因：<br>① 主板开启了scure boot模式<br>② 内核断层：NUC13的网卡所采用协议，对于ubuntu 20.04默认的kernel 5.15过高&#x3D;&gt;将内核升级到6.x版本<br>③ 固件断层：内核升级为6.x版本后请求的系统微码版本为77-89，而Ubuntu 20.04 自带库中最高只有71</p>
-<p>解决方法：<br>① 通过网络稳定的电脑与NUC直连，作为文件传输中转站<br>② 安装兼容旧系统的现代化内核：<br>在网络稳定电脑上进入网站 <a target="_blank" rel="noopener" href="https://github.com/wkennington/linux-firmware">https://github.com/wkennington/linux-firmware</a> 下载zip包后解压，然后传输给nuc，如<code>scp -r D:\Downloads\linux-firmware-master drone@192.168.55.100:/tmp/</code>，登陆NUC然后操作</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp/linux-firmware-master</span><br><span class="line"></span><br><span class="line"><span class="comment"># 覆盖固件</span></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> iwlwifi-* /lib/firmware/</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> intel/ibt-* /lib/firmware/intel/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启</span></span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查</span></span><br><span class="line"><span class="built_in">uname</span> -r</span><br><span class="line"><span class="comment"># 应该出现如6.12.63</span></span><br></pre></td></tr></table></figure>
-
-
-<p>③ 注入缺失固件<br>根据 <code>dmseg | grep -i iwl</code> 的提示报错，如<code>Direct firmware load for iwlwifi-so-a0-gf-a0-83.ucode failed with error -2</code>，下载特定微码文件并覆盖。<br>在网络稳定主机上进入linux kernel官方仓库 <a target="_blank" rel="noopener" href="https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/">https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/</a> 。根据缺失的文件搜索如&#96;&#96;<br><code>iwlwifi-so-a0-gf-a0</code>的目标文件，选择数字合适的文件。点击进入该文件，再点击plain下载。此外还需下载<code>iwlwifi-so-a0-gf-a0.pnvm</code>文件。<br>将文件传输至NUC，如<code>scp iwlwifi-so-a0-gf-a0* drone@192.168.55.100:/tmp/</code> ，然后登陆NUC后进行操作</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 移动文件 </span></span><br><span class="line"><span class="built_in">cd</span> /tmp </span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">cp</span> iwlwifi-so-a0-gf-a0* /lib/firmware/ </span><br><span class="line"><span class="comment"># 再次确认文件已就位 </span></span><br><span class="line"><span class="built_in">ls</span> -l /lib/firmware/iwlwifi-so-a0-gf-a0* </span><br><span class="line"><span class="comment"># 确保刚才传进来的 -83.ucode 在里面</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启nuc</span></span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查</span></span><br><span class="line">ip addr</span><br></pre></td></tr></table></figure>
-
-<p>普遍性分析：<br>该情况非常普遍，任何在2023&#x2F;2024年后发布的硬件上安装Ubuntu 18.04&#x2F;20.04 的行为都可能出现该情况</p>
+<h2 id="算法框架"><a href="#算法框架" class="headerlink" title="算法框架"></a>算法框架</h2><p>对于每一张输入的灰度图，都将进行以下操作</p>
+<h3 id="边缘检测"><a href="#边缘检测" class="headerlink" title="边缘检测"></a>边缘检测</h3><ol>
+<li>计算像素“梯度”：计算相邻点像素值变化的值与方向</li>
+<li>聚类与画线：将变化程度与方向相近的点聚类，然后拟合出一条直线</li>
+</ol>
+<h3 id="四边形检测"><a href="#四边形检测" class="headerlink" title="四边形检测"></a>四边形检测</h3><ol>
+<li>在上述所有线段中寻找首尾相连、逆时针环绕的四条线段</li>
+<li>抗遮挡：允许线段的端点之间存在缺口，即不必真的“首尾相连”</li>
+</ol>
+<h3 id="位姿估计"><a href="#位姿估计" class="headerlink" title="位姿估计"></a>位姿估计</h3><ol>
+<li>系统提前知道真实的AprilTag是边长已知的正方形，但由于透视，其在照片中可能变成了一个梯形或者菱形</li>
+<li>系统通过对比已知的正方形和照片中畸变的四边形，并利用相机参数，可以求出 <strong>单应性矩阵</strong> ，类似于变换矩阵，从而可以逆向推断出照片中的ApirlTag的位姿</li>
+</ol>
+<h3 id="读取ID"><a href="#读取ID" class="headerlink" title="读取ID"></a>读取ID</h3><ol>
+<li>AprilTag不仅能推断出标签的位姿，还能识别内部的自带的ID</li>
+<li>而AprilTag并不是简单将低于&#x2F;高于固定灰度值的部分分为白色&#x2F;黑色，而是建立一个随空间变化的光照模型，即通过相对亮度区分，于是可以应对光照不均匀的问题</li>
+</ol>
+<h3 id="纠错防伪"><a href="#纠错防伪" class="headerlink" title="纠错防伪"></a>纠错防伪</h3><p>画面中可能存在例如斑马线、黑白格子衫这样的物体，要如何保证系统不会认错标签？</p>
+<ol>
+<li>保证汉明距离：系统生成的每一张AprilTag，其黑白格子的图案和其他的标签都有巨大差别，保证即使读错了几个格子也能猜出正确的ID</li>
+<li>图案复杂：AprilTag编码在设计之初就淘汰了如纯黑这样几何复杂度低、且易在自然中产生的图案</li>
+</ol>
 <hr>
-<h2 id="3-飞行控制"><a href="#3-飞行控制" class="headerlink" title="3. 飞行控制"></a>3. 飞行控制</h2><p>(1) 安装ROS1</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加ros软件源</span></span><br><span class="line">1. <span class="built_in">sudo</span> sh -c <span class="string">&#x27;echo &quot;deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main&quot; &gt; /etc/apt/sources.list.d/ros-latest.list&#x27;</span></span><br><span class="line">   </span><br><span class="line"><span class="comment"># 添加ros密钥</span></span><br><span class="line">1. wget http://packages.ros.org/ros.key -O - | <span class="built_in">sudo</span> apt-key add -</span><br><span class="line">   </span><br><span class="line"><span class="comment"># 安装</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install ros-noetic-desktop-full</span><br></pre></td></tr></table></figure>
-<p>设置环境变量，打开<code>~/.bashrc</code>文件，<code>sudo vim ~/.bashrc</code><br>在文件末尾添加<code>source /opt/ros/noetic/setup.bash</code><br>关闭文件后刷新 <code>source ~/.bashrc</code><br>测试是否成功<code>roscore</code></p>
-<p>(2) 安装mavros</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装mavors二进制包</span></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install ros-noetic-mavros ros-noetic-mavros-extras -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装地理数据</span></span><br><span class="line"><span class="comment"># 下载安装脚本</span></span><br><span class="line">wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 赋予执行权限并运行（需要下载几十 MB 数据，可能需要一点时间）</span></span><br><span class="line"><span class="built_in">chmod</span> +x install_geographiclib_datasets.sh</span><br><span class="line"><span class="built_in">sudo</span> ./install_geographiclib_datasets.sh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置串口权限</span></span><br><span class="line"><span class="built_in">sudo</span> usermod -a -G dialout <span class="variable">$USER</span></span><br><span class="line"><span class="built_in">sudo</span> reboot</span><br></pre></td></tr></table></figure>
-
-<p>至此机载电脑完成基本调试</p>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>假设输入一张(w, h)的灰度图，其数值为0~255，系统应该如何处理</p>
+<h3 id="边缘检测-1"><a href="#边缘检测-1" class="headerlink" title="边缘检测"></a>边缘检测</h3><h4 id="计算梯度"><a href="#计算梯度" class="headerlink" title="计算梯度"></a>计算梯度</h4><p>首先对于图像上的任意一点 <code>(x,y)</code>，考察它水平方向和垂直方向的亮度差</p>
+<ul>
+<li>水平差分： $g_{x}&#x3D;I(x+1,y)−I(x−1,y)$</li>
+<li>垂直差分：$g_{y}&#x3D;I(x,y+1)−I(x,y-1)$<br>从而可以计算出梯度的大小与方向</li>
+<li>梯度幅值：$M(x,y)&#x3D;\sqrt{ g_{x}​(x,y)2+g_{y}​(x,y)2 }​$</li>
+<li>梯度方向：$θ(x,y)&#x3D;arctan2(g_{y}​(x,y),g_{x}​(x,y))$</li>
+</ul>
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4><h3 id="四边形检测-1"><a href="#四边形检测-1" class="headerlink" title="四边形检测"></a>四边形检测</h3><h3 id="位姿估计-1"><a href="#位姿估计-1" class="headerlink" title="位姿估计"></a>位姿估计</h3><h3 id="读取ID-1"><a href="#读取ID-1" class="headerlink" title="读取ID"></a>读取ID</h3><h3 id="纠错防伪-1"><a href="#纠错防伪-1" class="headerlink" title="纠错防伪"></a>纠错防伪</h3><hr>
+<h2 id="扩展内容"><a href="#扩展内容" class="headerlink" title="扩展内容"></a>扩展内容</h2><p>ApirlTag（2011）在后续还推出了<a target="_blank" rel="noopener" href="http://ieeexplore.ieee.org/document/7759617/">ApirlTag2</a>（2016）、<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/8967787/">ApirlTag3</a>（2019）。</p>
+<hr>
+<h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><p><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a></p>
 
       </section>
 
@@ -258,30 +271,14 @@ document.addEventListener("DOMContentLoaded", function() {
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-      <div class="card-cover" background-image-lazy data-img="/images/cover/gnosia.png"></div>
-    
-    <div class="card-text">
-      
-        <a href="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</h2>
-        </a>
-      
-      <div class="card-text--row">Newer</div>
-    </div>
-  </article>
-</div>
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
     <div class="card-text">
       
-        <a href="/2025/12/22/%E7%9B%B8%E6%9C%BA%E4%BD%BF%E7%94%A8-&-rosbag/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">相机使用 &amp; rosbag</h2>
+        <a href="/2026/03/17/ROS%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">ROS参数服务器</h2>
         </a>
       
       <div class="card-text--row">Older</div>
@@ -350,7 +347,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <span>TOC</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85Ubuntu-20-04"><span class="toc-number">1.</span> <span class="toc-text">1.  安装Ubuntu 20.04</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%9F%BA%E7%A1%80%E8%B0%83%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">2. 基础调试</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E9%A3%9E%E8%A1%8C%E6%8E%A7%E5%88%B6"><span class="toc-number">3.</span> <span class="toc-text">3. 飞行控制</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E6%A1%86%E6%9E%B6"><span class="toc-number">2.</span> <span class="toc-text">算法框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E6%A3%80%E6%B5%8B"><span class="toc-number">2.2.</span> <span class="toc-text">四边形检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1"><span class="toc-number">2.3.</span> <span class="toc-text">位姿估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96ID"><span class="toc-number">2.4.</span> <span class="toc-text">读取ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A0%E9%94%99%E9%98%B2%E4%BC%AA"><span class="toc-number">2.5.</span> <span class="toc-text">纠错防伪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B-1"><span class="toc-number">3.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E6%A3%80%E6%B5%8B-1"><span class="toc-number">3.2.</span> <span class="toc-text">四边形检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1-1"><span class="toc-number">3.3.</span> <span class="toc-text">位姿估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96ID-1"><span class="toc-number">3.4.</span> <span class="toc-text">读取ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A0%E9%94%99%E9%98%B2%E4%BC%AA-1"><span class="toc-number">3.5.</span> <span class="toc-text">纠错防伪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E5%86%85%E5%AE%B9"><span class="toc-number">4.</span> <span class="toc-text">扩展内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9"><span class="toc-number">5.</span> <span class="toc-text">参考内容</span></a></li></ol>
   </div>
 </section>
 
