@@ -185,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function() {
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2026-03-16T16:00:00.000Z" itemprop="datePublished">2026-03-17</time>
+            <time  class="article-date" datetime="2026-01-26T16:00:00.000Z" itemprop="datePublished">2026-01-27</time>
           </h2>
           
           
@@ -196,9 +196,9 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/catkin/">🏷️ catkin</a></li>
-  
     <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
+  
+    <li><a href="/tags/catkin/">🏷️ catkin</a></li>
   
 </ul>
         </div>
@@ -223,15 +223,15 @@ document.addEventListener("DOMContentLoaded", function() {
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
         <p>简单来说，三者都是cpp的编译工具。<br>首先，因为ros项目非常依赖本地环境且要进行自主修改，所以基本都需要在本地对源码进行编译。（拓展：对于一个cpp的应用程序，其是否需要上述内容？并不需要，一个应用程序可以以编译后的二进制形式发布。一种方式是静态连接，将依赖抄进exe文件；第二种方式是动态链接，例如使用win的dll，在运行时编译，这样只需要一个安装程序，在安装时将这些文件放到指定文件夹中）</p>
-<h3 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h3><p>对于简单的cpp文件编译，例如只有两个文件，可以用命令行手动编译</p>
+<h2 id="cmake"><a href="#cmake" class="headerlink" title="cmake"></a>cmake</h2><p>对于简单的cpp文件编译，例如只有两个文件，可以用命令行手动编译</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">g++ main.cpp lib.cpp -o final</span><br></pre></td></tr></table></figure>
 <p>但是实际中，ros项目的可能有几十上百个需编译的文件，分布在不同文件夹中，且有极多路径不同的依赖和头文件。每次手动敲指令编译太过困难。</p>
 <p>因而有了<code>makefile</code>文本文件，将编译指令输进去，之后每次输入make即可执行编译过程。<br>但是<code>makefile</code>也有问题。例如不同平台的文件路径不同，相同的依赖可能在不同的路径中，且每次新加一个文件就需要手动修改<code>makefile</code></p>
 <p>于是有了cmake工具，根据电脑环境自动生成<code>makefile</code>。相当于多了一个中间层，使用者通过更高层的<code>CMakeList.txt</code>去自动生成更底层的makefile。cmake有几大特点：首先会自动寻找依赖，第二可以跨平台使用，第三其通过让顶层cmakelist指挥底层cmakelist可以管理超大项目。</p>
 <h3 id="catkin-make"><a href="#catkin-make" class="headerlink" title="catkin make"></a>catkin make</h3><p>可以视为cmake的高阶封装版，ROS1自带的编译工具，用于高效地构建众多相互依赖但独立开发的CMake项目。有一个workspace，将ws下视为一个巨大的cmake项目。</p>
 <p>缺点在于没有实现包的隔离，会导致变量名冲突，以及修改一个包需要重新检查整个工作空间的依赖关系</p>
-<h3 id="catkin-build"><a href="#catkin-build" class="headerlink" title="catkin build"></a>catkin build</h3><p>由<code>catkin_tools</code>提供的更现代ROS1的编译工具，需要自己下载。<br><code>sudo apt-get install python3-catkin-tools</code><br>可以实现多个包并行的单独编译，提供单独的build文件夹和日志等，有更好的输出结果展示。</p>
-<h3 id="catkin-config"><a href="#catkin-config" class="headerlink" title="catkin config"></a>catkin config</h3><p>在使用<code>catkin init</code>初始化工作空间后，可以对工作空间进行一些配置，以优化操作</p>
+<h2 id="catkin-build"><a href="#catkin-build" class="headerlink" title="catkin build"></a>catkin build</h2><p>由<code>catkin_tools</code>提供的更现代ROS1的编译工具，需要自己下载。<br><code>sudo apt-get install python3-catkin-tools</code><br>可以实现多个包并行的单独编译，提供单独的build文件夹和日志等，有更好的输出结果展示。</p>
+<h2 id="catkin-config"><a href="#catkin-config" class="headerlink" title="catkin config"></a>catkin config</h2><p>在使用<code>catkin init</code>初始化工作空间后，可以对工作空间进行一些配置，以优化操作</p>
 <p><code>catkin config --extend /opt/ros/$ROS_DISTRO</code></p>
 <p><code>catkin config --merge-devel</code><br>合并编译结果的空间。本来catkin build默认每一个功能包都有单独的devel空间，从而可以单独删除某一个包的编译结果，但是这样python的依赖路径可能很深。</p>
 <p><code>catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release</code><br>给底层的编译器传递参数。默认模式为debug或空，而<code>Release</code>模式会开启编译器优化（-O3），代码运行速度比 Debug 模式快数倍</p>
@@ -251,16 +251,32 @@ document.addEventListener("DOMContentLoaded", function() {
       
         <nav class="article-nav">
           
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+      <div class="card-cover" background-image-lazy data-img="/images/cover/laevatin.png"></div>
+    
+    <div class="card-text">
+      
+        <a href="/2026/01/28/7_%E5%B0%8F%E5%9E%8B%E4%BB%BF%E7%9C%9F%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E5%AE%9E%E9%AA%8C/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">7_小型仿真强化学习实验</h2>
+        </a>
+      
+      <div class="card-text--row">Newer</div>
+    </div>
+  </article>
+</div>
+          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
-      <div class="card-cover" background-image-lazy data-img="/images/cover/regent.jpg"></div>
+      <div class="card-cover" background-image-lazy data-img="/images/cover/zangief.jpg"></div>
     
     <div class="card-text">
       
-        <a href="/2026/03/03/9_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">9_基础建图测试</h2>
+        <a href="/2026/01/20/6_%E6%90%AD%E8%BD%BDNUC%E5%AE%9E%E6%9C%BA%E8%B5%B7%E9%A3%9E%E6%B5%8B%E8%AF%95/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">6_搭载NUC实机起飞测试</h2>
         </a>
       
       <div class="card-text--row">Older</div>
@@ -302,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
 </svg>
-        <span>10</span>
+        <span>13</span>
       </div>
       <div class="count-box--item">
         <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -314,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
 </svg>
-        21
+        24
       </div>
     </div>
   </div>
@@ -329,7 +345,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <span>TOC</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#cmake"><span class="toc-number">1.</span> <span class="toc-text">cmake</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#catkin-make"><span class="toc-number">2.</span> <span class="toc-text">catkin make</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#catkin-build"><span class="toc-number">3.</span> <span class="toc-text">catkin build</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#catkin-config"><span class="toc-number">4.</span> <span class="toc-text">catkin config</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95"><span class="toc-number"></span> <span class="toc-text">扩展</span></a>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#cmake"><span class="toc-number">1.</span> <span class="toc-text">cmake</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#catkin-make"><span class="toc-number">1.1.</span> <span class="toc-text">catkin make</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#catkin-build"><span class="toc-number">2.</span> <span class="toc-text">catkin build</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#catkin-config"><span class="toc-number">3.</span> <span class="toc-text">catkin config</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95"><span class="toc-number">4.</span> <span class="toc-text">扩展</span></a></li></ol>
   </div>
 </section>
 
@@ -354,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         <li class="categories-list-item">
           <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-            无人机工程 (1)
+            无人机工程 (4)
           </a>
         </li>
         
@@ -371,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function() {
   </div>
   <div class="widget-body">
     <div class="tags-cloud">
-      <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 20px;" class="tags-cloud-10">NUC13</a> <a href="/tags/RL/" style="font-size: 10px;" class="tags-cloud-0">RL</a> <a href="/tags/ROS1/" style="font-size: 10px;" class="tags-cloud-0">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 15px;" class="tags-cloud-5">Ubuntu20-04</a> <a href="/tags/catkin/" style="font-size: 10px;" class="tags-cloud-0">catkin</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/ego-planner/" style="font-size: 15px;" class="tags-cloud-5">ego_planner</a> <a href="/tags/octomap/" style="font-size: 10px;" class="tags-cloud-0">octomap</a> <a href="/tags/offb-node/" style="font-size: 15px;" class="tags-cloud-5">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 10px;" class="tags-cloud-0">px4</a> <a href="/tags/reading/" style="font-size: 15px;" class="tags-cloud-5">reading</a> <a href="/tags/simulation/" style="font-size: 10px;" class="tags-cloud-0">simulation</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 15px;" class="tags-cloud-5">vins</a> <a href="/tags/wifi/" style="font-size: 10px;" class="tags-cloud-0">wifi</a> <a href="/tags/%E5%AE%9E%E6%9C%BA/" style="font-size: 15px;" class="tags-cloud-5">实机</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 10px;" class="tags-cloud-0">绕圈</a>
+      <a href="/tags/IntelRealsense/" style="font-size: 13.33px;" class="tags-cloud-3">IntelRealsense</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 16.67px;" class="tags-cloud-7">NUC13</a> <a href="/tags/RL/" style="font-size: 10px;" class="tags-cloud-0">RL</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 13.33px;" class="tags-cloud-3">Ubuntu20-04</a> <a href="/tags/catkin/" style="font-size: 10px;" class="tags-cloud-0">catkin</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/ego-planner/" style="font-size: 13.33px;" class="tags-cloud-3">ego_planner</a> <a href="/tags/octomap/" style="font-size: 13.33px;" class="tags-cloud-3">octomap</a> <a href="/tags/offb-node/" style="font-size: 13.33px;" class="tags-cloud-3">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 10px;" class="tags-cloud-0">px4</a> <a href="/tags/reading/" style="font-size: 13.33px;" class="tags-cloud-3">reading</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/simulation/" style="font-size: 10px;" class="tags-cloud-0">simulation</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 13.33px;" class="tags-cloud-3">vins</a> <a href="/tags/wifi/" style="font-size: 10px;" class="tags-cloud-0">wifi</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%AE%9E%E6%9C%BA/" style="font-size: 13.33px;" class="tags-cloud-3">实机</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 10px;" class="tags-cloud-0">绕圈</a>
     </div>
   </div>
 </section>
