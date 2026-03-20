@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Downloading...</title>
+</head>
+<body>
+  <p>正在跳转下载，请稍候...</p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const file = params.get("file");
+
+    if (file) {
+      const url = "https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/files/" + file;
+      window.location.href = url;
+    } else {
+      document.body.innerHTML = "缺少文件参数";
+    }
+  </script>
+</body>
+</html>

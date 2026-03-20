@@ -24,7 +24,7 @@
 
   
 
-  <title>AprilTag视觉定位原理简介 | Mian的笔记</title>
+  <title>AprilTag视觉定位 | Mian的笔记</title>
 
   
 
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">AprilTag视觉定位原理简介</h1>
+          <h1 class="title-wrap">AprilTag视觉定位</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
@@ -223,12 +223,11 @@ document.addEventListener("DOMContentLoaded", function() {
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在阅读无人机跟踪论文<a target="_blank" rel="noopener" href="http://arxiv.org/abs/2011.03968">Fast-Tracker</a>时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a>进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。</p>
-<img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B/fast-tracker01.png" class="">
+<img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/fast-tracker01.png" class="">
 <p>补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。</p>
 <p>关于ApirlTag，其是由密歇根大学的Edwin Olson于2011年发表的，虽然看起来像是二维码，但是于日常中常见的二维码有许多不同。即AprilTag的核心目的不是为了存储大量数据，而是为了<strong>在极端的环境（光照不均、距离很远、角度倾斜、部分被遮挡）下，依然能被摄像头瞬间认出来，并精确计算出它在三维空间中的位置和姿态（即 6个自由度：前后、左右、上下，以及俯仰、偏航、滚转）。</strong> 所以AprilTag看起来比一般的二维码简单许多。</p>
-<img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B/AprilTag01.png" class="">
+<img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/AprilTag01.png" class="">
 <p><em>注意AprilTag不仅是一种标签生成的方式，也是一种标签检测系统</em></p>
-<hr>
 <h2 id="算法框架"><a href="#算法框架" class="headerlink" title="算法框架"></a>算法框架</h2><p>对于每一张输入的灰度图，都将进行以下操作</p>
 <h3 id="边缘检测"><a href="#边缘检测" class="headerlink" title="边缘检测"></a>边缘检测</h3><ol>
 <li>计算像素“梯度”：计算相邻点像素值变化的值与方向</li>
@@ -251,18 +250,44 @@ document.addEventListener("DOMContentLoaded", function() {
 <li>保证汉明距离：系统生成的每一张AprilTag，其黑白格子的图案和其他的标签都有巨大差别，保证即使读错了几个格子也能猜出正确的ID</li>
 <li>图案复杂：AprilTag编码在设计之初就淘汰了如纯黑这样几何复杂度低、且易在自然中产生的图案</li>
 </ol>
-<hr>
 <h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>假设输入一张(w, h)的灰度图，其数值为0~255，系统应该如何处理</p>
-<h3 id="边缘检测-1"><a href="#边缘检测-1" class="headerlink" title="边缘检测"></a>边缘检测</h3><h4 id="计算梯度"><a href="#计算梯度" class="headerlink" title="计算梯度"></a>计算梯度</h4><p>首先对于图像上的任意一点 <code>(x,y)</code>，考察它水平方向和垂直方向的亮度差</p>
+<h3 id="边缘检测-1"><a href="#边缘检测-1" class="headerlink" title="边缘检测"></a>边缘检测</h3><p>此处方法与ARTag的检测器相似。是整个过程中最为耗时的部分，通常可以以一半的分辨率执行，提高4倍速度。</p>
+<h4 id="计算梯度"><a href="#计算梯度" class="headerlink" title="计算梯度"></a>计算梯度</h4><p>首先对于图像上的任意一点 <code>(x,y)</code>，考察它水平方向和垂直方向的亮度差</p>
 <ul>
 <li>水平差分： $g_{x}&#x3D;I(x+1,y)−I(x−1,y)$</li>
 <li>垂直差分：$g_{y}&#x3D;I(x,y+1)−I(x,y-1)$<br>从而可以计算出梯度的大小与方向</li>
 <li>梯度幅值：$M(x,y)&#x3D;\sqrt{ g_{x}​(x,y)2+g_{y}​(x,y)2 }​$</li>
 <li>梯度方向：$θ(x,y)&#x3D;arctan2(g_{y}​(x,y),g_{x}​(x,y))$</li>
 </ul>
-<h4 id=""><a href="#" class="headerlink" title=""></a></h4><h3 id="四边形检测-1"><a href="#四边形检测-1" class="headerlink" title="四边形检测"></a>四边形检测</h3><h3 id="位姿估计-1"><a href="#位姿估计-1" class="headerlink" title="位姿估计"></a>位姿估计</h3><h3 id="读取ID-1"><a href="#读取ID-1" class="headerlink" title="读取ID"></a>读取ID</h3><h3 id="纠错防伪-1"><a href="#纠错防伪-1" class="headerlink" title="纠错防伪"></a>纠错防伪</h3><hr>
-<h2 id="扩展内容"><a href="#扩展内容" class="headerlink" title="扩展内容"></a>扩展内容</h2><p>ApirlTag（2011）在后续还推出了<a target="_blank" rel="noopener" href="http://ieeexplore.ieee.org/document/7759617/">ApirlTag2</a>（2016）、<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/8967787/">ApirlTag3</a>（2019）。</p>
-<hr>
+<h4 id="聚类"><a href="#聚类" class="headerlink" title="聚类"></a>聚类</h4><p>经过上述操作，图上每一个像素点p都有了两个物理量，然后使用基于图的聚类方法。<br>创建一个图，其中每个节点代表一个像素。在相邻像素之间添加边,边权重等于像素在梯度方向上的差异：$$W_{i,j}​&#x3D;​θ(p_{i}​)−θ(p_{j})​(mod2π)$$<br>然后按照权重从小到大去尝试把节点合并为一个“component”。即初始时一个节点代表了一个component，后续可能有多个component的合并。假设现在有两个相邻的component，n和m，通过以下条件判断是否要将其合并$$D(n∪m)≤min(D(n),D(m))+\frac{K_{D}}{∣n∪m∣}​​$$$$M(n∪m)≤min(M(n),M(m))+\frac{K_{M}}{∣n∪m∣}​​$$<br>其中：</p>
+<ul>
+<li>$D(n) &#x3D; \max_{p \in n} \theta(p) - \min_{p \in n} \theta(p)$ 为方向极差</li>
+<li>$K(n) &#x3D; \max_{p \in n} M(p) - \min_{p \in n} M(p)$ 为幅值极差</li>
+<li>$|n \cup m|$：代表合并后群落包含的<strong>像素总数</strong>。 </li>
+<li>$K_D$：人为设定的常数。 </li>
+<li><strong>巧妙之处</strong>：公式右侧的 $\frac{K_D}{|n \cup m|}$ 是一个动态宽容度项。当群落很小（像素少）时，分母小，宽容度极大，允许像素快速抱团，具有极强的抗噪能力；当群落成长为长线段时（像素多），宽容度迅速趋近于 0，算法变得极其严苛，强制保证最终提取出的线段必须是“笔直且方向均匀”的。</li>
+</ul>
+<h4 id="画线"><a href="#画线" class="headerlink" title="画线"></a>画线</h4><p>使用最小二乘法，对于一个component的像素拟合出几何直线方程<br><strong>1.计算加权重心</strong> 以像素的梯度幅值 $M$ 作为权重 $w_i$，由于处在“悬崖”边缘的像素更具代表性，赋予其更高权重。设共有 $N$ 个像素，计算加权平均坐标 $(\bar{x}, \bar{y})$： $$ \bar{x} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot x_i}{\sum_{i&#x3D;1}^{N} w_i}, \quad \bar{y} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot y_i}{\sum_{i&#x3D;1}^{N} w_i} $$ 随后将所有坐标平移至重心处（去中心化）：$x’<em>i &#x3D; x_i - \bar{x}, \quad y’<em>i &#x3D; y_i - \bar{y}$。<br><strong>2. 构建加权协方差矩阵</strong> 利用去中心化后的坐标，构建一个 $2 \times 2$ 的加权协方差矩阵 $\mathbf{C}$ 来描述像素的几何分布形态： $$ \mathbf{C} &#x3D; \begin{bmatrix} C</em>{xx} &amp; C</em>{xy} \ C_{xy} &amp; C_{yy} \end{bmatrix} $$ 其中矩阵元素的计算公式为： $$ C_{xx} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot (x’<em>i)^2}{\sum</em>{i&#x3D;1}^{N} w_i}, \quad C_{yy} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot (y’<em>i)^2}{\sum</em>{i&#x3D;1}^{N} w_i}, \quad C_{xy} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot x’<em>i \cdot y’<em>i}{\sum</em>{i&#x3D;1}^{N} w_i} $$ <strong>3. 求解特征向量得到直线方程</strong> 直线的走向（倾斜角 $\theta$）即为该协方差矩阵最大特征值对应的特征向量方向。其解析解可以直接通过下式计算： $$ \theta &#x3D; \frac{1}{2} \text{arctan2}\big(2 C</em>{xy}, , C_{xx} - C_{yy}\big) $$ 最终，利用倾斜角 $\theta$ 和重心 $(\bar{x}, \bar{y})$，我们可以直接写出没有任何数学奇点的亚像素级直线标准方程 $Ax + By + C &#x3D; 0$：<br>$$ A &#x3D; -\sin\theta, \quad B &#x3D; \cos\theta, \quad C &#x3D; -(A\bar{x} + B\bar{y}) $$</p>
+<h3 id="四边形检测-1"><a href="#四边形检测-1" class="headerlink" title="四边形检测"></a>四边形检测</h3><p>使用深度为4的深度优先搜索，并在深度一考虑所有线段，而在深度二至四考虑所有开始距离前一个线段结束位置“足够近”并且遵循逆时针缠绕 顺序的线段。</p>
+<p>通过调整“足够接近”阈值来处理对遮挡和分割错误的鲁棒性:通过使阈值变大,可以处理边缘 周围的显着间隙。文中“足够接近”的阈值是线长度的两倍加上五个额外像素。</p>
+<p>在找到四边形后边可以得到对应四个角在二维图像中的坐标</p>
+<h3 id="位姿估计-1"><a href="#位姿估计-1" class="headerlink" title="位姿估计"></a>位姿估计</h3><p>在找到了二维照片上的 4 个精确角点后，我们需要将其映射回真实的三维物理空间。这里用到了计算机视觉中最经典的“小孔相机投影模型”。<br><strong>1. 建立巧妙的世界坐标系</strong> 将世界坐标系的原点强行定义在<strong>真实 AprilTag 的正中心</strong>，并让标签平铺在 $X-Y$ 平面上。这一设定的绝妙之处在于，标签上所有点的物理 $Z$ 坐标全部归零： $$ Z_w &#x3D; 0 $$ <strong>2. 投影矩阵的“降维打击”</strong> 根据相机的透视投影公式，世界坐标 $(X_w, Y_w, Z_w)$ 投影到图像像素坐标 $(u, v)$ 满足以下关系： $$ s \begin{bmatrix} u \ v \ 1 \end{bmatrix} &#x3D; \mathbf{K} \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{r_3} &amp; \mathbf{t} \end{bmatrix} \begin{bmatrix} X_w \ Y_w \ Z_w \ 1 \end{bmatrix} $$</p>
+<blockquote>
+<p><strong>参数说明：</strong> </p>
+<ul>
+<li>$s$：透视缩放因子（由于“近大远小”丢失的深度信息）。 &gt; * $\mathbf{K}$：相机的 $3 \times 3$ 内参矩阵（包含焦距和光心）。 &gt; * $\mathbf{r_1}, \mathbf{r_2}, \mathbf{r_3}$：相机旋转矩阵 $\mathbf{R}$ 的三个列向量。 &gt; * $\mathbf{t}$：平移向量 $[t_x, t_y, t_z]^T$，即相机到标签中心的真实物理距离。 由于 $Z_w &#x3D; 0$，矩阵乘法中涉及 $\mathbf{r_3}$ 的项统统被消灭（乘以 0）。原本 $3 \times 4$ 的复杂空间投影，完美坍缩为一个 $3 \times 3$ 的平面映射矩阵——这就是**单应性矩阵 $\mathbf{H}$**： $$ s \begin{bmatrix} u \ v \ 1 \end{bmatrix} &#x3D; \mathbf{K} \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t} \end{bmatrix} \begin{bmatrix} X_w \ Y_w \ 1 \end{bmatrix} \quad \Longrightarrow \quad \mathbf{H} &#x3D; \mathbf{K} \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t} \end{bmatrix} $$ <em>(通过四对已知的角点坐标，运用直接线性变换 DLT 算法即可解出 $\mathbf{H}$ 的所有元素。)</em></li>
+</ul>
+</blockquote>
+<p>解出单应性矩阵 $\mathbf{H}$ 后，我们需要逆向剥离出我们真正想要的平移向量 $\mathbf{t}$（距离）和旋转矩阵 $\mathbf{R}$（姿态）。<br><strong>3. 消除相机内参干扰</strong> 在等式两边同时左乘相机内参矩阵的逆 $\mathbf{K}^{-1}$，我们将计算结果记为三个列向量 $\mathbf{h_1}, \mathbf{h_2}, \mathbf{h_3}$： $$ \mathbf{K}^{-1} \mathbf{H} &#x3D; \begin{bmatrix} \mathbf{h_1} &amp; \mathbf{h_2} &amp; \mathbf{h_3} \end{bmatrix} &#x3D; s \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t} \end{bmatrix} $$ 这实际上给出了三个极其关键的等式： $$ \mathbf{h_1} &#x3D; s \cdot \mathbf{r_1}, \quad \mathbf{h_2} &#x3D; s \cdot \mathbf{r_2}, \quad \mathbf{h_3} &#x3D; s \cdot \mathbf{t} $$ <strong>4. 利用刚体物理定理求解缩放因子 $s$</strong> 在真实的物理空间中，旋转矩阵的列向量 $\mathbf{r_1}$ 和 $\mathbf{r_2}$ 代表方向轴，它们的<strong>模长（长度）必须严格等于 1</strong>（即 $|\mathbf{r_1}| &#x3D; |\mathbf{r_2}| &#x3D; 1$）。 基于这个物理公理，我们可以直接算出透视缩放因子 $s$。为了减少图像噪点误差，通常取前两列模长的几何平均值： $$ s &#x3D; \sqrt{|\mathbf{h_1}| \cdot |\mathbf{h_2}|} $$ <strong>5. 提取平移距离与旋转轴</strong> 既然 $s$ 已经求出，终极目标瞬间解开： * <strong>物理距离（平移向量）</strong>：直接拿到了无人机距离目标的绝对 $X, Y, Z$ 坐标！ $$ \mathbf{t} &#x3D; \frac{\mathbf{h_3}}{s} $$ * <strong>物理姿态（旋转向量）</strong>：解出真实的 $X$ 轴和 $Y$ 轴朝向。 $$ \mathbf{r_1} &#x3D; \frac{\mathbf{h_1}}{s}, \quad \mathbf{r_2} &#x3D; \frac{\mathbf{h_2}}{s} $$ * <strong>找回丢失的 $Z$ 轴</strong>：利用三维几何的右手法则，通过向量的叉乘（Cross Product）无中生有地生成垂直于平面的第三个旋转轴： $$ \mathbf{r_3} &#x3D; \mathbf{r_1} \times \mathbf{r_2} $$ 至此，我们初步拼凑出了 $3 \times 3$ 的旋转矩阵 $\tilde{\mathbf{R}} &#x3D; \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{r_3} \end{bmatrix}$。</p>
+<p><strong>6.旋转矩阵正交化</strong> 由于像素离散误差和镜头畸变，我们粗略拼凑出来的 $\tilde{\mathbf{R}}$ 往往并不完美（三个轴可能不绝对正交）。如果将其直接输入无人机飞控，会导致严重的姿态计算错误。<br><strong>数学解法（极分解）：</strong> 我们需要寻找一个在三维旋转群 $SO(3)$ 中，距离 $\tilde{\mathbf{R}}$ 最近的“绝对完美的正交旋转矩阵” $\mathbf{R}^*$。 通过对粗糙矩阵 $\tilde{\mathbf{R}}$ 进行奇异值分解（SVD）： $$ \tilde{\mathbf{R}} &#x3D; \mathbf{U} \mathbf{\Sigma} \mathbf{V}^T $$ 将代表拉伸变形的对角阵 $\mathbf{\Sigma}$ 强制替换为单位阵 $\mathbf{I}$，即可得到完全正交的最优旋转矩阵： $$ \mathbf{R}^* &#x3D; \mathbf{U} \mathbf{V}^T $$</p>
+<h3 id="读取ID-1"><a href="#读取ID-1" class="headerlink" title="读取ID"></a>读取ID</h3><p>在真实的物理环境中，光照往往是极度不均匀的。比如标签一半暴露在刺眼的阳光下，一半掩盖在浓重的树荫里。此时，阴影区域的“纯白色”像素，其绝对亮度可能比阳光区域的“纯黑色”像素还要暗。如果使用一个全局固定的亮度阈值（如 128）去二值化图像，阴影区的密码将全军覆没。 </p>
+<p><strong>数学解法：建立空间光照曲面</strong> AprilTag 利用了其本身固有的几何设计：标签的最外圈固定是一层白边，往内固定是一层黑框。这些边框的颜色是<strong>绝对已知</strong>的。 算法在这些已知的白边和黑框中采样若干像素点 $(x_i, y_i)$ 以及它们的真实灰度值 $I_i$，并在数学上假设光照强度的变化在二维空间中是一个<strong>双线性平面（Bilinear Surface）</strong>。<br>为此，算法分别构建了两个连续的二维空间亮度函数：<br><strong>黑色区域的光照曲面模型</strong>： $$ I_{\text{black}}(x, y) &#x3D; A_1 x + B_1 xy + C_1 y + D_1 $$ <strong>白色区域的光照曲面模型</strong>： $$ I_{\text{white}}(x, y) &#x3D; A_2 x + B_2 xy + C_2 y + D_2 $$<br>现在，算法准备去读取标签内部的任意一个数据网格（密码位）。假设该网格中心的像素坐标为 $(x_k, y_k)$。 我们不再去和一个死板的固定数字比大小，而是将该坐标分别代入刚刚拟合出的两张曲面方程中，计算出它**专属的动态阈值 $T(x_k, y_k)$**（即黑与白的中间值）： $$ T(x_k, y_k) &#x3D; \frac{I_{\text{black}}(x_k, y_k) + I_{\text{white}}(x_k, y_k)}{2} $$ 最后，用该坐标点真实的相机传感器亮度 $I_{\text{actual}}(x_k, y_k)$ 与其专属阈值进行比较，直接输出二进制位： $$ \text{Bit}(x_k, y_k) &#x3D; \begin{cases} 1 \text{ (白)} &amp; \text{if } I_{\text{actual}}(x_k, y_k) &gt; T(x_k, y_k) \ 0 \text{ (黑)} &amp; \text{if } I_{\text{actual}}(x_k, y_k) \le T(x_k, y_k) \end{cases} $$</p>
+<h3 id="纠错防伪-1"><a href="#纠错防伪-1" class="headerlink" title="纠错防伪"></a>纠错防伪</h3><p>除了上面所有的检测措施之外，AprilTag在设计时还加入了许多限制</p>
+<h4 id="汉明距离纠错"><a href="#汉明距离纠错" class="headerlink" title="汉明距离纠错"></a>汉明距离纠错</h4><p>为了保证即使部分被遮挡也能成功读取，在设计时保证了任何两个标签之间有足够的汉明距离，例如36h10一族标签代表了有36个格子，最小汉明距离为10</p>
+<h4 id="旋转不变性"><a href="#旋转不变性" class="headerlink" title="旋转不变性"></a>旋转不变性</h4><p>AprilTag还限制了任意标签在旋转后与原来的自己也保持最小汉明距离，从而可以迅速读出标签的旋转</p>
+<h4 id="几何复杂度"><a href="#几何复杂度" class="headerlink" title="几何复杂度"></a>几何复杂度</h4><p>自然界中也可能出现类似的图形，例如一个方形窗户中的光阴。AprilTag设定了每个标签绘制所需要的最少矩形个数，排除了如纯黑色标签这种形式</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>AprilTag通过数学上的精妙运算，实现了一种快速准确且能够在极端环境运行的视觉定位系统</p>
+<p>ApirlTag（2011）在后续还推出了<a target="_blank" rel="noopener" href="http://ieeexplore.ieee.org/document/7759617/">ApirlTag2</a>（2016）、<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/8967787/">ApirlTag3</a>（2019）。分别实现了更精准快速的检测器、更多样化的标签生成机制。</p>
 <h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><p><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a></p>
 
       </section>
@@ -276,8 +301,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     <div class="card-text">
       
-        <a href="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">AprilTag视觉定位</h2>
+        <a href="/2026/03/19/11_ApirlTag%E6%B5%8B%E8%AF%95%E5%AE%9E%E9%AA%8C/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">11_ApirlTag测试实验</h2>
         </a>
       
       <div class="card-text--row">Newer</div>
@@ -289,12 +314,10 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
-      <div class="card-cover" background-image-lazy data-img="/images/cover/regent.jpg"></div>
-    
     <div class="card-text">
       
-        <a href="/2026/03/03/9_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">9_基础建图测试</h2>
+        <a href="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">AprilTag视觉定位原理简介</h2>
         </a>
       
       <div class="card-text--row">Older</div>
@@ -363,7 +386,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <span>TOC</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E6%A1%86%E6%9E%B6"><span class="toc-number">2.</span> <span class="toc-text">算法框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E6%A3%80%E6%B5%8B"><span class="toc-number">2.2.</span> <span class="toc-text">四边形检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1"><span class="toc-number">2.3.</span> <span class="toc-text">位姿估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96ID"><span class="toc-number">2.4.</span> <span class="toc-text">读取ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A0%E9%94%99%E9%98%B2%E4%BC%AA"><span class="toc-number">2.5.</span> <span class="toc-text">纠错防伪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B-1"><span class="toc-number">3.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E6%A3%80%E6%B5%8B-1"><span class="toc-number">3.2.</span> <span class="toc-text">四边形检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1-1"><span class="toc-number">3.3.</span> <span class="toc-text">位姿估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96ID-1"><span class="toc-number">3.4.</span> <span class="toc-text">读取ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A0%E9%94%99%E9%98%B2%E4%BC%AA-1"><span class="toc-number">3.5.</span> <span class="toc-text">纠错防伪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E5%86%85%E5%AE%B9"><span class="toc-number">4.</span> <span class="toc-text">扩展内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9"><span class="toc-number">5.</span> <span class="toc-text">参考内容</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E6%A1%86%E6%9E%B6"><span class="toc-number">2.</span> <span class="toc-text">算法框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E6%A3%80%E6%B5%8B"><span class="toc-number">2.2.</span> <span class="toc-text">四边形检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1"><span class="toc-number">2.3.</span> <span class="toc-text">位姿估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96ID"><span class="toc-number">2.4.</span> <span class="toc-text">读取ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A0%E9%94%99%E9%98%B2%E4%BC%AA"><span class="toc-number">2.5.</span> <span class="toc-text">纠错防伪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B-1"><span class="toc-number">3.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E6%A3%80%E6%B5%8B-1"><span class="toc-number">3.2.</span> <span class="toc-text">四边形检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1-1"><span class="toc-number">3.3.</span> <span class="toc-text">位姿估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96ID-1"><span class="toc-number">3.4.</span> <span class="toc-text">读取ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A0%E9%94%99%E9%98%B2%E4%BC%AA-1"><span class="toc-number">3.5.</span> <span class="toc-text">纠错防伪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9"><span class="toc-number">5.</span> <span class="toc-text">参考内容</span></a></li></ol>
   </div>
 </section>
 
