@@ -93,6 +93,21 @@ window.addEventListener("DOMContentLoaded", function() {
     goScrollTop()
   });
 
+  querySelectorArrs(".article-card[data-url]").forEach(function(card) {
+    card.addEventListener("click", function(e) {
+      if (e.target.closest("a")) return
+
+      const url = this.dataset.url
+      if (!url) return
+
+      if (this.dataset.target === "_blank") {
+        window.open(url, "_blank", "noopener")
+      } else {
+        window.location.href = url
+      }
+    })
+  })
+
   window.addEventListener("scroll", function () {
     toggleBackToTopBtn()
   }, { passive: true });

@@ -267,7 +267,12 @@ document.addEventListener("DOMContentLoaded", function() {
 <li>$K_D$：人为设定的常数。 </li>
 <li><strong>巧妙之处</strong>：公式右侧的 $\frac{K_D}{|n \cup m|}$ 是一个动态宽容度项。当群落很小（像素少）时，分母小，宽容度极大，允许像素快速抱团，具有极强的抗噪能力；当群落成长为长线段时（像素多），宽容度迅速趋近于 0，算法变得极其严苛，强制保证最终提取出的线段必须是“笔直且方向均匀”的。</li>
 </ul>
-<h4 id="画线"><a href="#画线" class="headerlink" title="画线"></a>画线</h4><p>使用最小二乘法，对于一个component的像素拟合出几何直线方程<br><strong>1.计算加权重心</strong> 以像素的梯度幅值 $M$ 作为权重 $w_i$，由于处在“悬崖”边缘的像素更具代表性，赋予其更高权重。设共有 $N$ 个像素，计算加权平均坐标 $(\bar{x}, \bar{y})$： $$ \bar{x} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot x_i}{\sum_{i&#x3D;1}^{N} w_i}, \quad \bar{y} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot y_i}{\sum_{i&#x3D;1}^{N} w_i} $$ 随后将所有坐标平移至重心处（去中心化）：$x’<em>i &#x3D; x_i - \bar{x}, \quad y’<em>i &#x3D; y_i - \bar{y}$。<br><strong>2. 构建加权协方差矩阵</strong> 利用去中心化后的坐标，构建一个 $2 \times 2$ 的加权协方差矩阵 $\mathbf{C}$ 来描述像素的几何分布形态： $$ \mathbf{C} &#x3D; \begin{bmatrix} C</em>{xx} &amp; C</em>{xy} \ C_{xy} &amp; C_{yy} \end{bmatrix} $$ 其中矩阵元素的计算公式为： $$ C_{xx} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot (x’<em>i)^2}{\sum</em>{i&#x3D;1}^{N} w_i}, \quad C_{yy} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot (y’<em>i)^2}{\sum</em>{i&#x3D;1}^{N} w_i}, \quad C_{xy} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot x’<em>i \cdot y’<em>i}{\sum</em>{i&#x3D;1}^{N} w_i} $$ <strong>3. 求解特征向量得到直线方程</strong> 直线的走向（倾斜角 $\theta$）即为该协方差矩阵最大特征值对应的特征向量方向。其解析解可以直接通过下式计算： $$ \theta &#x3D; \frac{1}{2} \text{arctan2}\big(2 C</em>{xy}, , C_{xx} - C_{yy}\big) $$ 最终，利用倾斜角 $\theta$ 和重心 $(\bar{x}, \bar{y})$，我们可以直接写出没有任何数学奇点的亚像素级直线标准方程 $Ax + By + C &#x3D; 0$：<br>$$ A &#x3D; -\sin\theta, \quad B &#x3D; \cos\theta, \quad C &#x3D; -(A\bar{x} + B\bar{y}) $$</p>
+<h4 id="画线"><a href="#画线" class="headerlink" title="画线"></a>画线</h4><p>使用最小二乘法，对于一个component的像素拟合出几何直线方程<br><strong>1.计算加权重心</strong> 以像素的梯度幅值 $M$ 作为权重 $w_i$，由于处在“悬崖”边缘的像素更具代表性，赋予其更高权重。设共有 $N$ 个像素，计算加权平均坐标 $(\bar{x}, \bar{y})$： $$ \bar{x} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot x_i}{\sum_{i&#x3D;1}^{N} w_i}, \quad \bar{y} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot y_i}{\sum_{i&#x3D;1}^{N} w_i} $$ 随后将所有坐标平移至重心处（去中心化）：$x’_i &#x3D; x_i - \bar{x}, \quad y’_i &#x3D; y_i - \bar{y}$</p>
+<p><strong>2. 构建加权协方差矩阵</strong> 利用去中心化后的坐标，构建一个 $2 \times 2$ 的加权协方差矩阵 $\mathbf{C}$ 来描述像素的几何分布形态： $$ \mathbf{C} &#x3D; \begin{bmatrix} C_{xx} &amp; C_{xy} \ C_{xy} &amp; C_{yy} \end{bmatrix} $$<br>其中矩阵元素的计算公式如下：</p>
+<p>  $$<br>  C_{xx} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot (x’<em>i)^2}{\sum</em>{i&#x3D;1}^{N} w_i}, \quad<br>  C_{yy} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot (y’<em>i)^2}{\sum</em>{i&#x3D;1}^{N} w_i}, \quad<br>  C_{xy} &#x3D; \frac{\sum_{i&#x3D;1}^{N} w_i \cdot x’_i \cdot y’<em>i}{\sum</em>{i&#x3D;1}^{N} w_i}<br>  $$</p>
+<p><strong>3. 求解特征向量得到直线方程</strong> 直线的走向（倾斜角 $\theta$）即为该协方差矩阵最大特征值对应的特征向量方向。其解析解可以直接通过下式计算：</p>
+<p>$$ \theta &#x3D; \frac{1}{2} \text{arctan2}\big(2 C_{xy}, , C_{xx} - C_{yy}\big) $$<br>最终，利用倾斜角  $\theta$  和重心  $(\bar{x}, \bar{y})$ ，我们可以直接写出没有任何数学奇点的亚像素级直线标准方程 $Ax + By + C &#x3D; 0$： </p>
+<p>$$ A &#x3D; -\sin\theta, \quad B &#x3D; \cos\theta, \quad C &#x3D; -(A\bar{x} + B\bar{y}) $$</p>
 <h3 id="四边形检测-1"><a href="#四边形检测-1" class="headerlink" title="四边形检测"></a>四边形检测</h3><p>使用深度为4的深度优先搜索，并在深度一考虑所有线段，而在深度二至四考虑所有开始距离前一个线段结束位置“足够近”并且遵循逆时针缠绕 顺序的线段。</p>
 <p>通过调整“足够接近”阈值来处理对遮挡和分割错误的鲁棒性:通过使阈值变大,可以处理边缘 周围的显着间隙。文中“足够接近”的阈值是线长度的两倍加上五个额外像素。</p>
 <p>在找到四边形后边可以得到对应四个角在二维图像中的坐标</p>
@@ -275,9 +280,13 @@ document.addEventListener("DOMContentLoaded", function() {
 <blockquote>
 <p><strong>参数说明：</strong> </p>
 <ul>
-<li>$s$：透视缩放因子（由于“近大远小”丢失的深度信息）。 &gt; * $\mathbf{K}$：相机的 $3 \times 3$ 内参矩阵（包含焦距和光心）。 &gt; * $\mathbf{r_1}, \mathbf{r_2}, \mathbf{r_3}$：相机旋转矩阵 $\mathbf{R}$ 的三个列向量。 &gt; * $\mathbf{t}$：平移向量 $[t_x, t_y, t_z]^T$，即相机到标签中心的真实物理距离。 由于 $Z_w &#x3D; 0$，矩阵乘法中涉及 $\mathbf{r_3}$ 的项统统被消灭（乘以 0）。原本 $3 \times 4$ 的复杂空间投影，完美坍缩为一个 $3 \times 3$ 的平面映射矩阵——这就是**单应性矩阵 $\mathbf{H}$**： $$ s \begin{bmatrix} u \ v \ 1 \end{bmatrix} &#x3D; \mathbf{K} \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t} \end{bmatrix} \begin{bmatrix} X_w \ Y_w \ 1 \end{bmatrix} \quad \Longrightarrow \quad \mathbf{H} &#x3D; \mathbf{K} \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t} \end{bmatrix} $$ <em>(通过四对已知的角点坐标，运用直接线性变换 DLT 算法即可解出 $\mathbf{H}$ 的所有元素。)</em></li>
+<li>$s$：透视缩放因子（由于“近大远小”丢失的深度信息）。 </li>
+<li>$\mathbf{K}$：相机的 $3 \times 3$ 内参矩阵（包含焦距和光心）。 </li>
+<li>$\mathbf{r_1}, \mathbf{r_2}, \mathbf{r_3}$：相机旋转矩阵 $\mathbf{R}$ 的三个列向量。 </li>
+<li>$\mathbf{t}$：平移向量 $[t_x, t_y, t_z]^T$，即相机到标签中心的真实物理距离。</li>
 </ul>
 </blockquote>
+<p> 由于 $Z_w &#x3D; 0$，矩阵乘法中涉及 $\mathbf{r_3}$ 的项统统被消灭（乘以 0）。原本 $3 \times 4$ 的复杂空间投影，完美坍缩为一个 $3 \times 3$ 的平面映射矩阵——这就是**单应性矩阵 $\mathbf{H}$**： $$ s \begin{bmatrix} u \ v \ 1 \end{bmatrix} &#x3D; \mathbf{K} \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t} \end{bmatrix} \begin{bmatrix} X_w \ Y_w \ 1 \end{bmatrix} \quad \Longrightarrow \quad \mathbf{H} &#x3D; \mathbf{K} \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t} \end{bmatrix} $$ <em>(通过四对已知的角点坐标，运用直接线性变换 DLT 算法即可解出 $\mathbf{H}$ 的所有元素。)</em></p>
 <p>解出单应性矩阵 $\mathbf{H}$ 后，我们需要逆向剥离出我们真正想要的平移向量 $\mathbf{t}$（距离）和旋转矩阵 $\mathbf{R}$（姿态）。<br><strong>3. 消除相机内参干扰</strong> 在等式两边同时左乘相机内参矩阵的逆 $\mathbf{K}^{-1}$，我们将计算结果记为三个列向量 $\mathbf{h_1}, \mathbf{h_2}, \mathbf{h_3}$： $$ \mathbf{K}^{-1} \mathbf{H} &#x3D; \begin{bmatrix} \mathbf{h_1} &amp; \mathbf{h_2} &amp; \mathbf{h_3} \end{bmatrix} &#x3D; s \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t} \end{bmatrix} $$ 这实际上给出了三个极其关键的等式： $$ \mathbf{h_1} &#x3D; s \cdot \mathbf{r_1}, \quad \mathbf{h_2} &#x3D; s \cdot \mathbf{r_2}, \quad \mathbf{h_3} &#x3D; s \cdot \mathbf{t} $$ <strong>4. 利用刚体物理定理求解缩放因子 $s$</strong> 在真实的物理空间中，旋转矩阵的列向量 $\mathbf{r_1}$ 和 $\mathbf{r_2}$ 代表方向轴，它们的<strong>模长（长度）必须严格等于 1</strong>（即 $|\mathbf{r_1}| &#x3D; |\mathbf{r_2}| &#x3D; 1$）。 基于这个物理公理，我们可以直接算出透视缩放因子 $s$。为了减少图像噪点误差，通常取前两列模长的几何平均值： $$ s &#x3D; \sqrt{|\mathbf{h_1}| \cdot |\mathbf{h_2}|} $$ <strong>5. 提取平移距离与旋转轴</strong> 既然 $s$ 已经求出，终极目标瞬间解开： * <strong>物理距离（平移向量）</strong>：直接拿到了无人机距离目标的绝对 $X, Y, Z$ 坐标！ $$ \mathbf{t} &#x3D; \frac{\mathbf{h_3}}{s} $$ * <strong>物理姿态（旋转向量）</strong>：解出真实的 $X$ 轴和 $Y$ 轴朝向。 $$ \mathbf{r_1} &#x3D; \frac{\mathbf{h_1}}{s}, \quad \mathbf{r_2} &#x3D; \frac{\mathbf{h_2}}{s} $$ * <strong>找回丢失的 $Z$ 轴</strong>：利用三维几何的右手法则，通过向量的叉乘（Cross Product）无中生有地生成垂直于平面的第三个旋转轴： $$ \mathbf{r_3} &#x3D; \mathbf{r_1} \times \mathbf{r_2} $$ 至此，我们初步拼凑出了 $3 \times 3$ 的旋转矩阵 $\tilde{\mathbf{R}} &#x3D; \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{r_3} \end{bmatrix}$。</p>
 <p><strong>6.旋转矩阵正交化</strong> 由于像素离散误差和镜头畸变，我们粗略拼凑出来的 $\tilde{\mathbf{R}}$ 往往并不完美（三个轴可能不绝对正交）。如果将其直接输入无人机飞控，会导致严重的姿态计算错误。<br><strong>数学解法（极分解）：</strong> 我们需要寻找一个在三维旋转群 $SO(3)$ 中，距离 $\tilde{\mathbf{R}}$ 最近的“绝对完美的正交旋转矩阵” $\mathbf{R}^*$。 通过对粗糙矩阵 $\tilde{\mathbf{R}}$ 进行奇异值分解（SVD）： $$ \tilde{\mathbf{R}} &#x3D; \mathbf{U} \mathbf{\Sigma} \mathbf{V}^T $$ 将代表拉伸变形的对角阵 $\mathbf{\Sigma}$ 强制替换为单位阵 $\mathbf{I}$，即可得到完全正交的最优旋转矩阵： $$ \mathbf{R}^* &#x3D; \mathbf{U} \mathbf{V}^T $$</p>
 <h3 id="读取ID-1"><a href="#读取ID-1" class="headerlink" title="读取ID"></a>读取ID</h3><p>在真实的物理环境中，光照往往是极度不均匀的。比如标签一半暴露在刺眼的阳光下，一半掩盖在浓重的树荫里。此时，阴影区域的“纯白色”像素，其绝对亮度可能比阳光区域的“纯黑色”像素还要暗。如果使用一个全局固定的亮度阈值（如 128）去二值化图像，阴影区的密码将全军覆没。 </p>
@@ -314,10 +323,12 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
+      <div class="card-cover" background-image-lazy data-img="/images/cover/regent.jpg"></div>
+    
     <div class="card-text">
       
-        <a href="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D%E5%8E%9F%E7%90%86%E7%AE%80%E4%BB%8B/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">AprilTag视觉定位原理简介</h2>
+        <a href="/2026/03/03/9_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">9_基础建图测试</h2>
         </a>
       
       <div class="card-text--row">Older</div>
@@ -359,7 +370,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
 </svg>
-        <span>16</span>
+        <span>15</span>
       </div>
       <div class="count-box--item">
         <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -411,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function() {
         
         <li class="categories-list-item">
           <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-            无人机工程 (6)
+            无人机工程 (5)
           </a>
         </li>
         
@@ -428,7 +439,7 @@ document.addEventListener("DOMContentLoaded", function() {
   </div>
   <div class="widget-body">
     <div class="tags-cloud">
-      <a href="/tags/AprilTag/" style="font-size: 15px;" class="tags-cloud-5">AprilTag</a> <a href="/tags/IntelRealsense/" style="font-size: 17.5px;" class="tags-cloud-8">IntelRealsense</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 15px;" class="tags-cloud-5">NUC13</a> <a href="/tags/RL/" style="font-size: 10px;" class="tags-cloud-0">RL</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12.5px;" class="tags-cloud-3">Ubuntu20-04</a> <a href="/tags/catkin/" style="font-size: 10px;" class="tags-cloud-0">catkin</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 15px;" class="tags-cloud-5">drone</a> <a href="/tags/ego-planner/" style="font-size: 12.5px;" class="tags-cloud-3">ego_planner</a> <a href="/tags/octomap/" style="font-size: 12.5px;" class="tags-cloud-3">octomap</a> <a href="/tags/offb-node/" style="font-size: 12.5px;" class="tags-cloud-3">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 12.5px;" class="tags-cloud-3">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/simulation/" style="font-size: 10px;" class="tags-cloud-0">simulation</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 12.5px;" class="tags-cloud-3">vins</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 10px;" class="tags-cloud-0">绕圈</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 15px;" class="tags-cloud-5">视觉定位</a>
+      <a href="/tags/AprilTag/" style="font-size: 12.5px;" class="tags-cloud-3">AprilTag</a> <a href="/tags/IntelRealsense/" style="font-size: 17.5px;" class="tags-cloud-8">IntelRealsense</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 15px;" class="tags-cloud-5">NUC13</a> <a href="/tags/RL/" style="font-size: 10px;" class="tags-cloud-0">RL</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12.5px;" class="tags-cloud-3">Ubuntu20-04</a> <a href="/tags/catkin/" style="font-size: 10px;" class="tags-cloud-0">catkin</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 15px;" class="tags-cloud-5">drone</a> <a href="/tags/ego-planner/" style="font-size: 12.5px;" class="tags-cloud-3">ego_planner</a> <a href="/tags/octomap/" style="font-size: 12.5px;" class="tags-cloud-3">octomap</a> <a href="/tags/offb-node/" style="font-size: 12.5px;" class="tags-cloud-3">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 12.5px;" class="tags-cloud-3">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/simulation/" style="font-size: 10px;" class="tags-cloud-0">simulation</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 12.5px;" class="tags-cloud-3">vins</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 10px;" class="tags-cloud-0">绕圈</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 12.5px;" class="tags-cloud-3">视觉定位</a>
     </div>
   </div>
 </section>
@@ -502,6 +513,27 @@ document.addEventListener("DOMContentLoaded", function() {
 
   
   
+
+
+
+ 
+<!-- mathjax -->
+
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [
+      ['$', '$']
+    ],
+    displayMath: [
+      ['$$', '$$']
+    ],
+    processEscapes: true
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
 
