@@ -48,7 +48,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(/images/cover/regent.jpg)"></div>
+    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_基础建图测试/cover-regent-d5bd3a07d694.jpg)"></div>
   
 
   <!-- navbar -->
@@ -241,9 +241,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>这里可以直接采用<code>/mavros/local_position/pose</code>的值作为转换值，但是为了节省带宽和cpu资源，MAVROS默认将<code>local_position/tf/send</code>设置为false，这样算出的位置信息只会以话题发布，而不会作为坐标变换广播。<br>而由于是使用<code>mavros_posix_sitl</code>启动的mavros，所以无法直接修改参数，而又由于mavros使用的是私有参数，故也无法添加全局参数，所以直接修改默认配置文件<code>/opt/ros/noetic/share/mavros/launch/px4_config.yaml</code>。找到其中<code>local_position</code>部分，首先将<code>frame_id</code>修改为<code>odom</code>，其次将<code>send</code>改为true。</p>
 <p>修改后启动仿真与octomap，查看tf树结构发现三者都连接在一棵树了，然后启动rviz发现能成功显示点云图与占据栅格图，且手动旋转无人机，占据栅格图能够正常运行</p>
 <h3 id="TF树"><a href="#TF树" class="headerlink" title="TF树"></a>TF树</h3><p>tf树，即transformer坐标系变换树，是ROS机器人的一个特点。在ROS机器人模型中存在大量的部件，称为link，每一个link都有自己的坐标系，称为frame。而tf树就是一个树状结构，维护坐标系之间的关系，从而实现系统中任意一个点在所有坐标系中的转换。而为了高效，ROS采用树的结构来表示这个坐标系转换。</p>
-<p>以本实验为例，存在map，odom，base link，camera link几个坐标系，分别为世界坐标系（以某个固定点为原点），无人机起始点为原点，飞控中心为原点，摄像机中心为原点</p>
-<img src="/2026/03/03/9_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/242b5ff9-7270-407a-9093-aa838c9380a1.png" class="">
-<p>odom坐标系也是一种世界坐标系，但是由无人机自己给出坐标，例如无人机绕了一个圈回到原点，那么在map下坐标回到原点，但是无人机可能估计自己没有回到原点。</p>
+<p>以本实验为例，存在map，odom，base link，camera link几个坐标系，分别为世界坐标系（以某个固定点为原点），无人机起始点为原点，飞控中心为原点，摄像机中心为原点<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/242b5ff9-7270-407a-9093-aa838c9380a1-86d3b9e70b49.png"><br>odom坐标系也是一种世界坐标系，但是由无人机自己给出坐标，例如无人机绕了一个圈回到原点，那么在map下坐标回到原点，但是无人机可能估计自己没有回到原点。</p>
 <p>而tf树中有两种frame之间的连接，分别为动态转换与静态转换。例如camera link到base link，两个部件之间是物理固定的，那么可以在launch文件中使用tf程序包来构建frame之间的连接；而baselink到odom之间则是动态的转换关系，需要不断发布消息。</p>
 <h4 id="TF程序包"><a href="#TF程序包" class="headerlink" title="TF程序包"></a>TF程序包</h4><p><code>rosrun tf tf_viewer</code>在命令行查看tf树结构<br><code>rosrun tf view_frames</code>生成一张当前tf树的pdf图像</p>
 <p>构建静态tf连接，在launch文件中</p>
@@ -294,7 +292,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
-      <div class="card-cover" background-image-lazy data-img="/images/cover/chen.png"></div>
+      <div class="card-cover" background-image-lazy data-img="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8_实机绕圈测试&amp;场地搭建/cover-chen-943ee6494ab4.png"></div>
     
     <div class="card-text">
       

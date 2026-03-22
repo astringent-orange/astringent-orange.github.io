@@ -48,7 +48,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(/images/cover/Hippolyta.jpg)"></div>
+    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/5_EGO-Planner-代码阅读-仿真器/cover-Hippolyta-27b556580874.jpg)"></div>
   
 
   <!-- navbar -->
@@ -222,9 +222,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>首先在仿真中运行，是通过planner下plan_manage的launch文件进行的</p>
-<img src="/2026/01/15/5_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E4%BB%BF%E7%9C%9F%E5%99%A8/ego%20%E4%BB%BF%E7%9C%9F%E5%90%AF%E5%8A%A8%E4%BD%8D%E7%BD%AE.png" class="">
-<p>分析该launch文件的结构</p>
+        <p>首先在仿真中运行，是通过planner下plan_manage的launch文件进行的<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/5_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E4%BB%BF%E7%9C%9F%E5%99%A8/ego-%E4%BB%BF%E7%9C%9F%E5%90%AF%E5%8A%A8%E4%BD%8D%E7%BD%AE-71d5c64fd840.png"><br>分析该launch文件的结构</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1. 设定地图大小</span><br><span class="line">2. 设置里程计话题</span><br><span class="line">3. 启动规划器，并设置参数</span><br><span class="line">   <span class="tag">&lt;<span class="name">include</span> <span class="attr">file</span>=<span class="string">&quot;$(find ego_planner)/launch/advanced_param.xml&quot;</span>&gt;</span></span><br><span class="line">4. 启动轨迹服务器</span><br><span class="line">     <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;ego_planner&quot;</span> <span class="attr">name</span>=<span class="string">&quot;traj_server&quot;</span> <span class="attr">type</span>=<span class="string">&quot;traj_server&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;waypoint_generator&quot;</span> <span class="attr">name</span>=<span class="string">&quot;waypoint_generator&quot;</span> <span class="attr">type</span>=<span class="string">&quot;waypoint_generator&quot;</span> <span class="attr">output</span>=<span class="string">&quot;screen&quot;</span>&gt;</span></span><br><span class="line">设置目标点</span><br><span class="line">5. 启动仿真器</span><br><span class="line">     <span class="tag">&lt;<span class="name">include</span> <span class="attr">file</span>=<span class="string">&quot;$(find ego_planner)/launch/simulator.xml&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>xml文件的意义</strong><br>这里有一个问题，为什么要写为<code>simulator.xml</code>而不是<code>simulator.launch</code>？本质上launch文件就是xml文件，只要内容合法其运行效果是一致的。写成两种形式只是为了人为区分而形成的工程约定，即.launch文件是直接给用户运行的，而.xml文件被include的模块化启动文件</p>
@@ -268,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
-      <div class="card-cover" background-image-lazy data-img="/images/cover/zangief.jpg"></div>
+      <div class="card-cover" background-image-lazy data-img="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/6_搭载NUC实机起飞测试/cover-zangief-08a6943d19a7.jpg"></div>
     
     <div class="card-text">
       

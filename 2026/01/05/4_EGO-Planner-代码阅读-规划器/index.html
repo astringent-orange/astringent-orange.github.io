@@ -48,7 +48,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(/images/cover/YeShunguang.png)"></div>
+    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/4_EGO-Planner-代码阅读-规划器/cover-YeShunguang-125fd6adece5.png)"></div>
   
 
   <!-- navbar -->
@@ -224,8 +224,7 @@ document.addEventListener("DOMContentLoaded", function() {
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
         <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>参考<a target="_blank" rel="noopener" href="https://github.com/Littlestarluo/Notebooks/blob/main/EGO-planner%E5%8F%8A%E5%85%B6v2%E7%9A%84%E5%AD%A6%E4%B9%A0%E5%8F%8A%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB.md">Notebooks&#x2F;EGO-planner及其v2的学习及代码阅读.md at main · Littlestarluo&#x2F;Notebooks</a><br>整个EGO-Planner的代码内容并不小，想要读懂所有部分耗时很多，在阅读时一定要抓住一个主线，了解到每一部分是在做什么</p>
 <hr>
-<h3 id="文件结构"><a href="#文件结构" class="headerlink" title="文件结构"></a>文件结构</h3><img src="/2026/01/05/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego%20%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84.png" class="">
-<p>planner为规划器相关功能包，而uav_simulator为在模拟时的仿真环境相关功能包。planner下可分为以下部分</p>
+<h3 id="文件结构"><a href="#文件结构" class="headerlink" title="文件结构"></a>文件结构</h3><p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego-%E4%BB%A3%E7%A0%81%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84-28bb561e5429.png"><br>planner为规划器相关功能包，而uav_simulator为在模拟时的仿真环境相关功能包。planner下可分为以下部分</p>
 <ul>
 <li>bspline为优化函数相关</li>
 <li>path_searching为A* 相关</li>
@@ -235,8 +234,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul>
 <p>使用plan manage的launch文件中的run in sim启动文件，会调用advanced param.xml文件中的高级参数设置</p>
 <hr>
-<h3 id="建图-plan-env"><a href="#建图-plan-env" class="headerlink" title="建图 plan_env"></a>建图 plan_env</h3><img src="/2026/01/05/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego-planner%E4%BB%A3%E7%A0%81plan_env%E7%BB%93%E6%9E%84.png" class="">
-<p>grid_map.cpp完成了建图功能，程序主体就是地图初始化函数<code>void GridMap::initMap(ros::NodeHandle &amp;nh)</code>，程序的其余部分就是initMap中各个发布器、订阅器的回调函数，最后是这些回调函数中使用的功能函数，形成非常清晰的三级结构。</p>
+<h3 id="建图-plan-env"><a href="#建图-plan-env" class="headerlink" title="建图 plan_env"></a>建图 plan_env</h3><p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego-planner%E4%BB%A3%E7%A0%81plan_env%E7%BB%93%E6%9E%84-66a0410fa23f.png"><br>grid_map.cpp完成了建图功能，程序主体就是地图初始化函数<code>void GridMap::initMap(ros::NodeHandle &amp;nh)</code>，程序的其余部分就是initMap中各个发布器、订阅器的回调函数，最后是这些回调函数中使用的功能函数，形成非常清晰的三级结构。</p>
 <blockquote>
 <p>ROS工程的文件结构有许多使用技巧，可以从此一窥</p>
 </blockquote>
@@ -267,9 +265,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </blockquote>
 <p>EGO为了维持一个动态局部地图以及高速的查询，没有使用传统的<code>octomap</code>等建图工具，而是自己写了一个建图功能包</p>
 <hr>
-<h3 id="plan-manage"><a href="#plan-manage" class="headerlink" title="plan_manage"></a>plan_manage</h3><p>run in sim.launch逻辑，运行 advanced param.xml（只要看开头与结尾是launch标签，那么xml文件就可以作为launch文件运行；这样写是为了层级化和结构化），运行ego planner节点，运行simulator仿真器。<br>——&gt;关键在于第二步ego planner节点。查看cmake文件可以知道，ego planner节点是由三个文件拼接而成</p>
-<img src="/2026/01/05/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego%20planner%20node%E6%8B%BC%E6%8E%A5.png" class="">
-<p>其中，ego planner node cpp中包含了main函数，为整体入口</p>
+<h3 id="plan-manage"><a href="#plan-manage" class="headerlink" title="plan_manage"></a>plan_manage</h3><p>run in sim.launch逻辑，运行 advanced param.xml（只要看开头与结尾是launch标签，那么xml文件就可以作为launch文件运行；这样写是为了层级化和结构化），运行ego planner节点，运行simulator仿真器。<br>——&gt;关键在于第二步ego planner节点。查看cmake文件可以知道，ego planner节点是由三个文件拼接而成<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/4_EGO-Planner-%E4%BB%A3%E7%A0%81%E9%98%85%E8%AF%BB-%E8%A7%84%E5%88%92%E5%99%A8/ego-planner-node%E6%8B%BC%E6%8E%A5-11a38896f53a.png"><br>其中，ego planner node cpp中包含了main函数，为整体入口</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> ego_planner;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;ego_planner_node&quot;</span>);</span><br><span class="line">  <span class="function">ros::NodeHandle <span class="title">nh</span><span class="params">(<span class="string">&quot;~&quot;</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">  EGOReplanFSM rebo_replan;</span><br><span class="line">  </span><br><span class="line">  rebo_replan.<span class="built_in">init</span>(nh);</span><br><span class="line"></span><br><span class="line">  ros::<span class="built_in">Duration</span>(<span class="number">1.0</span>).<span class="built_in">sleep</span>();</span><br><span class="line">  ros::<span class="built_in">spin</span>();</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在main中，首先初始化了一个节点，然后声明了一个<code>EGOReplanFSM</code>类实体（FSM表示finite state machine有限状态机），然后运行其初始化函数。发现该类是一个在自定义库文件<code>ego_replan_fsm.h</code>中的类，但是其<code>init</code>函数则是在<code>ego_replan_fsm.cpp</code>中定义，于是查看<code>init</code>的内容。<br>发现首先是设定了句柄的参数，其次初始化了一些模组，最后设置了回调函数，于是在去寻找设定的模组与回调，首先是模组。<br>其中<code>visualization_</code>来自tra_utils包，执行可视化操作，而<code>planner_manager_</code>自然来自planner_manager.cpp，句柄nh传递到两个模块中，同时<code>visualization_</code>也和句柄传递到<code>planner_manager_</code>内，再加上状态机本身，可以看到携带句柄的节点有三个了。</p>
 <p>其实<code>traj_server</code>是一个单独的.cpp，它的内部也有一个主函数，负责订阅轨迹和时间信息，再发布控制指令。因此，可以说实质上规划功能是两个部分组成的：状态机和轨迹服务器。</p>

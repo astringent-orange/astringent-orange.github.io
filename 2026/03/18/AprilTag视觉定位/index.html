@@ -48,7 +48,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(/images/banner.png)"></div>
+    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assest/banner.png)"></div>
   
 
   <!-- navbar -->
@@ -222,10 +222,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在阅读无人机跟踪论文<a target="_blank" rel="noopener" href="http://arxiv.org/abs/2011.03968">Fast-Tracker</a>时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a>进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。</p>
-<img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/fast-tracker01.png" class="">
-<p>补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。</p>
-<p>关于ApirlTag，其是由密歇根大学的Edwin Olson于2011年发表的，虽然看起来像是二维码，但是于日常中常见的二维码有许多不同。即AprilTag的核心目的不是为了存储大量数据，而是为了<strong>在极端的环境（光照不均、距离很远、角度倾斜、部分被遮挡）下，依然能被摄像头瞬间认出来，并精确计算出它在三维空间中的位置和姿态（即 6个自由度：前后、左右、上下，以及俯仰、偏航、滚转）。</strong> 所以AprilTag看起来比一般的二维码简单许多。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在阅读无人机跟踪论文<a target="_blank" rel="noopener" href="http://arxiv.org/abs/2011.03968">Fast-Tracker</a>时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a>进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/fast-tracker01-93191883c8bc.png"><br>补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/AprilTag01-38e46038e887.png"><br>关于ApirlTag，其是由密歇根大学的Edwin Olson于2011年发表的，虽然看起来像是二维码，但是于日常中常见的二维码有许多不同。即AprilTag的核心目的不是为了存储大量数据，而是为了<strong>在极端的环境（光照不均、距离很远、角度倾斜、部分被遮挡）下，依然能被摄像头瞬间认出来，并精确计算出它在三维空间中的位置和姿态（即 6个自由度：前后、左右、上下，以及俯仰、偏航、滚转）。</strong> 所以AprilTag看起来比一般的二维码简单许多。</p>
 <img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/AprilTag01.png" class="">
 <p><em>注意AprilTag不仅是一种标签生成的方式，也是一种标签检测系统</em></p>
 <h2 id="算法框架"><a href="#算法框架" class="headerlink" title="算法框架"></a>算法框架</h2><p>对于每一张输入的灰度图，都将进行以下操作</p>
@@ -537,7 +534,7 @@ $$
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
-      <div class="card-cover" background-image-lazy data-img="/images/cover/regent.jpg"></div>
+      <div class="card-cover" background-image-lazy data-img="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_基础建图测试/cover-regent-d5bd3a07d694.jpg"></div>
     
     <div class="card-text">
       
