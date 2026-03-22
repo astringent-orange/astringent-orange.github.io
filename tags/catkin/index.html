@@ -144,19 +144,43 @@ document.addEventListener("DOMContentLoaded", function() {
   const toggle = dropdown.querySelector(".dropdown-toggle");
   const arrow = dropdown.querySelector(".arrow");
 
+  function closeMenu() {
+    menu.style.display = "none";
+    arrow.style.transform = "rotate(0deg)";
+  }
+
+  function openMenu() {
+    menu.style.display = "block";
+    arrow.style.transform = "rotate(180deg)";
+  }
+
   toggle.addEventListener("click", function(e) {
     e.preventDefault();
+    e.stopPropagation();
 
     const opened = menu.style.display === "block";
 
     if (opened) {
-      menu.style.display = "none";
-      arrow.style.transform = "rotate(0deg)";
+      closeMenu();
     } else {
-      menu.style.display = "block";
-      arrow.style.transform = "rotate(180deg)";
+      openMenu();
     }
+  });
 
+  document.addEventListener("click", function(e) {
+    if (!dropdown.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  menu.addEventListener("click", function(e) {
+    e.stopPropagation();
+  });
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+      closeMenu();
+    }
   });
 
 });
@@ -179,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block layout-padding">
         <h1 class="title-wrap">catkin</h1>
-        <h2 class="title-sub-wrap">当前标签下共有2篇文章</h2>
+        <h2 class="title-sub-wrap">当前标签下共有1篇文章</h2>
       </div>
     </div>
   
@@ -200,41 +224,6 @@ document.addEventListener("DOMContentLoaded", function() {
       <div class="article-item layout-padding">
         <article
           class="card-container article-card content-padding--large soft-size--large soft-style--box"
-          data-url="/2026/01/27/cmake-&-catkin-make-&-build/"
-          
-        >
-          
-
-          <div class="card-text">
-            
-              <a href="/2026/01/27/cmake-&-catkin-make-&-build/" itemprop="url">
-                <h2 class="card-text--title">cmake &amp; catkin make &amp; build</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2026-01-26T16:00:00.000Z" itemprop="datePublished">2026-01-27</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/catkin/">🏷️ catkin</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box"
           data-url="/2026/01/27/cmake-catkin-make-build/"
           
         >
@@ -243,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function() {
           <div class="card-text">
             
               <a href="/2026/01/27/cmake-catkin-make-build/" itemprop="url">
-                <h2 class="card-text--title">cmake &amp; catkin make &amp; build</h2>
+                <h2 class="card-text--title">cmake-catkin make-build</h2>
               </a>
             
             <div class="card-text--row">

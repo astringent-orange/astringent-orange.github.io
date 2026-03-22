@@ -144,19 +144,43 @@ document.addEventListener("DOMContentLoaded", function() {
   const toggle = dropdown.querySelector(".dropdown-toggle");
   const arrow = dropdown.querySelector(".arrow");
 
+  function closeMenu() {
+    menu.style.display = "none";
+    arrow.style.transform = "rotate(0deg)";
+  }
+
+  function openMenu() {
+    menu.style.display = "block";
+    arrow.style.transform = "rotate(180deg)";
+  }
+
   toggle.addEventListener("click", function(e) {
     e.preventDefault();
+    e.stopPropagation();
 
     const opened = menu.style.display === "block";
 
     if (opened) {
-      menu.style.display = "none";
-      arrow.style.transform = "rotate(0deg)";
+      closeMenu();
     } else {
-      menu.style.display = "block";
-      arrow.style.transform = "rotate(180deg)";
+      openMenu();
     }
+  });
 
+  document.addEventListener("click", function(e) {
+    if (!dropdown.contains(e.target)) {
+      closeMenu();
+    }
+  });
+
+  menu.addEventListener("click", function(e) {
+    e.stopPropagation();
+  });
+
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+      closeMenu();
+    }
   });
 
 });
