@@ -824,7 +824,7 @@ html.show-mobile-nav .navbar-list {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
   }
   .article-card .card-cover {
-    opacity: 0.82;
+    opacity: 0.88;
     transition: opacity 0.3s ease;
   }
   .article-card:hover {
