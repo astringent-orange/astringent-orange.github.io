@@ -24,7 +24,7 @@
 
   
 
-  <title>7_小型仿真强化学习实验 | Mian的笔记</title>
+  <title>相机使用 &amp; rosbag | Mian的笔记</title>
 
   
 
@@ -48,7 +48,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/7_小型仿真强化学习实验/cover-laevatin-f97c8174be05.png)"></div>
+    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png)"></div>
   
 
   <!-- navbar -->
@@ -181,24 +181,26 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">7_小型仿真强化学习实验</h1>
+          <h1 class="title-wrap">相机使用 &amp; rosbag</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2026-01-27T16:00:00.000Z" itemprop="datePublished">2026-01-28</time>
+            <time  class="article-date" datetime="2025-12-21T16:00:00.000Z" itemprop="datePublished">2025-12-22</time>
           </h2>
           
           
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
     
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/simulation/">🏷️ simulation</a></li>
+    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
   
-    <li><a href="/tags/RL/">🏷️ RL</a></li>
+    <li><a href="/tags/IntelRealsense/">🏷️ IntelRealsense</a></li>
+  
+    <li><a href="/tags/rosbag/">🏷️ rosbag</a></li>
   
 </ul>
         </div>
@@ -222,19 +224,29 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>尝试完成一个微型实验，在Ubuntu 20.04 + ROS noetic的环境中，使用PX4 firmware + mavros + gazebo，GPU nvidia rtx 2060 6G + CPU intel i7-10875H实现一个RL的过程。输入为64×64深度图像，输出为水平速度（高度固定）+ 旋转速度。模型选择基本的CNN处理图像后获得特征向量，与无人机状态向量进行拼接，经过MLP后输出。</p>
-<h1 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h1><p>构建工作空间，并安装PX4、配置gazebo模型、运行mavros通信。</p>
-<h2 id="source覆盖问题"><a href="#source覆盖问题" class="headerlink" title="source覆盖问题"></a>source覆盖问题</h2><p>以前下载过PX4 firmware且配置过bashrc文件，这次尝试运行时发现，如果<code>source ./devel/setup.bash</code>之后则会找不到px4，再去<code>source ~/.bashrc</code>则会找不到功能包。<br>原因是两次source的内容互相覆盖了。解决方法一是修改<code>./devel/setup.bash</code>的内容，在其中加入px4的路径（不推荐修改bashrc文件）；解决方法二，单独为该项目安装一个px4固件。–&gt;相当于增加了一个controller文件夹</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> catkin_ws</span><br><span class="line">git <span class="built_in">clone</span> --recursive https://github.com/PX4/PX4-Autopilot.git -b v1.13.3</span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> PX4-Autopilot</span><br><span class="line"><span class="comment"># 安装依赖 (如果你之前装过可能不需要，但为了保险跑一下)  </span></span><br><span class="line">bash ./Tools/setup/ubuntu.sh </span><br><span class="line"><span class="comment"># 编译仿真环境 (这一步会生成 Gazebo 插件) </span></span><br><span class="line">DONT_RUN=1 make px4_sitl_default gazebo</span><br></pre></td></tr></table></figure>
-<p>然后需要构建一个完整的启动脚本</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/catkin_ws</span><br><span class="line">gedit setup_env.bash</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 1. 获取当前脚本所在的目录 </span></span><br><span class="line"><span class="comment"># 这一步保证了不管你把项目拷到哪，路径都是对的</span></span><br><span class="line">PROJECT_ROOT=<span class="string">&quot;<span class="subst">$( cd <span class="string">&quot;<span class="subst">$( dirname <span class="string">&quot;<span class="variable">$&#123;BASH_SOURCE[0]&#125;</span>&quot;</span> )</span>&quot;</span> &amp;&amp; pwd )</span>&quot;</span></span><br><span class="line">PX4_DIR=<span class="string">&quot;<span class="variable">$PROJECT_ROOT</span>/PX4-Autopilot&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 2. Source Catkin 工作空间</span></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$PROJECT_ROOT</span>/devel/setup.bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 3. 配置 PX4 环境</span></span><br><span class="line"><span class="comment"># 加载 PX4 的 gazebo 设置</span></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$PX4_DIR</span>/Tools/setup_gazebo.bash <span class="variable">$PX4_DIR</span> <span class="variable">$PX4_DIR</span>/build/px4_sitl_default</span><br><span class="line"></span><br><span class="line"><span class="comment"># 4. 强制路径融合 (解决 ROS 和 PX4 打架的问题)</span></span><br><span class="line"><span class="comment"># 我们把 本地PX4路径 和 本地src路径 显式地加进去</span></span><br><span class="line"><span class="built_in">export</span> ROS_PACKAGE_PATH=<span class="variable">$ROS_PACKAGE_PATH</span>:<span class="variable">$PX4_DIR</span>:<span class="variable">$PX4_DIR</span>/Tools/sitl_gazebo:<span class="variable">$PROJECT_ROOT</span>/src</span><br><span class="line"></span><br><span class="line"><span class="comment"># 5. 设置 GAZEBO 模型路径 (防止找不到模型)</span></span><br><span class="line"><span class="built_in">export</span> GAZEBO_MODEL_PATH=<span class="variable">$GAZEBO_MODEL_PATH</span>:<span class="variable">$PX4_DIR</span>/Tools/sitl_gazebo/models</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;=================================================&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;✅ Project Environment Loaded!&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   - Workspace: <span class="variable">$PROJECT_ROOT</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;   - PX4 Path:  <span class="variable">$PX4_DIR</span>&quot;</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;=================================================&quot;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="补充内容"><a href="#补充内容" class="headerlink" title="补充内容"></a>补充内容</h2><p>事后发现这样每次都要下载一个PX4源码，虽然对于打包程序来说很好，但是对于自己本地使用还是不方便。于是提出来了方法三。<br>发现之前的问题是source bashrc和&#x2F;devel&#x2F;setup会分别覆盖对方的结果，更具体而言，是source &#x2F;devel&#x2F;setup和PX4&#x2F;Tools&#x2F;setup_gazebo.bash时，因为两者不知道对方的层级，所以会清空对方的<code>$ROS_PACKAGE_PATH</code>，然后添加自己的导致的路径导致的。而PX4的路径其实并不是在bash文件中添加的，而是export添加的，所以可以写一个如下的启动脚本set_env.sh，每次source该脚本即可。注意一定是source，而不是sh执行。因为source的作用是将脚本内容复制到当前终端中执行，而sh或者bash是另外开一个终端来执行。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载ROS基础环境</span></span><br><span class="line"><span class="built_in">source</span> /opt/ros/noetic/setup.bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># PX4 Autopilot路径</span></span><br><span class="line"><span class="built_in">export</span> PX4_ROOT_DIR=~/UAV/PX4-Autopilot</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载PX4环境</span></span><br><span class="line"><span class="built_in">source</span> <span class="variable">$PX4_ROOT_DIR</span>/Tools/setup_gazebo.bash <span class="variable">$PX4_ROOT_DIR</span> <span class="variable">$PX4_ROOT_DIR</span>/build/px4_sitl_default</span><br><span class="line"></span><br><span class="line"><span class="comment"># 加载当前工作空间的环境</span></span><br><span class="line"><span class="built_in">source</span> ./devel/setup.bash</span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> ROS_PACKAGE_PATH=<span class="variable">$ROS_PACKAGE_PATH</span>:<span class="variable">$PX4_ROOT_DIR</span></span><br><span class="line"><span class="built_in">export</span> ROS_PACKAGE_PATH=<span class="variable">$ROS_PACKAGE_PATH</span>:<span class="variable">$PX4_ROOT_DIR</span>/Tools/sitl_gazebo</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> -e <span class="string">&quot;\e[1;32m[INFO] Environment setup complete.\e[0m&quot;</span></span><br></pre></td></tr></table></figure>
-<p>分析该脚本，注意到是最后才去exportPX4的位置，这样就可以避免被刷掉。</p>
-<h1 id="基础通信与控制"><a href="#基础通信与控制" class="headerlink" title="基础通信与控制"></a>基础通信与控制</h1><p>image_transport<br>cv_bridge</p>
+        <p>ROS1使用IntelRealsense D435相机方法</p>
+<h2 id="SDK启动"><a href="#SDK启动" class="headerlink" title="SDK启动"></a>SDK启动</h2><p>通过realsense自带的工具启动相机。下载教程<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_51612528/article/details/140945640">https://blog.csdn.net/weixin_51612528/article/details/140945640</a><br>启动GUI界面<code>realsense-viewer</code>可以进行录制与查看录制结果。</p>
+<h2 id="录制视频"><a href="#录制视频" class="headerlink" title="录制视频"></a>录制视频</h2><p>注意相机录制的文件格式是<code>.bag</code>，包含了除相机图像以外其他传感器数据，且所有数据都是原始格式，所以比进行了压缩的mp4文件大很多。但是直接存储原始格式对于cpu的运载压力，相较于压缩为mp4格式更小，所以推荐是录制为bag文件，等结束飞行后再转换为mp4文件。bag文件只能用<code>realsense-viewer</code>进行播放。</p>
+<blockquote>
+<p>注意，在飞行&#x2F;录制结束后不能马上断电，因为bag文件的存储需要一段时间</p>
+</blockquote>
+<p>ros转bag脚本<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39779233/article/details/127389801">【ROS学习】 rosbag 转化为 mp4 格式视频_.bag文件怎么转成mp4-CSDN博客</a></p>
+<h2 id="命令行模式"><a href="#命令行模式" class="headerlink" title="命令行模式"></a>命令行模式</h2><p><strong>基本使用方法</strong><br><code>rs-record -f &lt;video_name&gt;.bag</code>持续录制至<code>ctrl+c</code>结束<br><code>rs-record -d &lt;time&gt; -f &lt;video_name&gt;.bag</code>录制指定时长</p>
+<p><strong>进阶使用方法</strong><br>要完成关闭结构光、只录制双目文件等录制操作，需要使用python运行脚本</p>
+<h2 id="ROS启动"><a href="#ROS启动" class="headerlink" title="ROS启动"></a>ROS启动</h2><p>启动相机<br>使用<code>roslaunch realsense2_camera rs_camera.launch</code>启动相机</p>
+<p>在电脑上查看<br>使用<code>rqt_image_view</code>可以查看图像<br>如果没有，则可以先下载<code>ros-noetic-rqt-image-view</code></p>
+<p>如果想在另一台电脑查看<br>则首先在NUC终端中<code>export ROS_MASTER_URI=http://本机ip</code>，<code>export ROS_IP=本机ip</code>（分别是声明master节点在哪里，以及自己是谁）<br>然后在另一台安装了rqt-image-view的电脑中<code>export ROS_MASTER_URI=http://master ip</code>，<code>export ROS_IP=本机ip</code>，<code>rqt-image-view</code></p>
+<h2 id="录制视频-1"><a href="#录制视频-1" class="headerlink" title="录制视频"></a>录制视频</h2><blockquote>
+<p>首先，虽然使用ros进行录制和使用上面SDK进行录制得到的数据格式，都是<code>bag</code>，但是两者是有更细微的差距的，还是建议分开对待。</p>
+</blockquote>
+<p>使用<code>rosbag</code>命令来进行录制与回放</p>
+<p><strong>基本操作</strong><br><code>rosbag record &lt;topic_name&gt;</code>录制指定的话题，生成文件名为时间戳<br><code>rosbag record -a</code>代表录制所有话题<br><code>rosbag record -O &lt;bag_name&gt;</code>指定输出的文件名（-O或者-o都可以）</p>
+<p><code>rosbag info &lt;bag_name&gt;</code>输出bag信息</p>
+<p><code>rosbag play &lt;bag_name&gt;</code>播放bag</p>
+<p><code>&lt;node pkg=&quot;rosbag&quot; type=&quot;record&quot; name=&quot;bag_record&quot; args=&quot;/topic1 /topic2&quot;/&gt; </code>在launch文件中运行</p>
+<p><strong>运行流程</strong><br>首先需要启动roscore与相机（启动相机的roslaunch文件也会自动启动roscore），其次再启动录制。</p>
+<p><strong>扩展</strong><br>其他类型的数据，可以用<code>rqt_plot</code>或者<code>plotjuggler</code>等gui来观察</p>
+<p><strong>参考文档</strong><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/151444739">ROS 机器人技术 - rosbag 详细使用教程！ - 知乎</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42905141/article/details/100057323">ROS——一文读懂：rosbag-CSDN博客</a><br><a target="_blank" rel="noopener" href="https://wiki.ros.org/rosbag/Commandline">rosbag&#x2F;Commandline - ROS Wiki</a></p>
 
       </section>
 
@@ -245,12 +257,10 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
-      <div class="card-cover" background-image-lazy data-img="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8_实机绕圈测试-场地搭建/cover-chen-943ee6494ab4.png"></div>
-    
     <div class="card-text">
       
-        <a href="/2026/02/04/8_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95-%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">8_实机绕圈测试&amp;场地搭建</h2>
+        <a href="/2025/12/22/%E7%9B%B8%E6%9C%BA%E4%BD%BF%E7%94%A8-&-rosbag/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">相机使用 &amp; rosbag</h2>
         </a>
       
       <div class="card-text--row">Newer</div>
@@ -258,20 +268,6 @@ document.addEventListener("DOMContentLoaded", function() {
   </article>
 </div>
           
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    <div class="card-text">
-      
-        <a href="/2026/01/27/cmake-&-catkin-make-&-build/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">cmake &amp; catkin make &amp; build</h2>
-        </a>
-      
-      <div class="card-text--row">Older</div>
-    </div>
-  </article>
-</div>
           
         </nav>
       
@@ -334,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <span>TOC</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#source%E8%A6%86%E7%9B%96%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">source覆盖问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%A1%A5%E5%85%85%E5%86%85%E5%AE%B9"><span class="toc-number">2.</span> <span class="toc-text">补充内容</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SDK%E5%90%AF%E5%8A%A8"><span class="toc-number">1.</span> <span class="toc-text">SDK启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%95%E5%88%B6%E8%A7%86%E9%A2%91"><span class="toc-number">2.</span> <span class="toc-text">录制视频</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">命令行模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ROS%E5%90%AF%E5%8A%A8"><span class="toc-number">4.</span> <span class="toc-text">ROS启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BD%95%E5%88%B6%E8%A7%86%E9%A2%91-1"><span class="toc-number">5.</span> <span class="toc-text">录制视频</span></a></li></ol>
   </div>
 </section>
 

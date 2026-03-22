@@ -222,9 +222,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在阅读无人机跟踪论文<a target="_blank" rel="noopener" href="http://arxiv.org/abs/2011.03968">Fast-Tracker</a>时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a>进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/fast-tracker01-93191883c8bc.png"><br>补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/AprilTag01-38e46038e887.png"><br>关于ApirlTag，其是由密歇根大学的Edwin Olson于2011年发表的，虽然看起来像是二维码，但是于日常中常见的二维码有许多不同。即AprilTag的核心目的不是为了存储大量数据，而是为了<strong>在极端的环境（光照不均、距离很远、角度倾斜、部分被遮挡）下，依然能被摄像头瞬间认出来，并精确计算出它在三维空间中的位置和姿态（即 6个自由度：前后、左右、上下，以及俯仰、偏航、滚转）。</strong> 所以AprilTag看起来比一般的二维码简单许多。</p>
-<img src="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/AprilTag01.png" class="">
-<p><em>注意AprilTag不仅是一种标签生成的方式，也是一种标签检测系统</em></p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在阅读无人机跟踪论文<a target="_blank" rel="noopener" href="http://arxiv.org/abs/2011.03968">Fast-Tracker</a>时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a>进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/fast-tracker01-93191883c8bc.png"><br>补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/AprilTag01-38e46038e887.png"><br>关于ApirlTag，其是由密歇根大学的Edwin Olson于2011年发表的，虽然看起来像是二维码，但是于日常中常见的二维码有许多不同。即AprilTag的核心目的不是为了存储大量数据，而是为了<strong>在极端的环境（光照不均、距离很远、角度倾斜、部分被遮挡）下，依然能被摄像头瞬间认出来，并精确计算出它在三维空间中的位置和姿态（即 6个自由度：前后、左右、上下，以及俯仰、偏航、滚转）。</strong> 所以AprilTag看起来比一般的二维码简单许多。<br><em>注意AprilTag不仅是一种标签生成的方式，也是一种标签检测系统</em></p>
 <h2 id="算法框架"><a href="#算法框架" class="headerlink" title="算法框架"></a>算法框架</h2><p>对于每一张输入的灰度图，都将进行以下操作</p>
 <h3 id="边缘检测"><a href="#边缘检测" class="headerlink" title="边缘检测"></a>边缘检测</h3><ol>
 <li>计算像素“梯度”：计算相邻点像素值变化的值与方向</li>
@@ -581,7 +579,7 @@ $$
         <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
 </svg>
-        <span>15</span>
+        <span>19</span>
       </div>
       <div class="count-box--item">
         <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -627,13 +625,13 @@ $$
       
         <li class="categories-list-item">
           <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-            无人机实验 (10)
+            无人机实验 (12)
           </a>
         </li>
         
         <li class="categories-list-item">
           <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-            无人机工程 (5)
+            无人机工程 (7)
           </a>
         </li>
         
@@ -650,7 +648,7 @@ $$
   </div>
   <div class="widget-body">
     <div class="tags-cloud">
-      <a href="/tags/AprilTag/" style="font-size: 12.5px;" class="tags-cloud-3">AprilTag</a> <a href="/tags/IntelRealsense/" style="font-size: 17.5px;" class="tags-cloud-8">IntelRealsense</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 15px;" class="tags-cloud-5">NUC13</a> <a href="/tags/RL/" style="font-size: 10px;" class="tags-cloud-0">RL</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12.5px;" class="tags-cloud-3">Ubuntu20-04</a> <a href="/tags/catkin/" style="font-size: 10px;" class="tags-cloud-0">catkin</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 15px;" class="tags-cloud-5">drone</a> <a href="/tags/ego-planner/" style="font-size: 12.5px;" class="tags-cloud-3">ego_planner</a> <a href="/tags/octomap/" style="font-size: 12.5px;" class="tags-cloud-3">octomap</a> <a href="/tags/offb-node/" style="font-size: 12.5px;" class="tags-cloud-3">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 12.5px;" class="tags-cloud-3">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/simulation/" style="font-size: 10px;" class="tags-cloud-0">simulation</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 12.5px;" class="tags-cloud-3">vins</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 10px;" class="tags-cloud-0">绕圈</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 12.5px;" class="tags-cloud-3">视觉定位</a>
+      <a href="/tags/AprilTag/" style="font-size: 12px;" class="tags-cloud-2">AprilTag</a> <a href="/tags/IntelRealsense/" style="font-size: 18px;" class="tags-cloud-8">IntelRealsense</a> <a href="/tags/MAVROS/" style="font-size: 12px;" class="tags-cloud-2">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 16px;" class="tags-cloud-6">NUC13</a> <a href="/tags/RL/" style="font-size: 10px;" class="tags-cloud-0">RL</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12px;" class="tags-cloud-2">Ubuntu20-04</a> <a href="/tags/catkin/" style="font-size: 12px;" class="tags-cloud-2">catkin</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 16px;" class="tags-cloud-6">drone</a> <a href="/tags/ego-planner/" style="font-size: 12px;" class="tags-cloud-2">ego_planner</a> <a href="/tags/octomap/" style="font-size: 12px;" class="tags-cloud-2">octomap</a> <a href="/tags/offb-node/" style="font-size: 14px;" class="tags-cloud-4">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 16px;" class="tags-cloud-6">px4</a> <a href="/tags/rosbag/" style="font-size: 12px;" class="tags-cloud-2">rosbag</a> <a href="/tags/simulation/" style="font-size: 10px;" class="tags-cloud-0">simulation</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 14px;" class="tags-cloud-4">vins</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 12px;" class="tags-cloud-2">绕圈</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 12px;" class="tags-cloud-2">视觉定位</a>
     </div>
   </div>
 </section>
