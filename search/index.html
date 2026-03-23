@@ -449,7 +449,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <p class="search-page-subtitle">&#22312;&#36825;&#37324;&#27983;&#35272;&#20840;&#37096;&#25628;&#32034;&#32467;&#26524;&#12290;</p>
       </div>
       <form class="search-page-form" role="search">
-        <input class="search-page-input" type="search" placeholder="搜索文章..." autocomplete="off" />
+        <input class="search-page-input" type="search" placeholder="&#25628;&#32034;&#25991;&#31456;..." autocomplete="off" />
       </form>
     </div>
 
@@ -458,6 +458,7 @@ document.addEventListener("DOMContentLoaded", function() {
     </div>
 
     <div class="search-page-results content-container article-list"></div>
+    <nav class="page-container search-page-pagination" hidden></nav>
   </section>
 </div>
 
@@ -470,9 +471,11 @@ document.addEventListener("DOMContentLoaded", function() {
   const input = container.querySelector(".search-page-input");
   const summaryText = container.querySelector(".search-page-summary-text");
   const results = container.querySelector(".search-page-results");
+  const pagination = container.querySelector(".search-page-pagination");
   const searchIndexPath = "/search.json";
   const searchBasePath = "/";
   const params = new URLSearchParams(window.location.search);
+  const pageSize = 10;
   let searchIndex = [];
 
   function escapeHTML(value) {
@@ -533,6 +536,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   function renderEmptyState(message) {
+    pagination.hidden = true;
     results.innerHTML = [
       '<div class="search-page-empty layout-margin content-padding--large soft-size--large soft-style--box">',
       "<p>" + escapeHTML(message) + "</p>",
@@ -540,7 +544,54 @@ document.addEventListener("DOMContentLoaded", function() {
     ].join("");
   }
 
-  function renderResults(items, keyword) {
+  function renderPagination(totalItems, currentPage, keyword) {
+    const totalPages = Math.ceil(totalItems / pageSize);
+
+    if (totalPages <= 1) {
+      pagination.hidden = true;
+      pagination.innerHTML = "";
+      return;
+    }
+
+    const links = [];
+    const addLink = function(label, pageNumber, className) {
+      const url = "?q=" + encodeURIComponent(keyword) + "&page=" + pageNumber;
+      const classes = className ? " " + className : "";
+      links.push('<a class="' + classes.trim() + '" href="' + url + '" data-page="' + pageNumber + '">' + label + "</a>");
+    };
+
+    if (currentPage > 1) {
+      addLink("\u4e0a\u4e00\u9875", currentPage - 1, "extend prev");
+    }
+
+    for (let pageNumber = 1; pageNumber <= totalPages; pageNumber++) {
+      if (
+        pageNumber === 1 ||
+        pageNumber === totalPages ||
+        Math.abs(pageNumber - currentPage) <= 1
+      ) {
+        if (pageNumber === currentPage) {
+          links.push('<span class="page-number current">' + pageNumber + "</span>");
+        } else {
+          addLink(String(pageNumber), pageNumber, "page-number");
+        }
+      } else if (
+        (pageNumber === 2 && currentPage > 3) ||
+        (pageNumber === totalPages - 1 && currentPage < totalPages - 2)
+      ) {
+        links.push('<span class="space">...</span>');
+      }
+    }
+
+    if (currentPage < totalPages) {
+      addLink("\u4e0b\u4e00\u9875", currentPage + 1, "extend next");
+    }
+
+    pagination.hidden = false;
+    pagination.innerHTML = links.join("");
+  }
+
+  function renderResults(items, keyword, currentPage) {
     if (!keyword.trim()) {
       summaryText.textContent = "\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22\u3002";
       renderEmptyState("\u641c\u7d22\u7ed3\u679c\u5c06\u663e\u793a\u5728\u8fd9\u91cc\u3002");
@@ -554,7 +605,11 @@ document.addEventListener("DOMContentLoaded", function() {
       return;
     }
 
-    results.innerHTML = items.map(function(item) {
+    const totalPages = Math.ceil(items.length / pageSize);
+    const safePage = Math.min(Math.max(currentPage, 1), totalPages);
+    const pageItems = items.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+    results.innerHTML = pageItems.map(function(item) {
       const dateText = formatDate(item.date);
       const snippet = buildSnippet(item, keyword);
       const hasCover = Boolean(item.cover);
@@ -581,9 +636,11 @@ document.addEventListener("DOMContentLoaded", function() {
         "</div>"
       ].join("");
     }).join("");
+
+    renderPagination(items.length, safePage, keyword);
   }
 
-  function performSearch(keyword) {
+  function performSearch(keyword, pageNumber) {
     const trimmedKeyword = keyword.trim();
     const matchedItems = !trimmedKeyword ? [] : searchIndex.filter(function(item) {
       const haystack = [
@@ -602,15 +659,29 @@ document.addEventListener("DOMContentLoaded", function() {
       return bTitle - aTitle;
     });
 
-    renderResults(matchedItems, trimmedKeyword);
+    renderResults(matchedItems, trimmedKeyword, pageNumber || 1);
   }
 
   form.addEventListener("submit", function(e) {
     e.preventDefault();
     const keyword = input.value.trim();
-    const nextUrl = keyword ? "?q=" + encodeURIComponent(keyword) : window.location.pathname;
+    const nextUrl = keyword ? "?q=" + encodeURIComponent(keyword) + "&page=1" : window.location.pathname;
     window.history.replaceState({}, "", nextUrl);
-    performSearch(keyword);
+    performSearch(keyword, 1);
+  });
+
+  pagination.addEventListener("click", function(e) {
+    const target = e.target.closest("[data-page]");
+    if (!target) return;
+
+    e.preventDefault();
+    const keyword = input.value.trim();
+    const nextPage = Number(target.dataset.page) || 1;
+    const nextUrl = "?q=" + encodeURIComponent(keyword) + "&page=" + nextPage;
+    window.history.replaceState({}, "", nextUrl);
+    performSearch(keyword, nextPage);
+    const top = container.getBoundingClientRect().top + window.scrollY - 24;
+    window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
   });
 
   fetch(searchIndexPath)
@@ -621,8 +692,9 @@ document.addEventListener("DOMContentLoaded", function() {
     .then(function(data) {
       searchIndex = Array.isArray(data) ? data : [];
       const initialKeyword = params.get("q") || "";
+      const initialPage = Number(params.get("page") || "1") || 1;
       input.value = initialKeyword;
-      performSearch(initialKeyword);
+      performSearch(initialKeyword, initialPage);
     })
     .catch(function() {
       summaryText.textContent = "\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25\u3002";
