@@ -126,7 +126,7 @@
             class="navbar-search-input"
             type="search"
             name="q"
-            placeholder="Search posts..."
+            placeholder="搜索文章..."
             autocomplete="off"
           />
         </form>
@@ -445,16 +445,16 @@ document.addEventListener("DOMContentLoaded", function() {
   <section class="content-container layout-block search-page-container">
     <div class="search-page-head layout-margin content-padding--large soft-size--large soft-style--box">
       <div class="search-page-copy">
-        <h2 class="search-page-title">Search</h2>
-        <p class="search-page-subtitle">在这里浏览完整搜索结果。</p>
+        <h2 class="search-page-title">&#31449;&#20869;&#25628;&#32034;</h2>
+        <p class="search-page-subtitle">&#22312;&#36825;&#37324;&#27983;&#35272;&#20840;&#37096;&#25628;&#32034;&#32467;&#26524;&#12290;</p>
       </div>
       <form class="search-page-form" role="search">
-        <input class="search-page-input" type="search" placeholder="Search posts..." autocomplete="off" />
+        <input class="search-page-input" type="search" placeholder="搜索文章..." autocomplete="off" />
       </form>
     </div>
 
     <div class="search-page-summary layout-margin">
-      <span class="search-page-summary-text">输入关键词开始搜索</span>
+      <span class="search-page-summary-text">&#36755;&#20837;&#20851;&#38190;&#35789;&#24320;&#22987;&#25628;&#32034;&#12290;</span>
     </div>
 
     <div class="search-page-results content-container article-list"></div>
@@ -520,6 +520,18 @@ document.addEventListener("DOMContentLoaded", function() {
     return date.toISOString().slice(0, 10);
   }
 
+  function buildWrapList(items, className, prefix) {
+    if (!items.length) return "";
+
+    return [
+      '<ul class="wrap-list ' + className + '">',
+      items.slice(0, 4).map(function(item) {
+        return '<li><span>' + prefix + " " + escapeHTML(item) + "</span></li>";
+      }).join(""),
+      "</ul>"
+    ].join("");
+  }
+
   function renderEmptyState(message) {
     results.innerHTML = [
       '<div class="search-page-empty layout-margin content-padding--large soft-size--large soft-style--box">',
@@ -530,54 +542,49 @@ document.addEventListener("DOMContentLoaded", function() {
 
   function renderResults(items, keyword) {
     if (!keyword.trim()) {
-      summaryText.textContent = "输入关键词开始搜索";
-      renderEmptyState("当前还没有输入关键词。");
+      summaryText.textContent = "\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22\u3002";
+      renderEmptyState("\u641c\u7d22\u7ed3\u679c\u5c06\u663e\u793a\u5728\u8fd9\u91cc\u3002");
       return;
     }
 
-    summaryText.textContent = "共找到 " + items.length + " 篇相关文章";
+    summaryText.textContent = "\u5171\u627e\u5230 " + items.length + " \u7bc7\u76f8\u5173\u6587\u7ae0";
 
     if (!items.length) {
-      renderEmptyState("没有找到匹配的文章。");
+      renderEmptyState("\u672a\u627e\u5230\u5339\u914d\u7684\u6587\u7ae0\u3002");
       return;
     }
 
     results.innerHTML = items.map(function(item) {
-      const meta = [];
       const dateText = formatDate(item.date);
       const snippet = buildSnippet(item, keyword);
-      if (dateText) meta.push(dateText);
-      if ((item.categories || []).length) meta.push(item.categories.join(" / "));
-
-      const coverHTML = item.cover ? [
+      const hasCover = Boolean(item.cover);
+      const wrapClass = hasCover ? "dark" : "light";
+      const coverHTML = hasCover ? [
         '<div class="card-cover" style="background-image: url(' + escapeHTML(item.cover) + ')"></div>',
         '<a href="' + searchBasePath + escapeHTML(item.path) + '" class="card-cover-hitarea" aria-label="' + escapeHTML(item.title || "Untitled") + '"></a>'
       ].join("") : "";
 
       return [
         '<div class="article-item layout-padding">',
-        '<article class="card-container article-card content-padding--large soft-size--large soft-style--box search-result-card">',
+        '<article class="card-container article-card content-padding--large soft-size--large soft-style--box search-result-card" data-url="' + searchBasePath + escapeHTML(item.path) + '">',
         coverHTML,
         '<div class="card-text">',
         '<a href="' + searchBasePath + escapeHTML(item.path) + '" itemprop="url">',
         '<h2 class="card-text--title">' + highlightText(item.title || "Untitled", keyword) + '</h2>',
-        '</a>',
-        meta.length ? '<div class="card-text--row">' + escapeHTML(meta.join(" / ")) + '</div>' : "",
-        snippet ? '<p class="search-result-excerpt">' + highlightText(snippet, keyword) + '</p>' : "",
-        (item.tags || []).length ? '<div class="search-result-tags">' + item.tags.slice(0, 4).map(function(tag) {
-          return '<span>' + escapeHTML(tag) + '</span>';
-        }).join("") + '</div>' : "",
-        '</div>',
-        '</article>',
-        '</div>'
+        "</a>",
+        dateText ? '<div class="card-text--row"><span>\u53d1\u5e03\u4e8e </span><time>' + escapeHTML(dateText) + "</time></div>" : "",
+        buildWrapList(item.categories || [], wrapClass, "\u5206\u7c7b"),
+        buildWrapList(item.tags || [], wrapClass, "\u6807\u7b7e"),
+        snippet ? '<p class="search-result-excerpt">' + highlightText(snippet, keyword) + "</p>" : "",
+        "</div>",
+        "</article>",
+        "</div>"
       ].join("");
     }).join("");
   }
 
   function performSearch(keyword) {
     const trimmedKeyword = keyword.trim();
-    params.set("q", trimmedKeyword);
-
     const matchedItems = !trimmedKeyword ? [] : searchIndex.filter(function(item) {
       const haystack = [
         item.title,
@@ -589,8 +596,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
       return haystack.includes(trimmedKeyword.toLowerCase());
     }).sort(function(a, b) {
-      const aTitle = (a.title || "").toLowerCase().includes(trimmedKeyword.toLowerCase()) ? 1 : 0;
-      const bTitle = (b.title || "").toLowerCase().includes(trimmedKeyword.toLowerCase()) ? 1 : 0;
+      const normalizedKeyword = trimmedKeyword.toLowerCase();
+      const aTitle = (a.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
+      const bTitle = (b.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
       return bTitle - aTitle;
     });
 
@@ -617,8 +625,8 @@ document.addEventListener("DOMContentLoaded", function() {
       performSearch(initialKeyword);
     })
     .catch(function() {
-      summaryText.textContent = "搜索索引加载失败";
-      renderEmptyState("搜索索引加载失败，请稍后重试。");
+      summaryText.textContent = "\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25\u3002";
+      renderEmptyState("\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25\u3002");
     });
 });
 </script>

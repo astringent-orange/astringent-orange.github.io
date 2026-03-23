@@ -1522,33 +1522,32 @@ html.show-mobile-nav .navbar-list {
 }
 .search-result-card {
   height: 100%;
-  min-height: 320px;
+  min-height: 280px;
+}
+.search-page-results .article-item {
+  min-width: 33.333%;
+}
+.search-page-results .card-text--row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.search-page-results .wrap-list {
+  margin-top: 14px;
+}
+.search-page-results .wrap-list span {
+  display: block;
+  padding: 4px 8px;
 }
 .search-result-excerpt {
-  margin-top: 16px;
+  margin-top: 18px;
   color: var(--theme-text-low);
   font-size: 13px;
   line-height: 1.7;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-.search-result-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 18px;
-}
-.search-result-tags span {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--theme-bg-primary);
-  color: var(--theme-text-low);
-  font-size: 11px;
-  line-height: 1;
 }
 .search-page-results mark,
 .search-result-excerpt mark {
@@ -1564,6 +1563,9 @@ html.show-mobile-nav .navbar-list {
   }
   .search-page-form {
     flex-basis: auto;
+  }
+  .search-page-results .article-item {
+    min-width: 100%;
   }
 }
 .content-container.post-container {
