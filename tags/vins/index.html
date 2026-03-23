@@ -85,7 +85,7 @@
           
 
             <li class="navbar-list-item dropdown">
-              <a href="#" class="dropdown-toggle">
+              <a href="#" class="dropdown-toggle" aria-expanded="false">
                 文档 <span class="arrow">▾</span>
               </a>
 
@@ -142,23 +142,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
   const menu = dropdown.querySelector(".dropdown-menu");
   const toggle = dropdown.querySelector(".dropdown-toggle");
-  const arrow = dropdown.querySelector(".arrow");
 
   function closeMenu() {
-    menu.style.display = "none";
-    arrow.style.transform = "rotate(0deg)";
+    dropdown.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
   }
 
   function openMenu() {
-    menu.style.display = "block";
-    arrow.style.transform = "rotate(180deg)";
+    dropdown.classList.add("is-open");
+    toggle.setAttribute("aria-expanded", "true");
   }
 
   toggle.addEventListener("click", function(e) {
     e.preventDefault();
     e.stopPropagation();
 
-    const opened = menu.style.display === "block";
+    const opened = dropdown.classList.contains("is-open");
 
     if (opened) {
       closeMenu();
