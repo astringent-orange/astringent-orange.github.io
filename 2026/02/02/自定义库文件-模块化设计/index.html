@@ -24,7 +24,7 @@
 
   
 
-  <title>9_基础建图测试 | Mian的笔记</title>
+  <title>自定义库文件 模块化设计 | Mian的笔记</title>
 
   
 
@@ -48,7 +48,7 @@
 <!-- header container -->
 <header class="header-container post">
   
-    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_基础建图测试/cover-regent-d5bd3a07d694.jpg)"></div>
+    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png)"></div>
   
 
   <!-- navbar -->
@@ -431,28 +431,24 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">9_基础建图测试</h1>
+          <h1 class="title-wrap">自定义库文件 模块化设计</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2026-03-02T16:00:00.000Z" itemprop="datePublished">2026-03-03</time>
+            <time  class="article-date" datetime="2026-02-01T16:00:00.000Z" itemprop="datePublished">2026-02-02</time>
           </h2>
           
           
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
     
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/octomap/">🏷️ octomap</a></li>
-  
     <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
   
-    <li><a href="/tags/drone/">🏷️ drone</a></li>
-  
-    <li><a href="/tags/%E5%BB%BA%E5%9B%BE/">🏷️ 建图</a></li>
+    <li><a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/">🏷️ 模块化</a></li>
   
 </ul>
         </div>
@@ -476,47 +472,28 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <p>尝试在无人机上使用octomap进行建图，并于RVIZ中查看结果</p>
-<h2 id="仿真测试"><a href="#仿真测试" class="headerlink" title="仿真测试"></a>仿真测试</h2><h3 id="深度相机模型"><a href="#深度相机模型" class="headerlink" title="深度相机模型"></a>深度相机模型</h3><p>修改之前的启动仿真的launch文件，将其中<code>vehicle</code>修改为<code>iris_depth_camera</code>，启用深度相机模型<br>可能返回报错<code>ERROR [init] Unknown model iris_depth_camera (not found by name on ~/.ros/etc/init.d-posix/airframes)</code>然后无法启动gazebo。说明PX4与gazebo对于模型名称的理解产生了分歧，即PX4的官方固件中只有<code>iris</code>型号。需要分离“机型”与“外观”，如下</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 【关键修改 1】让 PX4 固件加载它认识的机型 iris --&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;vehicle&quot;</span> <span class="attr">default</span>=<span class="string">&quot;iris&quot;</span>/&gt;</span> </span><br><span class="line"><span class="comment">&lt;!-- 【关键修改 2】让 Gazebo 加载带相机的模型文件 --&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;sdf&quot;</span> <span class="attr">default</span>=<span class="string">&quot;~/UAV/PX4-Autopilot/Tools/sitl_gazebo/models/iris_depth_camera/iris_depth_camera.sdf&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="点云"><a href="#点云" class="headerlink" title="点云"></a>点云</h3><p>在gazebo由深度相机插件生成，从深度图像转换到点云。当选择使用深度相机模型将默认启动转换节点，从<code>/camera/depth/image_raw</code>转换得到<code>/camera/depth/points</code>。<br>而在实机上上使用时，具体内容可以参考 [[工程知识&#x2F;占据栅格图 Octomap]]</p>
-<h3 id="占据栅格图"><a href="#占据栅格图" class="headerlink" title="占据栅格图"></a>占据栅格图</h3><p>同样参考上述内容，使用octomap包（八叉树）来实现占据栅格图，可以通过launch文件来启动。其接受点云图作为输入，使用参数<br><code>&lt;remap from=&quot;cloud_in&quot; to=&quot;/camera/depth/color/points&quot; /&gt;</code>，然后查询tf树进行坐标变换，输出占据栅格图。</p>
-<h3 id="RVIZ显示"><a href="#RVIZ显示" class="headerlink" title="RVIZ显示"></a>RVIZ显示</h3><p>在本实验中，直接在仿真中启动<code>mavros_posix_sitl.launch</code>，然后启动<code>octomap_server</code>，再打开rviz，添加<code>pointcloud2</code>，并订阅点云话题尝试观察点云。结果status显示error，提示frame link无法回到map。即坐标转换出现了断点，需要检查tf树，<code>rosrun tf view_frames</code>。</p>
-<p>发现odom、map、baselink三者的tf树之间没有连接，于是尝试修复。首先是baselink与cameralink，两者相对位置是固定的，于是采用静态转换，直接写在启动octomap的launch文件中。</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;base_to_camera&quot;</span> </span></span><br><span class="line"><span class="tag"><span class="attr">args</span>=<span class="string">&quot;0.1 0 0 -1.57 0 -1.57 base_link camera_link 100&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-<p>而此处仿真中由于没有采用里程计，故odom可以认为是完美值，与map相等</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;map_to_odom&quot;</span> <span class="attr">args</span>=<span class="string">&quot;0 0 0 0 0 0 map odom 100&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-<p>而baselink到odom则是一个动态的变换，虽然也可以采用上面相同的静态转换，但是这样相当于假设无人机在仿真中是不能运动的，否则octomap的累计地图会出问题。</p>
-<p>这里可以直接采用<code>/mavros/local_position/pose</code>的值作为转换值，但是为了节省带宽和cpu资源，MAVROS默认将<code>local_position/tf/send</code>设置为false，这样算出的位置信息只会以话题发布，而不会作为坐标变换广播。<br>而由于是使用<code>mavros_posix_sitl</code>启动的mavros，所以无法直接修改参数，而又由于mavros使用的是私有参数，故也无法添加全局参数，所以直接修改默认配置文件<code>/opt/ros/noetic/share/mavros/launch/px4_config.yaml</code>。找到其中<code>local_position</code>部分，首先将<code>frame_id</code>修改为<code>odom</code>，其次将<code>send</code>改为true。</p>
-<p>修改后启动仿真与octomap，查看tf树结构发现三者都连接在一棵树了，然后启动rviz发现能成功显示点云图与占据栅格图，且手动旋转无人机，占据栅格图能够正常运行</p>
-<h3 id="TF树"><a href="#TF树" class="headerlink" title="TF树"></a>TF树</h3><p>tf树，即transformer坐标系变换树，是ROS机器人的一个特点。在ROS机器人模型中存在大量的部件，称为link，每一个link都有自己的坐标系，称为frame。而tf树就是一个树状结构，维护坐标系之间的关系，从而实现系统中任意一个点在所有坐标系中的转换。而为了高效，ROS采用树的结构来表示这个坐标系转换。</p>
-<p>以本实验为例，存在map，odom，base link，camera link几个坐标系，分别为世界坐标系（以某个固定点为原点），无人机起始点为原点，飞控中心为原点，摄像机中心为原点<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/242b5ff9-7270-407a-9093-aa838c9380a1-86d3b9e70b49.png"><br>odom坐标系也是一种世界坐标系，但是由无人机自己给出坐标，例如无人机绕了一个圈回到原点，那么在map下坐标回到原点，但是无人机可能估计自己没有回到原点。</p>
-<p>而tf树中有两种frame之间的连接，分别为动态转换与静态转换。例如camera link到base link，两个部件之间是物理固定的，那么可以在launch文件中使用tf程序包来构建frame之间的连接；而baselink到odom之间则是动态的转换关系，需要不断发布消息。</p>
-<h4 id="TF程序包"><a href="#TF程序包" class="headerlink" title="TF程序包"></a>TF程序包</h4><p><code>rosrun tf tf_viewer</code>在命令行查看tf树结构<br><code>rosrun tf view_frames</code>生成一张当前tf树的pdf图像</p>
-<p>构建静态tf连接，在launch文件中</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;base_to_camera&quot;</span> </span></span><br><span class="line"><span class="tag"><span class="attr">args</span>=<span class="string">&quot;0.1 0 0 -1.57 0 -1.57 base_link camera_link 100&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>发布动态tf连接，在节点中</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;tf/transform_broadcaster.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 创建广播员对象</span></span><br><span class="line"><span class="type">static</span> tf::TransformBroadcaster br;</span><br><span class="line">tf::Transform transform;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 将收到的 Pose 赋值给 Transform</span></span><br><span class="line">transform.<span class="built_in">setOrigin</span>( tf::<span class="built_in">Vector3</span>(msg.x, msg.y, msg.z) );</span><br><span class="line">transform.<span class="built_in">setRotation</span>( tf::<span class="built_in">Quaternion</span>(msg.qx, msg.qy, msg.qz, msg.qw) );</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 广播出去（这一步会让 /tf 话题产生数据）</span></span><br><span class="line">br.<span class="built_in">sendTransform</span>(tf::<span class="built_in">StampedTransform</span>(transform, ros::Time::<span class="built_in">now</span>(), <span class="string">&quot;odom&quot;</span>, <span class="string">&quot;base_link&quot;</span>));</span><br></pre></td></tr></table></figure>
-
-<p>仿真部分</p>
-<p>简单的offb+建图没有在执行上没有问题，但是细节上存在问题。一是能否消除地面，二是随着无人机的起飞与降落，地面的位置发生了变换</p>
-<p>而square+建图之前出现了无人机速度异常提醒，而且好像都没有飞起来就提醒了，需要检查。</p>
-<h2 id="实机测试"><a href="#实机测试" class="headerlink" title="实机测试"></a>实机测试</h2><p>实机测试时不止需要启动相机，故按照之前启动里程计的方式启动，但是需要进行一定的修改。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">roslaunch mavros px4.launch \</span><br><span class="line">    gcs_url:=udp://@192.168.1.1 \</span><br><span class="line">    local_position/tf/send:=<span class="literal">false</span> \</span><br><span class="line">    global_position/tf/send:=<span class="literal">false</span> &amp;</span><br><span class="line">    </span><br><span class="line">roslaunch vins d435_run.launch \</span><br><span class="line">    enable_depth:=<span class="literal">true</span> \</span><br><span class="line">    filters:=pointcloud,temporal,spatial,decimation \</span><br><span class="line">    enable_pointcloud:=<span class="literal">true</span> \</span><br><span class="line">    enable_color:=<span class="literal">false</span> &amp;</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="TF树与命名冲突"><a href="#TF树与命名冲突" class="headerlink" title="TF树与命名冲突"></a>TF树与命名冲突</h3><p>vins的代码默认使用的坐标系名称与mavros的坐标系名称不同，vins使用<code>world</code> ，<code>body</code>，<code>camera</code>而mavros使用<code>map</code>，<code>base_link</code>,<code>camera_link</code>。建议去<code>vins_estimator/src/utility/visualization.cpp</code>中修改，否则tf树中会存在两套不连接的体系。</p>
-<h3 id="纯深度点云生成"><a href="#纯深度点云生成" class="headerlink" title="纯深度点云生成"></a>纯深度点云生成</h3><p>相机默认生成的点云为彩色点云，而实机octomap建图时并不会使用彩色信息，故可以使用深度图像以节约CPU计算量。但是要注意，无论是否使用深度信息，相机生成的点云话题始终是<code>/cmaera/depth/color/points</code>.</p>
-<p>修改相机的启动文件参数</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">include</span> <span class="attr">file</span>=<span class="string">&quot;$(find realsense2_camera)/launch/rs_camera.launch&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_color&quot;</span> <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>/&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;allow_no_texture_points&quot;</span> <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;pointcloud_texture_stream&quot;</span> <span class="attr">value</span>=<span class="string">&quot;RS2_STREAM_ANY&quot;</span>/&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;filters&quot;</span> <span class="attr">value</span>=<span class="string">&quot;pointcloud,temporal,spatial,decimation&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
-<p>在rviz中查看点云图像是否还有颜色来检验。注意修改后查看tf树，其中<code>color_frame</code>将消失</p>
-<h3 id="rviz坐标轴旋转"><a href="#rviz坐标轴旋转" class="headerlink" title="rviz坐标轴旋转"></a>rviz坐标轴旋转</h3><p>在rviz中查看点云图，发现图像逆时针旋转了90度；而里程计的读数在各方向上又正常增长。原因为vins会发布一次旋转，而realsense驱动也会发布一次旋转。<br>故修改相机配置文件关闭相机的旋转即可，设置参数</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;publish_tf&quot;</span> <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>注意在关闭了相机发布tf信息后，tf树会失去<code>camera_link</code>以下所有frame，而为了在rviz中正常查看点云图像，需要手动添加<code>optical_frame</code>的静态变换</p>
-<p>修改<code>mapping.launch</code></p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 1. 连接 camera_link 到 camera_depth_frame --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;link_to_depth_frame&quot;</span> </span></span><br><span class="line"><span class="tag">      <span class="attr">args</span>=<span class="string">&quot;0 0 0 0 0 0 1 camera_link camera_depth_frame 100&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- 2. 连接 camera_depth_frame 到 camera_depth_optical_frame --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;depth_to_optical_identity&quot;</span> </span></span><br><span class="line"><span class="tag">      <span class="attr">args</span>=<span class="string">&quot;0 0 0 0 0 0 1 camera_depth_frame camera_depth_optical_frame 100&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>为了实现便于替换、复用与合作使用，在完成大型的项目时通常会使用模块化设计，即将不同功能的实现分别封装在单独的文件中，而不是在一个文件中实现所有功能，而这通常也伴随着自定义头文件的使用</p>
+<h2 id="CPP"><a href="#CPP" class="headerlink" title="CPP"></a>CPP</h2><p>除了上述理由，在cpp中使用cmake编译时，如果使用自定义头文件<code>.h</code>提前将类的结构，成员，函数入口等信息声明出来，则可以减轻编译的压力，而不必在更冗长<code>.cpp</code>文件中去寻找。</p>
+<p>具体而言，在ROS1的项目构成中，一个cpp文件通常以<code>.h</code>和<code>.cpp</code>成对的形式出现。例如如下结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ros_pkg\</span><br><span class="line">	include\</span><br><span class="line">		planner.h</span><br><span class="line">	src\</span><br><span class="line">		planner.cpp</span><br></pre></td></tr></table></figure>
+<p>然后<code>.h</code>文件写法示意如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> PLANNER_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PLANNER_H</span></span><br><span class="line"><span class="comment">// include部分一般只包含本文件中使用的，例如一些数据类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Planner</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">// 构造函数</span></span><br><span class="line">	<span class="built_in">Planner</span>(ros::NodeHandle&amp; nh);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 对外接口函数</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 公共变量</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="comment">// 回调函数</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// ROS通信</span></span><br><span class="line">	ros::Subscriber sub;</span><br><span class="line">	ros::Publisher pub;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 内部变量</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">// PLANNER_H</span></span></span><br></pre></td></tr></table></figure>
+<p>而<code>.cpp</code>文件写法示意如下</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros_pkg/planner.h&quot;</span></span></span><br><span class="line"><span class="comment">// 不必再include.h文件已有的部分</span></span><br><span class="line"><span class="comment">// 一般时包含一些例如&lt;math&gt;的功能库</span></span><br><span class="line"></span><br><span class="line">Planner::<span class="built_in">Planner</span>(ros::NodeHandle&amp; nh)</span><br><span class="line">	: 变量(值)</span><br><span class="line">&#123;</span><br><span class="line">	nh.param...; <span class="comment">// 依靠句柄传参</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 其他函数详细定义</span></span><br></pre></td></tr></table></figure>
+<p>其中构造函数名后面的 : 变量(值) 表示给类成员变量提前和直接赋值，是cpp的特殊语法</p>
+<h2 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h2><p>在ros1项目中python自定义库文件的使用需要遵循一定的方法，需要手动进行一些设置，因为ros1在设计时（2007）主要是为了cpp而设计的，许多python功能需要手动添加。而在ros2中就有了python的自动支持。</p>
+<p>如果不进行这些操作，rosrun无法正常使用（当然直接python运行则可以）</p>
+<p>以以下这个功能包<code>agent</code>为例，一般的python文件都放在scripts下，而需要被引用的库文件需要在src下新建一个同名文件夹。</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">agent/</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── package.xml</span><br><span class="line">├── setup.py                 &lt;-- 1. “安装图纸”</span><br><span class="line">├── scripts/</span><br><span class="line">│   └── train.py             &lt;-- 2. “可执行脚本”：可以引用下面的库</span><br><span class="line">└── src/</span><br><span class="line">    └── agent/               &lt;-- 3. “库文件夹”：名字必须和包名一致</span><br><span class="line">        ├── __init__.py      &lt;-- 4. 标识这是一个 Python 包</span><br><span class="line">        ├── envs/</span><br><span class="line">        │   ├── __init__.py</span><br><span class="line">        │   └── drone_env.py</span><br><span class="line">        └── utils/</span><br><span class="line">            ├── __init__.py</span><br><span class="line">            └── helper.py</span><br></pre></td></tr></table></figure>
+<p>其中有一个与cmakelist同级的<code>setup.py</code>文件，有如下内容</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> distutils.core <span class="keyword">import</span> setup</span><br><span class="line"><span class="keyword">from</span> catkin_pkg.python_setup <span class="keyword">import</span> generate_distutils_setup</span><br><span class="line"></span><br><span class="line">d = generate_distutils_setup(</span><br><span class="line">    packages=[<span class="string">&#x27;agent&#x27;</span>],     <span class="comment"># 告诉系统：src/agent 文件夹是一个包</span></span><br><span class="line">    package_dir=&#123;<span class="string">&#x27;&#x27;</span>: <span class="string">&#x27;src&#x27;</span>&#125; <span class="comment"># 告诉系统：源码在 src 目录下</span></span><br><span class="line">)</span><br><span class="line">setup(**d)</span><br></pre></td></tr></table></figure>
+<p>库文件夹及其下每一个文件夹都要有一个<code>__init__.py</code>，其中可以有以下内容</p>
+<ol>
+<li>留空，单纯表示该文件夹是一个python包</li>
+<li>加入一些一启动就需要执行的逻辑</li>
+<li>将一些类提高层级</li>
+</ol>
+<p>最后需要在<code>CMakeLists.txt</code>中加入<code>catkin_python_setup()</code>然后编译，即可成功使用，可以在其他功能包中使用这些库文件。</p>
 
       </section>
 
@@ -527,10 +504,12 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
+      <div class="card-cover" background-image-lazy data-img="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8_实机绕圈测试-场地搭建/cover-chen-943ee6494ab4.png"></div>
+    
     <div class="card-text">
       
-        <a href="/2026/03/12/10_astar%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92%E5%AE%9E%E9%AA%8C/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">10_astar路径规划实验</h2>
+        <a href="/2026/02/04/8_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95-%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">8_实机绕圈测试-场地搭建</h2>
         </a>
       
       <div class="card-text--row">Newer</div>
@@ -542,12 +521,12 @@ document.addEventListener("DOMContentLoaded", function() {
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
     
-      <div class="card-cover" background-image-lazy data-img="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8_实机绕圈测试-场地搭建/cover-chen-943ee6494ab4.png"></div>
+      <div class="card-cover" background-image-lazy data-img="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/7_小型仿真强化学习实验/cover-laevatin-f97c8174be05.png"></div>
     
     <div class="card-text">
       
-        <a href="/2026/02/04/8_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95-%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">8_实机绕圈测试-场地搭建</h2>
+        <a href="/2026/01/28/7_%E5%B0%8F%E5%9E%8B%E4%BB%BF%E7%9C%9F%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0%E5%AE%9E%E9%AA%8C/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">7_小型仿真强化学习实验</h2>
         </a>
       
       <div class="card-text--row">Older</div>
@@ -616,7 +595,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <span>TOC</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BF%E7%9C%9F%E6%B5%8B%E8%AF%95"><span class="toc-number">1.</span> <span class="toc-text">仿真测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E7%9B%B8%E6%9C%BA%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.</span> <span class="toc-text">深度相机模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%B9%E4%BA%91"><span class="toc-number">1.2.</span> <span class="toc-text">点云</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%A0%E6%8D%AE%E6%A0%85%E6%A0%BC%E5%9B%BE"><span class="toc-number">1.3.</span> <span class="toc-text">占据栅格图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RVIZ%E6%98%BE%E7%A4%BA"><span class="toc-number">1.4.</span> <span class="toc-text">RVIZ显示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TF%E6%A0%91"><span class="toc-number">1.5.</span> <span class="toc-text">TF树</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%9C%BA%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">实机测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TF%E6%A0%91%E4%B8%8E%E5%91%BD%E5%90%8D%E5%86%B2%E7%AA%81"><span class="toc-number">2.1.</span> <span class="toc-text">TF树与命名冲突</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%AF%E6%B7%B1%E5%BA%A6%E7%82%B9%E4%BA%91%E7%94%9F%E6%88%90"><span class="toc-number">2.2.</span> <span class="toc-text">纯深度点云生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rviz%E5%9D%90%E6%A0%87%E8%BD%B4%E6%97%8B%E8%BD%AC"><span class="toc-number">2.3.</span> <span class="toc-text">rviz坐标轴旋转</span></a></li></ol></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPP"><span class="toc-number">2.</span> <span class="toc-text">CPP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Python"><span class="toc-number">3.</span> <span class="toc-text">Python</span></a></li></ol>
   </div>
 </section>
 
