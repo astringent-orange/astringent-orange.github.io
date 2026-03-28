@@ -99,9 +99,6 @@
     --theme-border-secondary: #373e47;
   }
 }
-::-webkit-scrollbar {
-  display: none;
-}
 html,
 body,
 div,
