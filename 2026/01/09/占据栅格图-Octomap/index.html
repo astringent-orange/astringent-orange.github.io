@@ -489,7 +489,22 @@ document.addEventListener("DOMContentLoaded", function() {
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roslaunch realsense2_camera rs_camera.launch filters:=pointcloud</span><br></pre></td></tr></table></figure>
 <p>但是显然，由深度相机所得到的点云缺点很明显，首先是距离近，距离如果太远了相机的精度下降，其内容不可信，如果强行纳入计算则原处的点可能波动很大；其次是频率低，该点云的输出频率依赖于相机图像的频率；最后，由于依赖于深度图像，当面对如纯白墙面或者昏暗环境等深度相机不起作用的情况，也无法输出点云。可见，通过这种方式得到点云肯定是比不上由激光雷达得到点云。</p>
 <h2 id="占据栅格图的使用"><a href="#占据栅格图的使用" class="headerlink" title="占据栅格图的使用"></a>占据栅格图的使用</h2><p>除了直接在rviz中订阅地图来查看生成的占据栅格图，要如何使用地图来进行路径规划？</p>
-<h3 id="二维地图"><a href="#二维地图" class="headerlink" title="二维地图"></a>二维地图</h3><p>关于二维地图<code>projected_map</code>。</p>
+<h3 id="二维地图"><a href="#二维地图" class="headerlink" title="二维地图"></a>二维地图</h3><p>二维占据地图<code>projected_map</code>，表示二维地图上障碍物的位置，是<code>octomap_server</code>默认发布的话题，使用需要先<code>#include &lt;nav_msgs/OccupancyGrid.h&gt;</code>。</p>
+<p>其数据类型为<code>nav_msgs::OccupancyGrid</code>，其具体数据结构有以下三部分</p>
+<ul>
+<li>header</li>
+<li>info</li>
+<li>data</li>
+</ul>
+<p>  其中：</p>
+<ul>
+<li>header.frame_id<br>表示地图坐标系，通常这里是 map。你工程里 octomap_server 也把 frame_id 设成了 map，见 src&#x2F;astar_nav&#x2F;launch&#x2F;octomap.launch:5。</li>
+<li>info.resolution<br>每个栅格边长，单位米&#x2F;格。</li>
+<li>info.width, info.height<br>地图宽高，单位是格子数，不是米。</li>
+<li>info.origin<br>栅格 (0,0) 在世界坐标里的原点位姿。通常可理解为地图左下角对应的世界坐标。</li>
+<li>data<br>一个一维 int8[] 数组，长度等于 width * height。</li>
+</ul>
+<p>  数组索引通常按行展开，访问方式就是：  index &#x3D; y * width + x。其中值为-1~100的整数，-1代表未知，0代表空闲，100表示占据，数字越大表示该位置被占用的概率越大</p>
 <h3 id="三维地图"><a href="#三维地图" class="headerlink" title="三维地图"></a>三维地图</h3><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p> <a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_73640344/article/details/144833619">ROS中的三维地图表示：OctoMap详解及应用-CSDN博客</a><br> <a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44001261/article/details/122631470">nav_msgs::OccupancyGrid数据格式详解-CSDN博客</a></p>
 
       </section>
