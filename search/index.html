@@ -474,6 +474,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const pagination = container.querySelector(".search-page-pagination");
   const searchIndexPath = "/search.json";
   const searchBasePath = "/";
+  const useCardCover = false;
   const params = new URLSearchParams(window.location.search);
   const pageSize = 10;
   let searchIndex = [];
@@ -618,7 +619,7 @@ document.addEventListener("DOMContentLoaded", function() {
     results.innerHTML = pageItems.map(function(item) {
       const dateText = formatDate(item.date);
       const snippet = buildSnippet(item, keyword);
-      const hasCover = Boolean(item.cover);
+      const hasCover = useCardCover && Boolean(item.cover);
       const wrapClass = hasCover ? "dark" : "light";
       const coverHTML = hasCover ? [
         '<div class="card-cover" style="background-image: url(' + escapeHTML(item.cover) + ')"></div>',
@@ -627,7 +628,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       return [
         '<div class="article-item layout-padding">',
-        '<article class="card-container article-card content-padding--large soft-size--large soft-style--box search-result-card" data-url="' + searchBasePath + escapeHTML(item.path) + '">',
+        '<article class="card-container article-card content-padding--large soft-size--large soft-style--box search-result-card' + (hasCover ? '' : ' article-card--no-cover') + '" data-url="' + searchBasePath + escapeHTML(item.path) + '">',
         coverHTML,
         '<div class="card-text">',
         '<a href="' + searchBasePath + escapeHTML(item.path) + '" itemprop="url">',
