@@ -1038,6 +1038,11 @@ html.show-mobile-nav .navbar-list {
   font-size: var(--font-base-size);
   margin-top: 10px;
 }
+.article-card.article-card--no-cover.soft-style--box {
+  background-color: #e3ebf2;
+  border: 1px solid #c7d3de;
+  box-shadow: 14px 14px 28px rgba(173,186,198,0.42), -10px -10px 22px rgba(255,255,255,0.88);
+}
 @media (hover: hover) {
   .article-card {
     cursor: pointer;
