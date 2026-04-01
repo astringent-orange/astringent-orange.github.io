@@ -24,7 +24,7 @@
 
   
 
-  <title>10.1_astar路径规划改进——边飞边规划 | Mian的笔记</title>
+  <title>6_基础建图测试 | Mian的笔记</title>
 
   
 
@@ -427,11 +427,11 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">10.1_astar路径规划改进——边飞边规划</h1>
+          <h1 class="title-wrap">6_基础建图测试</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2026-03-31T16:00:00.000Z" itemprop="datePublished">2026-04-01</time>
+            <time  class="article-date" datetime="2026-03-02T16:00:00.000Z" itemprop="datePublished">2026-03-03</time>
           </h2>
           
           
@@ -442,15 +442,13 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/astar/">🏷️ astar</a></li>
+    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
   
-    <li><a href="/tags/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/">🏷️ 路径规划</a></li>
-  
-    <li><a href="/tags/%E4%BB%BF%E7%9C%9F/">🏷️ 仿真</a></li>
+    <li><a href="/tags/drone/">🏷️ drone</a></li>
   
     <li><a href="/tags/octomap/">🏷️ octomap</a></li>
   
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
+    <li><a href="/tags/%E5%BB%BA%E5%9B%BE/">🏷️ 建图</a></li>
   
 </ul>
         </div>
@@ -475,38 +473,69 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><h3 id="实验目标"><a href="#实验目标" class="headerlink" title="实验目标"></a>实验目标</h3><p>在之前的Astar规划baseline的基础上进行改进，让无人机能够选择已知地图外的点作为目标点，并能够边飞边规划，而非规划一次就直接飞到目标点。</p>
-<h3 id="实验配置-项目结构"><a href="#实验配置-项目结构" class="headerlink" title="实验配置&amp;项目结构"></a>实验配置&amp;项目结构</h3><p>参考上一篇baseline</p>
-<h3 id="改进分析"><a href="#改进分析" class="headerlink" title="改进分析"></a>改进分析</h3><p>可以分为以下三部分<br>第一阶段：只做边飞边规划，目标仍要求在图内</p>
-<ul>
-<li>新增 NAVIGATE</li>
-<li>周期性重规划</li>
-<li>路径失效检测</li>
-<li>地图更新触发重规划<br>  这样能先验证“滚动规划框架”是稳定的。</li>
-</ul>
-<p>第二阶段：支持地图外全局目标</p>
-<ul>
-<li>拆分 global_goal_ &#x2F; local_goal_</li>
-<li>增加 worldInMap() 和 computeLocalGoal()</li>
-<li>加入边界裁剪逻辑</li>
-</ul>
-<p>第三阶段：优化导航品质</p>
-<ul>
-<li>前视点跟踪替代逐格点跟踪</li>
-<li>局部窗口规划或路径平滑</li>
-<li>frontier 或探索式子目标选择</li>
-</ul>
-<h2 id="分点改进"><a href="#分点改进" class="headerlink" title="分点改进"></a>分点改进</h2><h3 id="滚动路径规划"><a href="#滚动路径规划" class="headerlink" title="滚动路径规划"></a>滚动路径规划</h3><p>当前的核心逻辑在于fsm中的<code>wait_goal</code>调用一次<code>plan</code>便进入<code>execute</code>，于是需要拆分该逻辑。首先将<code>execute</code>模块更名为<code>navigate</code>，当<code>wait_goal</code>得到目标和有地图后便切换到<code>navigate</code>，而后续一直在该模式下进行执行路径与定时重规划。因此主要是对<code>mission_fsm</code>部分代码进行修改</p>
-<h4 id="fsm关键逻辑"><a href="#fsm关键逻辑" class="headerlink" title="fsm关键逻辑"></a>fsm关键逻辑</h4><p>加入一个<code>need_replan_</code>变量，当为真时重新进行路径规划。而当地图更新、周期超时、路径失效和设置新目标点时会触发重新规划，重新规划后替换路径。</p>
-<h4 id="改进结果"><a href="#改进结果" class="headerlink" title="改进结果"></a>改进结果</h4><p>启动rviz后添加目标点，可以发现虽然目标点还是只能在已知地图内，但是路径在无人机飞行过程中会不断变化，而不是之前的固定路径。</p>
-<h4 id="存在问题"><a href="#存在问题" class="headerlink" title="存在问题"></a>存在问题</h4><p>现在<code>navigation</code>模式承载了太多的作用，又要规划路径，又要执行路径。观察<code>ego_planner</code>的代码，发现也还是区分了规划和执行模式。其次，虽然路径会实时规划了，但是总体的路径变得没有之前平滑。</p>
-<h3 id="全局目标支持"><a href="#全局目标支持" class="headerlink" title="全局目标支持"></a>全局目标支持</h3><p>在现有的代码基础上，为了支持全局目标，需要不再将给出的目标点当作A* 的规划终点，而是拆分为<code>global_goal</code>和<code>local_goal</code>，分别表示全局目标点和当前地图内的目标点。具体到代码上</p>
-<h4 id="改进结果-1"><a href="#改进结果-1" class="headerlink" title="改进结果"></a>改进结果</h4><h3 id="优化导航"><a href="#优化导航" class="headerlink" title="优化导航"></a>优化导航</h3><h2 id="其他细节"><a href="#其他细节" class="headerlink" title="其他细节"></a>其他细节</h2><h2 id="实验结果"><a href="#实验结果" class="headerlink" title="实验结果"></a>实验结果</h2><h2 id="后续改进"><a href="#后续改进" class="headerlink" title="后续改进"></a>后续改进</h2>
+        <p>尝试在无人机上使用octomap进行建图，并于RVIZ中查看结果</p>
+<h2 id="仿真测试"><a href="#仿真测试" class="headerlink" title="仿真测试"></a>仿真测试</h2><h3 id="深度相机模型"><a href="#深度相机模型" class="headerlink" title="深度相机模型"></a>深度相机模型</h3><p>修改之前的启动仿真的launch文件，将其中<code>vehicle</code>修改为<code>iris_depth_camera</code>，启用深度相机模型<br>可能返回报错<code>ERROR [init] Unknown model iris_depth_camera (not found by name on ~/.ros/etc/init.d-posix/airframes)</code>然后无法启动gazebo。说明PX4与gazebo对于模型名称的理解产生了分歧，即PX4的官方固件中只有<code>iris</code>型号。需要分离“机型”与“外观”，如下</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 【关键修改 1】让 PX4 固件加载它认识的机型 iris --&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;vehicle&quot;</span> <span class="attr">default</span>=<span class="string">&quot;iris&quot;</span>/&gt;</span> </span><br><span class="line"><span class="comment">&lt;!-- 【关键修改 2】让 Gazebo 加载带相机的模型文件 --&gt;</span> </span><br><span class="line"><span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;sdf&quot;</span> <span class="attr">default</span>=<span class="string">&quot;~/UAV/PX4-Autopilot/Tools/sitl_gazebo/models/iris_depth_camera/iris_depth_camera.sdf&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="点云"><a href="#点云" class="headerlink" title="点云"></a>点云</h3><p>在gazebo由深度相机插件生成，从深度图像转换到点云。当选择使用深度相机模型将默认启动转换节点，从<code>/camera/depth/image_raw</code>转换得到<code>/camera/depth/points</code>。<br>而在实机上上使用时，具体内容可以参考 [[工程知识&#x2F;占据栅格图 Octomap]]</p>
+<h3 id="占据栅格图"><a href="#占据栅格图" class="headerlink" title="占据栅格图"></a>占据栅格图</h3><p>同样参考上述内容，使用octomap包（八叉树）来实现占据栅格图，可以通过launch文件来启动。其接受点云图作为输入，使用参数<br><code>&lt;remap from=&quot;cloud_in&quot; to=&quot;/camera/depth/color/points&quot; /&gt;</code>，然后查询tf树进行坐标变换，输出占据栅格图。</p>
+<h3 id="RVIZ显示"><a href="#RVIZ显示" class="headerlink" title="RVIZ显示"></a>RVIZ显示</h3><p>在本实验中，直接在仿真中启动<code>mavros_posix_sitl.launch</code>，然后启动<code>octomap_server</code>，再打开rviz，添加<code>pointcloud2</code>，并订阅点云话题尝试观察点云。结果status显示error，提示frame link无法回到map。即坐标转换出现了断点，需要检查tf树，<code>rosrun tf view_frames</code>。</p>
+<p>发现odom、map、baselink三者的tf树之间没有连接，于是尝试修复。首先是baselink与cameralink，两者相对位置是固定的，于是采用静态转换，直接写在启动octomap的launch文件中。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;base_to_camera&quot;</span> </span></span><br><span class="line"><span class="tag"><span class="attr">args</span>=<span class="string">&quot;0.1 0 0 -1.57 0 -1.57 base_link camera_link 100&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>而此处仿真中由于没有采用里程计，故odom可以认为是完美值，与map相等</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;map_to_odom&quot;</span> <span class="attr">args</span>=<span class="string">&quot;0 0 0 0 0 0 map odom 100&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<p>而baselink到odom则是一个动态的变换，虽然也可以采用上面相同的静态转换，但是这样相当于假设无人机在仿真中是不能运动的，否则octomap的累计地图会出问题。</p>
+<p>这里可以直接采用<code>/mavros/local_position/pose</code>的值作为转换值，但是为了节省带宽和cpu资源，MAVROS默认将<code>local_position/tf/send</code>设置为false，这样算出的位置信息只会以话题发布，而不会作为坐标变换广播。<br>而由于是使用<code>mavros_posix_sitl</code>启动的mavros，所以无法直接修改参数，而又由于mavros使用的是私有参数，故也无法添加全局参数，所以直接修改默认配置文件<code>/opt/ros/noetic/share/mavros/launch/px4_config.yaml</code>。找到其中<code>local_position</code>部分，首先将<code>frame_id</code>修改为<code>odom</code>，其次将<code>send</code>改为true。</p>
+<p>修改后启动仿真与octomap，查看tf树结构发现三者都连接在一棵树了，然后启动rviz发现能成功显示点云图与占据栅格图，且手动旋转无人机，占据栅格图能够正常运行</p>
+<h3 id="TF树"><a href="#TF树" class="headerlink" title="TF树"></a>TF树</h3><p>tf树，即transformer坐标系变换树，是ROS机器人的一个特点。在ROS机器人模型中存在大量的部件，称为link，每一个link都有自己的坐标系，称为frame。而tf树就是一个树状结构，维护坐标系之间的关系，从而实现系统中任意一个点在所有坐标系中的转换。而为了高效，ROS采用树的结构来表示这个坐标系转换。</p>
+<p>以本实验为例，存在map，odom，base link，camera link几个坐标系，分别为世界坐标系（以某个固定点为原点），无人机起始点为原点，飞控中心为原点，摄像机中心为原点<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/6_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/242b5ff9-7270-407a-9093-aa838c9380a1-86d3b9e70b49.png"><br>odom坐标系也是一种世界坐标系，但是由无人机自己给出坐标，例如无人机绕了一个圈回到原点，那么在map下坐标回到原点，但是无人机可能估计自己没有回到原点。</p>
+<p>而tf树中有两种frame之间的连接，分别为动态转换与静态转换。例如camera link到base link，两个部件之间是物理固定的，那么可以在launch文件中使用tf程序包来构建frame之间的连接；而baselink到odom之间则是动态的转换关系，需要不断发布消息。</p>
+<h4 id="TF程序包"><a href="#TF程序包" class="headerlink" title="TF程序包"></a>TF程序包</h4><p><code>rosrun tf tf_viewer</code>在命令行查看tf树结构<br><code>rosrun tf view_frames</code>生成一张当前tf树的pdf图像</p>
+<p>构建静态tf连接，在launch文件中</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;base_to_camera&quot;</span> </span></span><br><span class="line"><span class="tag"><span class="attr">args</span>=<span class="string">&quot;0.1 0 0 -1.57 0 -1.57 base_link camera_link 100&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>发布动态tf连接，在节点中</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;tf/transform_broadcaster.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. 创建广播员对象</span></span><br><span class="line"><span class="type">static</span> tf::TransformBroadcaster br;</span><br><span class="line">tf::Transform transform;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 将收到的 Pose 赋值给 Transform</span></span><br><span class="line">transform.<span class="built_in">setOrigin</span>( tf::<span class="built_in">Vector3</span>(msg.x, msg.y, msg.z) );</span><br><span class="line">transform.<span class="built_in">setRotation</span>( tf::<span class="built_in">Quaternion</span>(msg.qx, msg.qy, msg.qz, msg.qw) );</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 广播出去（这一步会让 /tf 话题产生数据）</span></span><br><span class="line">br.<span class="built_in">sendTransform</span>(tf::<span class="built_in">StampedTransform</span>(transform, ros::Time::<span class="built_in">now</span>(), <span class="string">&quot;odom&quot;</span>, <span class="string">&quot;base_link&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>仿真部分</p>
+<p>简单的offb+建图没有在执行上没有问题，但是细节上存在问题。一是能否消除地面，二是随着无人机的起飞与降落，地面的位置发生了变换</p>
+<p>而square+建图之前出现了无人机速度异常提醒，而且好像都没有飞起来就提醒了，需要检查。</p>
+<h2 id="实机测试"><a href="#实机测试" class="headerlink" title="实机测试"></a>实机测试</h2><p>实机测试时不止需要启动相机，故按照之前启动里程计的方式启动，但是需要进行一定的修改。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">roslaunch mavros px4.launch \</span><br><span class="line">    gcs_url:=udp://@192.168.1.1 \</span><br><span class="line">    local_position/tf/send:=<span class="literal">false</span> \</span><br><span class="line">    global_position/tf/send:=<span class="literal">false</span> &amp;</span><br><span class="line">    </span><br><span class="line">roslaunch vins d435_run.launch \</span><br><span class="line">    enable_depth:=<span class="literal">true</span> \</span><br><span class="line">    filters:=pointcloud,temporal,spatial,decimation \</span><br><span class="line">    enable_pointcloud:=<span class="literal">true</span> \</span><br><span class="line">    enable_color:=<span class="literal">false</span> &amp;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="TF树与命名冲突"><a href="#TF树与命名冲突" class="headerlink" title="TF树与命名冲突"></a>TF树与命名冲突</h3><p>vins的代码默认使用的坐标系名称与mavros的坐标系名称不同，vins使用<code>world</code> ，<code>body</code>，<code>camera</code>而mavros使用<code>map</code>，<code>base_link</code>,<code>camera_link</code>。建议去<code>vins_estimator/src/utility/visualization.cpp</code>中修改，否则tf树中会存在两套不连接的体系。</p>
+<h3 id="纯深度点云生成"><a href="#纯深度点云生成" class="headerlink" title="纯深度点云生成"></a>纯深度点云生成</h3><p>相机默认生成的点云为彩色点云，而实机octomap建图时并不会使用彩色信息，故可以使用深度图像以节约CPU计算量。但是要注意，无论是否使用深度信息，相机生成的点云话题始终是<code>/cmaera/depth/color/points</code>.</p>
+<p>修改相机的启动文件参数</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">include</span> <span class="attr">file</span>=<span class="string">&quot;$(find realsense2_camera)/launch/rs_camera.launch&quot;</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;enable_color&quot;</span> <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>/&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;allow_no_texture_points&quot;</span> <span class="attr">value</span>=<span class="string">&quot;true&quot;</span>/&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;pointcloud_texture_stream&quot;</span> <span class="attr">value</span>=<span class="string">&quot;RS2_STREAM_ANY&quot;</span>/&gt;</span></span><br><span class="line">	</span><br><span class="line">	<span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;filters&quot;</span> <span class="attr">value</span>=<span class="string">&quot;pointcloud,temporal,spatial,decimation&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在rviz中查看点云图像是否还有颜色来检验。注意修改后查看tf树，其中<code>color_frame</code>将消失</p>
+<h3 id="rviz坐标轴旋转"><a href="#rviz坐标轴旋转" class="headerlink" title="rviz坐标轴旋转"></a>rviz坐标轴旋转</h3><p>在rviz中查看点云图，发现图像逆时针旋转了90度；而里程计的读数在各方向上又正常增长。原因为vins会发布一次旋转，而realsense驱动也会发布一次旋转。<br>故修改相机配置文件关闭相机的旋转即可，设置参数</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">arg</span> <span class="attr">name</span>=<span class="string">&quot;publish_tf&quot;</span> <span class="attr">value</span>=<span class="string">&quot;false&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意在关闭了相机发布tf信息后，tf树会失去<code>camera_link</code>以下所有frame，而为了在rviz中正常查看点云图像，需要手动添加<code>optical_frame</code>的静态变换</p>
+<p>修改<code>mapping.launch</code></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 1. 连接 camera_link 到 camera_depth_frame --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;link_to_depth_frame&quot;</span> </span></span><br><span class="line"><span class="tag">      <span class="attr">args</span>=<span class="string">&quot;0 0 0 0 0 0 1 camera_link camera_depth_frame 100&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">&lt;!-- 2. 连接 camera_depth_frame 到 camera_depth_optical_frame --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;tf&quot;</span> <span class="attr">type</span>=<span class="string">&quot;static_transform_publisher&quot;</span> <span class="attr">name</span>=<span class="string">&quot;depth_to_optical_identity&quot;</span> </span></span><br><span class="line"><span class="tag">      <span class="attr">args</span>=<span class="string">&quot;0 0 0 0 0 0 1 camera_depth_frame camera_depth_optical_frame 100&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
       </section>
 
       
       
         <nav class="article-nav">
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+    
+    <div class="card-text">
+      
+        <a href="/2026/03/12/7_astar%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92%E5%AE%9E%E9%AA%8C/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">7_astar路径规划实验</h2>
+        </a>
+      
+      <div class="card-text--row">下一篇</div>
+    </div>
+  </article>
+</div>
+
           
           
             <div class="article-nav-item layout-padding">
@@ -515,8 +544,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     <div class="card-text">
       
-        <a href="/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">AprilTag视觉定位</h2>
+        <a href="/2026/02/04/5_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95-%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">5_实机绕圈测试-场地搭建</h2>
         </a>
       
       <div class="card-text--row">上一篇</div>
@@ -559,7 +588,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
 </svg>
-        <span>17</span>
+        <span>14</span>
       </div>
       <div class="count-box--item">
         <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
@@ -571,7 +600,7 @@ document.addEventListener("DOMContentLoaded", function() {
         <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
 </svg>
-        27
+        22
       </div>
     </div>
   </div>
@@ -583,12 +612,13 @@ document.addEventListener("DOMContentLoaded", function() {
     <svg class="icon icon-toc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
   <path d="M134.50666666 767.46666668H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.23999999v50.13333333c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H134.50666666c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.13333333c0.10666668-27.73333333 22.50666668-50.24000001 50.24000001-50.24000001zM84.37333332 541.65333333h326.18666669c27.73333333 0 50.24000001 22.39999999 50.23999999 50.13333334v50.24000001c0 27.73333333-22.50666668 50.24000001-50.24000002 50.23999999H84.37333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.23999999v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333334zM134.50666666 315.83999999H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.24000001v50.24000001c0 27.73333333-22.50666668 50.13333334-50.24000001 50.13333333H134.50666666c-27.73333333 0-50.24000001-22.39999999-50.23999999-50.13333333v-50.24000001c0.10666668-27.84000001 22.50666668-50.24000001 50.24000001-50.23999999zM209.81333332 89.91999999h326.18666671c27.73333333 0 50.24000001 22.39999999 50.23999997 50.13333335v50.23999999c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H209.81333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333333zM692.05333333 623.36l274.66666669 176.00000002c23.36000001 14.93333333 30.08 45.97333334 15.14666666 69.33333332L954.77333334 910.93333333c-14.93333333 23.25333334-45.97333334 30.08-69.33333335 15.14666667l-274.66666666-176c-23.36000001-14.93333333-30.08-45.97333334-15.14666667-69.33333333l27.09333334-42.24000001c14.93333333-23.36000001 46.08000001-30.08 69.33333333-15.14666666z" fill="currentColor"></path>
 </svg>
-    <span>TOC</span>
+    <span>目录</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%9B%AE%E6%A0%87"><span class="toc-number">1.1.</span> <span class="toc-text">实验目标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E9%85%8D%E7%BD%AE-%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84"><span class="toc-number">1.2.</span> <span class="toc-text">实验配置&amp;项目结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%94%B9%E8%BF%9B%E5%88%86%E6%9E%90"><span class="toc-number">1.3.</span> <span class="toc-text">改进分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%86%E7%82%B9%E6%94%B9%E8%BF%9B"><span class="toc-number">2.</span> <span class="toc-text">分点改进</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BB%9A%E5%8A%A8%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92"><span class="toc-number">2.1.</span> <span class="toc-text">滚动路径规划</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#fsm%E5%85%B3%E9%94%AE%E9%80%BB%E8%BE%91"><span class="toc-number">2.1.1.</span> <span class="toc-text">fsm关键逻辑</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B9%E8%BF%9B%E7%BB%93%E6%9E%9C"><span class="toc-number">2.1.2.</span> <span class="toc-text">改进结果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AD%98%E5%9C%A8%E9%97%AE%E9%A2%98"><span class="toc-number">2.1.3.</span> <span class="toc-text">存在问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E7%9B%AE%E6%A0%87%E6%94%AF%E6%8C%81"><span class="toc-number">2.2.</span> <span class="toc-text">全局目标支持</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B9%E8%BF%9B%E7%BB%93%E6%9E%9C-1"><span class="toc-number">2.2.1.</span> <span class="toc-text">改进结果</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E5%AF%BC%E8%88%AA"><span class="toc-number">2.3.</span> <span class="toc-text">优化导航</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B6%E4%BB%96%E7%BB%86%E8%8A%82"><span class="toc-number">3.</span> <span class="toc-text">其他细节</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">4.</span> <span class="toc-text">实验结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%E6%94%B9%E8%BF%9B"><span class="toc-number">5.</span> <span class="toc-text">后续改进</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%BF%E7%9C%9F%E6%B5%8B%E8%AF%95"><span class="toc-number">1.</span> <span class="toc-text">仿真测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E7%9B%B8%E6%9C%BA%E6%A8%A1%E5%9E%8B"><span class="toc-number">1.1.</span> <span class="toc-text">深度相机模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%82%B9%E4%BA%91"><span class="toc-number">1.2.</span> <span class="toc-text">点云</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8D%A0%E6%8D%AE%E6%A0%85%E6%A0%BC%E5%9B%BE"><span class="toc-number">1.3.</span> <span class="toc-text">占据栅格图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RVIZ%E6%98%BE%E7%A4%BA"><span class="toc-number">1.4.</span> <span class="toc-text">RVIZ显示</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TF%E6%A0%91"><span class="toc-number">1.5.</span> <span class="toc-text">TF树</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#TF%E7%A8%8B%E5%BA%8F%E5%8C%85"><span class="toc-number">1.5.1.</span> <span class="toc-text">TF程序包</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E6%9C%BA%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">实机测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#TF%E6%A0%91%E4%B8%8E%E5%91%BD%E5%90%8D%E5%86%B2%E7%AA%81"><span class="toc-number">2.1.</span> <span class="toc-text">TF树与命名冲突</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%AF%E6%B7%B1%E5%BA%A6%E7%82%B9%E4%BA%91%E7%94%9F%E6%88%90"><span class="toc-number">2.2.</span> <span class="toc-text">纯深度点云生成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rviz%E5%9D%90%E6%A0%87%E8%BD%B4%E6%97%8B%E8%BD%AC"><span class="toc-number">2.3.</span> <span class="toc-text">rviz坐标轴旋转</span></a></li></ol></li></ol>
   </div>
 </section>
+
 
 
       
@@ -605,7 +635,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
         <li class="categories-list-item">
           <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-            无人机实验 (11)
+            无人机实验 (8)
           </a>
         </li>
         
@@ -628,7 +658,7 @@ document.addEventListener("DOMContentLoaded", function() {
   </div>
   <div class="widget-body">
     <div class="tags-cloud">
-      <a href="/tags/AprilTag/" style="font-size: 10px;" class="tags-cloud-0">AprilTag</a> <a href="/tags/IntelRealsense/" style="font-size: 15px;" class="tags-cloud-5">IntelRealsense</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 15px;" class="tags-cloud-5">NUC13</a> <a href="/tags/RL/" style="font-size: 10px;" class="tags-cloud-0">RL</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12.5px;" class="tags-cloud-3">Ubuntu20-04</a> <a href="/tags/astar/" style="font-size: 12.5px;" class="tags-cloud-3">astar</a> <a href="/tags/catkin/" style="font-size: 10px;" class="tags-cloud-0">catkin</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 15px;" class="tags-cloud-5">drone</a> <a href="/tags/ego-planner/" style="font-size: 12.5px;" class="tags-cloud-3">ego_planner</a> <a href="/tags/octomap/" style="font-size: 17.5px;" class="tags-cloud-8">octomap</a> <a href="/tags/offb-node/" style="font-size: 12.5px;" class="tags-cloud-3">offb_node</a> <a href="/tags/planner/" style="font-size: 10px;" class="tags-cloud-0">planner</a> <a href="/tags/px4/" style="font-size: 12.5px;" class="tags-cloud-3">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/simulation/" style="font-size: 10px;" class="tags-cloud-0">simulation</a> <a href="/tags/simulator/" style="font-size: 10px;" class="tags-cloud-0">simulator</a> <a href="/tags/vins/" style="font-size: 12.5px;" class="tags-cloud-3">vins</a> <a href="/tags/%E4%BB%BF%E7%9C%9F/" style="font-size: 12.5px;" class="tags-cloud-3">仿真</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" style="font-size: 10px;" class="tags-cloud-0">模块化</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 10px;" class="tags-cloud-0">绕圈</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 10px;" class="tags-cloud-0">视觉定位</a> <a href="/tags/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/" style="font-size: 12.5px;" class="tags-cloud-3">路径规划</a>
+      <a href="/tags/AprilTag/" style="font-size: 10px;" class="tags-cloud-0">AprilTag</a> <a href="/tags/IntelRealsense/" style="font-size: 14px;" class="tags-cloud-4">IntelRealsense</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 14px;" class="tags-cloud-4">NUC13</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12px;" class="tags-cloud-2">Ubuntu20-04</a> <a href="/tags/astar/" style="font-size: 12px;" class="tags-cloud-2">astar</a> <a href="/tags/catkin/" style="font-size: 10px;" class="tags-cloud-0">catkin</a> <a href="/tags/d435/" style="font-size: 10px;" class="tags-cloud-0">d435</a> <a href="/tags/drone/" style="font-size: 14px;" class="tags-cloud-4">drone</a> <a href="/tags/octomap/" style="font-size: 16px;" class="tags-cloud-6">octomap</a> <a href="/tags/offb-node/" style="font-size: 12px;" class="tags-cloud-2">offb_node</a> <a href="/tags/px4/" style="font-size: 18px;" class="tags-cloud-8">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/vins/" style="font-size: 12px;" class="tags-cloud-2">vins</a> <a href="/tags/%E4%BB%BF%E7%9C%9F/" style="font-size: 14px;" class="tags-cloud-4">仿真</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" style="font-size: 10px;" class="tags-cloud-0">模块化</a> <a href="/tags/%E7%BB%95%E5%9C%88/" style="font-size: 10px;" class="tags-cloud-0">绕圈</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 10px;" class="tags-cloud-0">视觉定位</a> <a href="/tags/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/" style="font-size: 12px;" class="tags-cloud-2">路径规划</a>
     </div>
   </div>
 </section>
