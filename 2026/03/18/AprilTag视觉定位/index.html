@@ -1008,6 +1008,65 @@ MathJax = {
 <!-- https://clipboardjs.com/ -->
 
 
+<script type="text/javascript">
+	(function () {
+		function setCopiedState(button) {
+			if (!button) return;
+			button.classList.add("copied");
+			setTimeout(() => {
+				button.classList.remove("copied");
+			}, 3000);
+		}
+
+		window.addEventListener("DOMContentLoaded", () => {
+			const copyBtnClass = "copy-btn";
+			document.querySelectorAll('figure.highlight').forEach((elem) => {
+				const codeContent = elem.querySelector("td.code");
+				if (!codeContent) return;
+				const copyButton = document.createElement('button');
+				const codeText = codeContent.innerText;
+				copyButton.setAttribute("class", copyBtnClass);
+				copyButton.setAttribute("title", "复制代码");
+				copyButton.setAttribute("aria-label", "复制代码");
+				copyButton.setAttribute("type", "button");
+				copyButton.setAttribute("data-clipboard-text", codeText);
+				copyButton.addEventListener("click", async () => {
+					try {
+						if (navigator.clipboard && window.isSecureContext) {
+							await navigator.clipboard.writeText(codeText);
+						} else {
+							const textArea = document.createElement("textarea");
+							textArea.value = codeText;
+							textArea.setAttribute("readonly", "");
+							textArea.style.position = "absolute";
+							textArea.style.left = "-9999px";
+							document.body.appendChild(textArea);
+							textArea.select();
+							document.execCommand("copy");
+							document.body.removeChild(textArea);
+						}
+						setCopiedState(copyButton);
+					} catch (error) {
+						console.error("Copy failed:", error);
+					}
+				});
+				elem.insertBefore(copyButton, elem.children[0]);
+			});
+
+			if (window.ClipboardJS) {
+				const clipboard = new ClipboardJS('.' + copyBtnClass);
+				clipboard.on('success', function (e) {
+					setCopiedState(e.trigger);
+					e.clearSelection();
+				});
+				clipboard.on('error', function (e) {
+					console.error('ClipboardJS error:', e.trigger);
+				});
+			}
+		})
+	})();
+</script>
+
 
 
 
