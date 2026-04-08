@@ -1326,7 +1326,7 @@ html.show-mobile-nav .navbar-list {
   position: relative;
   margin-top: 16px;
   margin-bottom: 16px;
-  overflow: auto;
+  overflow: hidden;
   color: #ccc;
   background: #2d2d2d;
   padding-top: 16px;
@@ -1403,6 +1403,9 @@ html.show-mobile-nav .navbar-list {
   width: 100%;
   max-width: 100%;
   table-layout: fixed;
+  display: block;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 .markdown-body figure.highlight table td {
   border: none;
