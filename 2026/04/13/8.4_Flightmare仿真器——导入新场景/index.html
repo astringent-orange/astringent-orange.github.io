@@ -24,7 +24,7 @@
 
   
 
-  <title>占据栅格图 Octomap | Mian的笔记</title>
+  <title>8.4_Flightmare仿真器——导入新场景 | Mian的笔记</title>
 
   
 
@@ -427,26 +427,24 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">占据栅格图 Octomap</h1>
+          <h1 class="title-wrap">8.4_Flightmare仿真器——导入新场景</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2026-01-08T16:00:00.000Z" itemprop="datePublished">2026-01-09</time>
+            <time  class="article-date" datetime="2026-04-12T16:00:00.000Z" itemprop="datePublished">2026-04-13</time>
           </h2>
           
           
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
     
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
+    <li><a href="/tags/FlightMare/">🏷️ FlightMare</a></li>
   
-    <li><a href="/tags/IntelRealsenseD435/">🏷️ IntelRealsenseD435</a></li>
-  
-    <li><a href="/tags/octomap/">🏷️ octomap</a></li>
+    <li><a href="/tags/Unity/">🏷️ Unity</a></li>
   
 </ul>
         </div>
@@ -471,43 +469,24 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="占据栅格图octomap"><a href="#占据栅格图octomap" class="headerlink" title="占据栅格图octomap"></a>占据栅格图octomap</h2><p>在传统分阶段（感知-建图-规划-优化）任务中，环境建图是非常重要的一环。<code>octomap</code>是一个开源的三维环境建模库，其基于八叉树<code>octree</code>实现，可以将三维<strong>点云</strong>数据转换为三维地图</p>
-<p>以Ubuntu 20.04 + ROS noetic为例，安装过程如下</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt-get update</span><br><span class="line"><span class="built_in">sudo</span> apt-get install ros-noetic-octomap ros-noetic-octomap-mapping ros-noetic-octomap-server</span><br><span class="line"><span class="comment"># rviz可视化插件</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install ros-noetic-octomap-rviz-plugins</span><br><span class="line"><span class="comment"># 离线查看工具，可直接查看地图.bt文件</span></span><br><span class="line"><span class="built_in">sudo</span> apt-get install octovis</span><br></pre></td></tr></table></figure>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>尝试在flightmare中导入一个自定义场景，不包含添加自定义物体。官方文档的说明不够详细，且存在一定的错误，按照以下步骤进行。</p>
+<h3 id="介绍概念"><a href="#介绍概念" class="headerlink" title="介绍概念"></a>介绍概念</h3><p>先对于过程中涉及到的部分<code>unity</code>相关概念进行介绍。首先<code>unity hub</code>用于管理不同版本的<code>unity editor</code>，所以需要先下载<code>unity hub</code>，然后通过其下载<code>unity editor</code>。其次<code>project</code>是可供编辑的工程文件，不能直接运行；而<code>linux standalone</code>则是经过编译后，不需要外部依赖，可以直接单独运行的二进制文件，例如之前下载并放在<code>flightrender</code>下的文件。故添加场景的整体过程如下，先下载<code>unity hub</code>，通过其下载合适版本的<code>unity editor</code>，然后打开<code>flightmare</code>的工程文件，在其中加入自己的场景，然后编译为二进制文件。将生成的二进制文件替换之前<code>flightrender</code>下的内容，并修改<code>flightlib</code>中相关配置即可</p>
+<h2 id="前置准备"><a href="#前置准备" class="headerlink" title="前置准备"></a>前置准备</h2><h3 id="安装unity-hub"><a href="#安装unity-hub" class="headerlink" title="安装unity hub"></a>安装unity hub</h3><p>安装<code>unity hub 2.0</code> <a target="_blank" rel="noopener" href="https://forum.unity.com/threads/unity-hub-v2-0-0-release.677485/">https://forum.unity.com/threads/unity-hub-v2-0-0-release.677485/</a><br><em>注意要运行<code>unity hub</code>，需要首先<code>chmod +x</code></em></p>
 <blockquote>
-<p>确保机器人有能提供三维点云数据的传感器</p>
+<p><strong>可能的问题</strong><br>  unity网页登陆后无法弹出unity hub界面。因为下载的AppImage虽然能启动，但是没有注册到系统，故系统没法将链接交给<code>unity hub</code>处理</p>
 </blockquote>
-<p><code>octomap</code>在使用时是作为一个ROS节点而存在，其输入为点云+定位信息，输出占据栅格+可视化标记。最基本的启动方式为<code>roslaunch octomap_server octomap_mapping.launch</code>，可以启动rviz添加<code>octomap</code>，选择<code>/octomap_full</code>进行查看</p>
-<p>一般可以通过launch文件启动，便于配置参数</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">launch</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">node</span> <span class="attr">pkg</span>=<span class="string">&quot;octomap_server&quot;</span> <span class="attr">type</span>=<span class="string">&quot;octomap_server_node&quot;</span> <span class="attr">name</span>=<span class="string">&quot;octomap_server&quot;</span>&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- ================= 核心坐标系 ================= --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- frame_id: 世界坐标系 (地图的根)，通常是 VINS 输出的 &quot;world&quot; 或 &quot;map&quot; --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;frame_id&quot;</span> <span class="attr">type</span>=<span class="string">&quot;string&quot;</span> <span class="attr">value</span>=<span class="string">&quot;world&quot;</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- base_frame_id: 机器人的基座，通常是 &quot;body_link&quot; 或 &quot;base_link&quot; --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 用于滤除地面或机器人自身的点云 (可选) --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;base_frame_id&quot;</span> <span class="attr">type</span>=<span class="string">&quot;string&quot;</span> <span class="attr">value</span>=<span class="string">&quot;body_link&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- ================= 建图参数 ================= --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- resolution: 格子大小 (米)。0.05 代表 5cm --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;resolution&quot;</span> <span class="attr">value</span>=<span class="string">&quot;0.05&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- max_range: 传感器最大有效距离 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- D435 建议设为 4.0 - 5.0。超过这个距离的点云不可信，不用于建图 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;sensor_model/max_range&quot;</span> <span class="attr">value</span>=<span class="string">&quot;5.0&quot;</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- ================= 动态更新逻辑 ================= --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- latch: false 表示地图会实时刷新。如果门开了，旧的障碍物会消失。 --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- latch: true 表示只增不减。适合完全静态的环境。 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;latch&quot;</span> <span class="attr">value</span>=<span class="string">&quot;false&quot;</span> /&gt;</span> </span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- 概率参数 (通常用默认即可) --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- hit: 击中障碍物增加的概率; miss: 光线穿过减少的概率 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;sensor_model/hit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;0.7&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;sensor_model/miss&quot;</span> <span class="attr">value</span>=<span class="string">&quot;0.4&quot;</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!-- ================= 地面滤除 (可选) ================= --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 如果不想要把地板建成障碍物，开启 filter_ground --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">param</span> <span class="attr">name</span>=<span class="string">&quot;filter_ground&quot;</span> <span class="attr">value</span>=<span class="string">&quot;false&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- ================= 数据输入 ================= --&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- cloud_in: 你的点云话题名字 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">remap</span> <span class="attr">from</span>=<span class="string">&quot;cloud_in&quot;</span> <span class="attr">to</span>=<span class="string">&quot;/camera/depth/color/points&quot;</span> /&gt;</span></span><br><span class="line">  </span><br><span class="line">  <span class="tag">&lt;/<span class="name">node</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">launch</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="使用D435-的点云"><a href="#使用D435-的点云" class="headerlink" title="使用D435 的点云"></a>使用D435 的点云</h3><p>d435虽然本身只能输出RGB-D图像，但是其内置的驱动可以通过计算输出点云数据，且该点云可以附带颜色，操作方式如下</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roslaunch realsense2_camera rs_camera.launch filters:=pointcloud</span><br></pre></td></tr></table></figure>
-<p>但是显然，由深度相机所得到的点云缺点很明显，首先是距离近，距离如果太远了相机的精度下降，其内容不可信，如果强行纳入计算则原处的点可能波动很大；其次是频率低，该点云的输出频率依赖于相机图像的频率；最后，由于依赖于深度图像，当面对如纯白墙面或者昏暗环境等深度相机不起作用的情况，也无法输出点云。可见，通过这种方式得到点云肯定是比不上由激光雷达得到点云。</p>
-<h2 id="占据栅格图的使用"><a href="#占据栅格图的使用" class="headerlink" title="占据栅格图的使用"></a>占据栅格图的使用</h2><p>除了直接在rviz中订阅地图来查看生成的占据栅格图，要如何使用地图来进行路径规划？</p>
-<h3 id="二维地图"><a href="#二维地图" class="headerlink" title="二维地图"></a>二维地图</h3><h4 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h4><p>二维占据地图<code>projected_map</code>，表示二维地图上障碍物的位置，是<code>octomap_server</code>默认发布的话题，在CPP中需要<code>#include &lt;nav_msgs/OccupancyGrid.h&gt;</code>。</p>
-<p>其数据类型为<code>nav_msgs::OccupancyGrid</code>，其具体数据结构有以下三部分</p>
-<ul>
-<li>header</li>
-<li>info</li>
-<li>data</li>
-</ul>
-<p>  其中：</p>
-<ul>
-<li>header.frame_id<br>表示地图坐标系，通常这里是 map。你工程里 octomap_server 也把 frame_id 设成了 map，见 src&#x2F;astar_nav&#x2F;launch&#x2F;octomap.launch:5。</li>
-<li>info.resolution<br>每个栅格边长，单位米&#x2F;格。</li>
-<li>info.width, info.height<br>地图宽高，单位是格子数，不是米。</li>
-<li>info.origin<br>栅格 (0,0) 在世界坐标里的原点位姿。通常可理解为地图左下角对应的世界坐标。</li>
-<li>data<br>一个一维 int8[] 数组，长度等于 width * height。</li>
-</ul>
-<p>  数组索引通常按行展开，访问方式就是：  index &#x3D; y * width + x。其中值为-1~100的整数，-1代表未知，0代表空闲，100表示占据，数字越大表示该位置被占用的概率越大</p>
-<h4 id="数据使用"><a href="#数据使用" class="headerlink" title="数据使用"></a>数据使用</h4><ol>
-<li>订阅话题并设置回调函数<br>首先需要订阅话题<code>/projected_map</code>，并使用回调函数将数据传给同类型的类内变量<code>raw_map</code>；同时在回调函数中进行地图膨胀，而膨胀后的地图可以用<code>std::vector&lt;int8_t&gt; inflated_data_</code>表示。</li>
-<li>地图膨胀<br>为了让无人机与障碍物保持安全距离，需要对地图进行膨胀。参考代码如下<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Planner::inflateMap</span><span class="params">()</span></span>&#123;</span><br><span class="line">	<span class="type">int</span> w = raw_map_.info.width;</span><br><span class="line">	<span class="type">int</span> h = raw_map_.info.height;</span><br><span class="line">    <span class="type">double</span> res = raw_map_.info.resolution;</span><br><span class="line">    <span class="type">int</span> radius = <span class="built_in">static_cast</span>&lt;<span class="type">int</span>&gt;(std::<span class="built_in">ceil</span>(safety_dist_ / res));</span><br><span class="line"></span><br><span class="line">    inflated_data_ = raw_map_.data;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> y = <span class="number">0</span>; y &lt; h; ++y)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> x = <span class="number">0</span>; x &lt; w; ++x)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// 原始地图中该格为占据</span></span><br><span class="line">            <span class="keyword">if</span> (raw_map_.data[y * w + x] &gt; <span class="number">50</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="comment">// 将周围 radius 范围内的格子都标记为占据</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="type">int</span> dy = -radius; dy &lt;= radius; ++dy)</span><br><span class="line">                &#123;</span><br><span class="line">                    <span class="keyword">for</span> (<span class="type">int</span> dx = -radius; dx &lt;= radius; ++dx)</span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="type">int</span> nx = x + dx;</span><br><span class="line">                        <span class="type">int</span> ny = y + dy;</span><br><span class="line">                        <span class="keyword">if</span> (nx &gt;= <span class="number">0</span> &amp;&amp; nx &lt; w &amp;&amp; ny &gt;= <span class="number">0</span> &amp;&amp; ny &lt; h)</span><br><span class="line">                        &#123;</span><br><span class="line">                            <span class="keyword">if</span> (dx * dx + dy * dy &lt;= radius * radius)</span><br><span class="line">                                inflated_data_[ny * w + nx] = <span class="number">100</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>路径规划<br>使用得到的膨胀后的二维地图进行路径规划</li>
-</ol>
-<h3 id="三维地图"><a href="#三维地图" class="headerlink" title="三维地图"></a>三维地图</h3><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p> <a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_73640344/article/details/144833619">ROS中的三维地图表示：OctoMap详解及应用-CSDN博客</a><br> <a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_44001261/article/details/122631470">nav_msgs::OccupancyGrid数据格式详解-CSDN博客</a></p>
+<h3 id="安装unity-editor"><a href="#安装unity-editor" class="headerlink" title="安装unity editor"></a>安装unity editor</h3><p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8.4_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%AF%BC%E5%85%A5%E6%96%B0%E5%9C%BA%E6%99%AF/8442f358-606d-44b3-bc75-2772eeabdf95-89d3a782b47e.png"></p>
+<h3 id="下载flightmare项目文件"><a href="#下载flightmare项目文件" class="headerlink" title="下载flightmare项目文件"></a>下载flightmare项目文件</h3><p>注意官方文档中给出的链接已经失效，UZH官方修改了项目部分内容（原来的场景有部分开始收费），使用以下新的链接</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone git@github.com:uzh-rpg/flightmare_unity.git</span><br></pre></td></tr></table></figure>
+<h2 id="修改Unity项目文件"><a href="#修改Unity项目文件" class="headerlink" title="修改Unity项目文件"></a>修改Unity项目文件</h2><h3 id="打开项目文件"><a href="#打开项目文件" class="headerlink" title="打开项目文件"></a>打开项目文件</h3><p>在<code>unity hub</code>的<code>project</code>页面中打开下载的<code>flightmare_unity</code>项目文件，将左下角<code>Assets -&gt; top_level_scene</code>拖动到左上角中，并删除默认的场景<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8.4_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%AF%BC%E5%85%A5%E6%96%B0%E5%9C%BA%E6%99%AF/be1feb92-736c-4f95-a0a2-5a98a3162268-dddfd8a1e5ef.png"></p>
+<h3 id="添加场景"><a href="#添加场景" class="headerlink" title="添加场景"></a>添加场景</h3><p>在<code>unity editor</code>中，使用左上角的<code>Assets -&gt; Import Package -&gt; Custom Package</code>导入自定义场景的<code>.unitypackage</code>文件，导入后可以在左下角看到，将其拖动到<code>assets -&gt; environment</code>下，与<code>industrial</code>并列同级</p>
+<h3 id="修改配置"><a href="#修改配置" class="headerlink" title="修改配置"></a>修改配置</h3><p>使用<code>vscode</code>打开flightmare的unity工程文件，找到<code>sceneSchedule</code>文件，进行以下两项修改<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8.4_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%AF%BC%E5%85%A5%E6%96%B0%E5%9C%BA%E6%99%AF/a2974e02-3a9a-4c17-b4ed-52b023075367-ed17d33608bc.png"><br>首先是声明自定义场景路径<code>public const string SCENE_xxx = &quot;Environments/xxx&quot;;</code>，其次是将其加入场景列表<code>scenes_list.Add(SCENE_CITY);</code>，要注意这里的加入顺序很重要</p>
+<h3 id="编译Standalone文件"><a href="#编译Standalone文件" class="headerlink" title="编译Standalone文件"></a>编译Standalone文件</h3><p>点击<code>unity editor</code>左上的<code>file -&gt; build settings -&gt; build</code>打开编译界面<br>将自定义的场景添加到编译设定中，注意这里的场景编号，其中<code>top_level_scene</code>的编号为0，其他场景的序号顺序也很重要<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8.4_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%AF%BC%E5%85%A5%E6%96%B0%E5%9C%BA%E6%99%AF/cc8cec3c-e71c-4c63-ac23-256d6ce0d337-942b97c5d241.png"><br>注意输出的文件名称设置为<code>RPG_Flightmare</code>，以便于后续替换之前下载的二进制文件。可以发现编译成功后有三个文件</p>
+<p><strong>存在问题</strong><br>在新的<code>flightmare_unity</code>工程文件中，官方删除了除<code>industrial</code>以外的所有场景文件，可以看到<code>asset -&gt; environment</code>下没有其他文件夹，且编译设置中也可以看到其他场景为<code>deleted</code>。一种方法是手动将其他场景下载并添加回来（在官方文档中存在链接，但是需要花钱购买）；另一种方法是忽略其他场景，设置新添加的场景的id为2，并配套修改代码文件。其中最容易遗漏的是在<code>sceneSchedule</code>中的<code>scene_list.Add</code>部分，需要让新的场景作为第二个添加的</p>
+<h2 id="修改flightmare配置"><a href="#修改flightmare配置" class="headerlink" title="修改flightmare配置"></a>修改flightmare配置</h2><p>首先将之前编译输出的三个文件替换<code>flightrender</code>中原有的文件，其次修改<code>flightlib</code>文件<code>flightlib/include/flightlib/bridges/unity_message_types.hpp</code>中以下部分<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8.4_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%AF%BC%E5%85%A5%E6%96%B0%E5%9C%BA%E6%99%AF/6dea3ea3-2531-4b2d-b5a6-f1308e04c236-5c636fa3cc8c.png"><br>将添加的场景的序号设置为1（注意在编译时的场景id为2，这是正常情况，因为编译时还包含<code>top_level_scene</code>），同时修改场景数量</p>
+<h3 id="运行测试"><a href="#运行测试" class="headerlink" title="运行测试"></a>运行测试</h3><p>将测试文件中的场景名称修改为之前设定的场景名称，然后进行编译，然后尝试启动新场景<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8.4_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%AF%BC%E5%85%A5%E6%96%B0%E5%9C%BA%E6%99%AF/f884422c3bfa9439fd28d7217345ca36-2c92662a42c6.png"><br>中间出现了几秒的industrial场景是正常现象，在载入场景之前可能会先显式默认场景</p>
+<h2 id="后续改进"><a href="#后续改进" class="headerlink" title="后续改进"></a>后续改进</h2><p>目前场景中的初始位置还是默认的，且场景的选择没有添加到一开始的选项栏中。此外，还没有实现自定义物体的添加以及场景的预览展示。</p>
+<h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><p><a target="_blank" rel="noopener" href="https://flightmare.readthedocs.io/en/latest/building_flightmare_binary/standalone.html#add-scene">Standalone build — Make the build in Unity — Flightmare documentation</a></p>
 
       </section>
 
@@ -515,22 +494,6 @@ document.addEventListener("DOMContentLoaded", function() {
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2026/01/20/4_%E6%90%AD%E8%BD%BDNUC%E5%AE%9E%E6%9C%BA%E8%B5%B7%E9%A3%9E%E6%B5%8B%E8%AF%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">4_搭载NUC实机起飞测试</h2>
-        </a>
-      
-      <div class="card-text--row">下一篇</div>
-    </div>
-  </article>
-</div>
-
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
@@ -538,8 +501,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     <div class="card-text">
       
-        <a href="/2026/01/05/ROS%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">ROS参数服务器</h2>
+        <a href="/2026/04/09/8.3_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A82/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">8.3_Flightmare仿真器——基础使用2</h2>
         </a>
       
       <div class="card-text--row">上一篇</div>
@@ -609,7 +572,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <span>目录</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%A0%E6%8D%AE%E6%A0%85%E6%A0%BC%E5%9B%BEoctomap"><span class="toc-number">1.</span> <span class="toc-text">占据栅格图octomap</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8D435-%E7%9A%84%E7%82%B9%E4%BA%91"><span class="toc-number">1.1.</span> <span class="toc-text">使用D435 的点云</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8D%A0%E6%8D%AE%E6%A0%85%E6%A0%BC%E5%9B%BE%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="toc-number">2.</span> <span class="toc-text">占据栅格图的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E7%BB%B4%E5%9C%B0%E5%9B%BE"><span class="toc-number">2.1.</span> <span class="toc-text">二维地图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="toc-number">2.1.1.</span> <span class="toc-text">数据结构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E4%BD%BF%E7%94%A8"><span class="toc-number">2.1.2.</span> <span class="toc-text">数据使用</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%89%E7%BB%B4%E5%9C%B0%E5%9B%BE"><span class="toc-number">2.2.</span> <span class="toc-text">三维地图</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">3.</span> <span class="toc-text">参考</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8B%E7%BB%8D%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.</span> <span class="toc-text">介绍概念</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%BD%AE%E5%87%86%E5%A4%87"><span class="toc-number">2.</span> <span class="toc-text">前置准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85unity-hub"><span class="toc-number">2.1.</span> <span class="toc-text">安装unity hub</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85unity-editor"><span class="toc-number">2.2.</span> <span class="toc-text">安装unity editor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BDflightmare%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6"><span class="toc-number">2.3.</span> <span class="toc-text">下载flightmare项目文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9Unity%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.</span> <span class="toc-text">修改Unity项目文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%89%93%E5%BC%80%E9%A1%B9%E7%9B%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.1.</span> <span class="toc-text">打开项目文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%BB%E5%8A%A0%E5%9C%BA%E6%99%AF"><span class="toc-number">3.2.</span> <span class="toc-text">添加场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE"><span class="toc-number">3.3.</span> <span class="toc-text">修改配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91Standalone%E6%96%87%E4%BB%B6"><span class="toc-number">3.4.</span> <span class="toc-text">编译Standalone文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9flightmare%E9%85%8D%E7%BD%AE"><span class="toc-number">4.</span> <span class="toc-text">修改flightmare配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E6%B5%8B%E8%AF%95"><span class="toc-number">4.1.</span> <span class="toc-text">运行测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%E6%94%B9%E8%BF%9B"><span class="toc-number">5.</span> <span class="toc-text">后续改进</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9"><span class="toc-number">6.</span> <span class="toc-text">参考内容</span></a></li></ol>
   </div>
 </section>
 
