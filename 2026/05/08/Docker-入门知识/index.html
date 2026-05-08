@@ -24,7 +24,7 @@
 
   
 
-  <title>自定义库文件 模块化设计 | Mian的笔记</title>
+  <title>Docker 入门知识 | Mian的笔记</title>
 
   
 
@@ -427,11 +427,11 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">自定义库文件 模块化设计</h1>
+          <h1 class="title-wrap">Docker 入门知识</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2026-02-01T16:00:00.000Z" itemprop="datePublished">2026-02-02</time>
+            <time  class="article-date" datetime="2026-05-07T16:00:00.000Z" itemprop="datePublished">2026-05-08</time>
           </h2>
           
           
@@ -442,13 +442,7 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/CPP/">🏷️ CPP</a></li>
-  
-    <li><a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/">🏷️ 模块化</a></li>
-  
-    <li><a href="/tags/Python/">🏷️ Python</a></li>
+    <li><a href="/tags/docker/">🏷️ docker</a></li>
   
 </ul>
         </div>
@@ -473,28 +467,24 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>为了实现便于替换、复用与合作使用，在完成大型的项目时通常会使用模块化设计，即将不同功能的实现分别封装在单独的文件中，而不是在一个文件中实现所有功能，而这通常也伴随着自定义头文件的使用</p>
-<h2 id="CPP"><a href="#CPP" class="headerlink" title="CPP"></a>CPP</h2><p>除了上述理由，在cpp中使用cmake编译时，如果使用自定义头文件<code>.h</code>提前将类的结构，成员，函数入口等信息声明出来，则可以减轻编译的压力，而不必在更冗长<code>.cpp</code>文件中去寻找。</p>
-<p>具体而言，在ROS1的项目构成中，一个cpp文件通常以<code>.h</code>和<code>.cpp</code>成对的形式出现。例如如下结构</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ros_pkg\</span><br><span class="line">	include\</span><br><span class="line">		planner.h</span><br><span class="line">	src\</span><br><span class="line">		planner.cpp</span><br></pre></td></tr></table></figure>
-<p>然后<code>.h</code>文件写法示意如下</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> PLANNER_H</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> PLANNER_H</span></span><br><span class="line"><span class="comment">// include部分一般只包含本文件中使用的，例如一些数据类</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Planner</span></span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="comment">// 构造函数</span></span><br><span class="line">	<span class="built_in">Planner</span>(ros::NodeHandle&amp; nh);</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 对外接口函数</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 公共变量</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	<span class="comment">// 回调函数</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// ROS通信</span></span><br><span class="line">	ros::Subscriber sub;</span><br><span class="line">	ros::Publisher pub;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 内部变量</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span> <span class="comment">// PLANNER_H</span></span></span><br></pre></td></tr></table></figure>
-<p>而<code>.cpp</code>文件写法示意如下</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;ros_pkg/planner.h&quot;</span></span></span><br><span class="line"><span class="comment">// 不必再include.h文件已有的部分</span></span><br><span class="line"><span class="comment">// 一般时包含一些例如&lt;math&gt;的功能库</span></span><br><span class="line"></span><br><span class="line">Planner::<span class="built_in">Planner</span>(ros::NodeHandle&amp; nh)</span><br><span class="line">	: 变量(值)</span><br><span class="line">&#123;</span><br><span class="line">	nh.param...; <span class="comment">// 依靠句柄传参</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 其他函数详细定义</span></span><br></pre></td></tr></table></figure>
-<p>其中构造函数名后面的 : 变量(值) 表示给类成员变量提前和直接赋值，是cpp的特殊语法</p>
-<h2 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h2><p>在ros1项目中python自定义库文件的使用需要遵循一定的方法，需要手动进行一些设置，因为ros1在设计时（2007）主要是为了cpp而设计的，许多python功能需要手动添加。而在ros2中就有了python的自动支持。</p>
-<p>如果不进行这些操作，rosrun无法正常使用（当然直接python运行则可以）</p>
-<p>以以下这个功能包<code>agent</code>为例，一般的python文件都放在scripts下，而需要被引用的库文件需要在src下新建一个同名文件夹。</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">agent/</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── package.xml</span><br><span class="line">├── setup.py                 &lt;-- 1. “安装图纸”</span><br><span class="line">├── scripts/</span><br><span class="line">│   └── train.py             &lt;-- 2. “可执行脚本”：可以引用下面的库</span><br><span class="line">└── src/</span><br><span class="line">    └── agent/               &lt;-- 3. “库文件夹”：名字必须和包名一致</span><br><span class="line">        ├── __init__.py      &lt;-- 4. 标识这是一个 Python 包</span><br><span class="line">        ├── envs/</span><br><span class="line">        │   ├── __init__.py</span><br><span class="line">        │   └── drone_env.py</span><br><span class="line">        └── utils/</span><br><span class="line">            ├── __init__.py</span><br><span class="line">            └── helper.py</span><br></pre></td></tr></table></figure>
-<p>其中有一个与cmakelist同级的<code>setup.py</code>文件，有如下内容</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> distutils.core <span class="keyword">import</span> setup</span><br><span class="line"><span class="keyword">from</span> catkin_pkg.python_setup <span class="keyword">import</span> generate_distutils_setup</span><br><span class="line"></span><br><span class="line">d = generate_distutils_setup(</span><br><span class="line">    packages=[<span class="string">&#x27;agent&#x27;</span>],     <span class="comment"># 告诉系统：src/agent 文件夹是一个包</span></span><br><span class="line">    package_dir=&#123;<span class="string">&#x27;&#x27;</span>: <span class="string">&#x27;src&#x27;</span>&#125; <span class="comment"># 告诉系统：源码在 src 目录下</span></span><br><span class="line">)</span><br><span class="line">setup(**d)</span><br></pre></td></tr></table></figure>
-<p>库文件夹及其下每一个文件夹都要有一个<code>__init__.py</code>，其中可以有以下内容</p>
-<ol>
-<li>留空，单纯表示该文件夹是一个python包</li>
-<li>加入一些一启动就需要执行的逻辑</li>
-<li>将一些类提高层级</li>
-</ol>
-<p>最后需要在<code>CMakeLists.txt</code>中加入<code>catkin_python_setup()</code>然后编译，即可成功使用，可以在其他功能包中使用这些库文件。</p>
+        <h2 id="提出背景-容器"><a href="#提出背景-容器" class="headerlink" title="提出背景-容器"></a>提出背景-容器</h2><p>假设一个程序员在开发一个app时，在自己电脑上从头到尾<strong>搭建了一套环境</strong>，而在测试时需要在另一台电脑上进行，最终运行时又需要在第三台电脑上运行。一般的方式是分别在测试电脑与运行电脑上再重新搭建这套环境，但是这样一是搭建了3次环境，耗费时间；第二是由于硬件的以及操作系统的不同，可能即使搭建了相同的环境，相同的程序也无法正确运行。</p>
+<p>这时提出，可以使用<strong>虚拟机</strong>来解决该问题，只需要开发人员配置好一套虚拟机环境然后clone给测试与运维，在<strong>容器</strong>技术出现前，这的确是一种好方法，但是该方法也存在缺陷。为了运行这一个应用程序，需要运行一台虚拟机，而对比一个应用，操作系统占用的资源其实更多，这样即浪费了存储也浪费了内存，并且虚拟机软件的启动也很慢，虚拟机软件的大小也不小。</p>
+<p>具体而言，在学过了操作系统之后可以知道，计算机的系统其实分为内核和用户，其中后者通过系统调用的方式访问前者。虽然内核的程序并不大，但是通常需要维护许多数据结构，导致需要占用大量资源。虚拟机就是完全模拟了内核和其上的用户程序，而容器则是使用宿主机的内核，从而减少了资源开销。</p>
+<p>于是，提出是否存在一种方法，即轻量又能隔离环境？</p>
+<h2 id="容器-docker"><a href="#容器-docker" class="headerlink" title="容器-docker"></a>容器-docker</h2><p>容器技术，可以视为一种“轻量化的虚拟机”，即隔离各应用的环境，但是又使用同一操作系统，而docker就是一种容器技术的实现。</p>
+<p>docker中有三个关键概念：<strong>Dockerfile，image，container</strong></p>
+<p>其中image可以理解为类似操作系统的iso镜像文件，使用docker engine（类似vmware）可以实例化一个container（虚拟机实例）。而dockerfile则是说明如何构建一个image</p>
+<h2 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h2><p>一般使用时，在工作文件夹下创建一个Dockerfile文件。内容首先 <code>FROM </code>指明基础镜像，如果本地没有则可以从服务器下载。<code>WORKDIR</code>指明镜像（虚拟机）工作文件夹&#x2F;app，之后都默认在该文件夹下。<code>COPY . .</code>将当前文件夹系下所有文件拷贝到&#x2F;app下。<code>RUN</code>指令来运行指令。通过上述命令即可完成docker镜像的创建。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Docker-%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/docker%E4%BD%BF%E7%94%A8%E4%BE%8B1-95a94dd3ceea.png"><br>而使用<code>CMD</code>在 <em>镜像运行起来后的容器</em> 中运行命令</p>
+<p>然后使用<code>docker build -t docker_name .</code>来构建镜像image，其中<code>-t</code>参数说明image名，<code>.</code>指明在当前文件夹下搜索dockerfile。第一次运行时会比较慢，因为docker会下载各种文件并按照操作构建，但是之后docker会将操作缓存在本地，第二次build时便会更快。</p>
+<p>在<code>build</code>之后便可以<code>docker run -p local_port:docker_port -d docker_name</code>，直接通过已经构建的image来运行一个container。其中<code>-d</code>是指在后台运行，不在命令行输出运行过程；<code>-p</code>是指定将docker的一个端口映射到本地的一个端口。</p>
+<h2 id="额外操作"><a href="#额外操作" class="headerlink" title="额外操作"></a>额外操作</h2><p>docker中的数据是在docker容器关闭后是不会保存的，就像是删除了虚拟机一样；此外，docker容器应该是“无状态”的，以便于迁移等。所以可以将容器数据保存在外部。docker中，可以创建一个数据卷，在容器启动时将该数据卷挂载到docker的文件目录下（像是外接了一个硬盘）；并且，一个数据卷可以挂载在多个容器下，以实现分布式存储</p>
+<p><code>docker volume create volume_name</code>来创建一个数据卷，之后启动容器时添加<code>-v</code>参数，例如<code>docker run -v volume_name:/path docker_name</code>将数据卷挂载</p>
+<h2 id="docker-compose"><a href="#docker-compose" class="headerlink" title="docker-compose"></a>docker-compose</h2><p>通过docker，现在可以在环境中运行一个应用，但是如果有多个应用该怎么办？一种方法是在一个container中运行多个应用，但是存在一些问题，如应用之间要求的环境不同；当一个应用出问题时，需要停下整个环境来调试。所以通常是每个container中运行一个应用，但是要启动多个container需要多次<code>docker run</code>，很不方便。可以使用sh文件来完成，而官方则是提供了专用的工具docker-compose，来一次性打开多个docker。</p>
+<p>docker-compose根据docker-compose.yml文件来运行<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Docker-%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/docker-compose%E4%BD%BF%E7%94%A8%E4%BE%8B1-949ef9d1a327.png"><br>其中<code>version</code>与docker-engine版本有关，在<code>services</code>下可以打开多个container，如<code>web</code>，<code>db</code>；其中可以指定不同的镜像来源，如<code>build</code>，<code>image</code>。</p>
+<p>完成后使用<code>docker-compose up -d</code>来运行该文件启动所有容器；要停止则使用<code>docker-compose down</code>。</p>
+<h2 id="额外内容"><a href="#额外内容" class="headerlink" title="额外内容"></a>额外内容</h2><h3 id="docker文件结构"><a href="#docker文件结构" class="headerlink" title="docker文件结构"></a>docker文件结构</h3><p>一个容器中的文件结构和linux基本一致</p>
+<h3 id="不同版本image"><a href="#不同版本image" class="headerlink" title="不同版本image"></a>不同版本image</h3><p>docker和虚拟机不同，依旧是使用宿主机的内核，所以对于构建使用的image基础的linux版本有要求。一般来说，宿主机的高版本内核可以兼容docker的低版本镜像，反之则一般不行</p>
+<h3 id="daemon-json文件"><a href="#daemon-json文件" class="headerlink" title="daemon.json文件"></a>daemon.json文件</h3><p>docker engine的配置文件，可以用于设置docker image的存储位置，image的大小，网络配置等</p>
 
       </section>
 
@@ -502,22 +492,6 @@ document.addEventListener("DOMContentLoaded", function() {
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2026/02/04/5_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95-%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">5_实机绕圈测试-场地搭建</h2>
-        </a>
-      
-      <div class="card-text--row">下一篇</div>
-    </div>
-  </article>
-</div>
-
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
@@ -525,8 +499,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     <div class="card-text">
       
-        <a href="/2026/01/27/cmake-catkin-make-build/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">cmake-catkin make-build</h2>
+        <a href="/2026/04/27/catkin_simple%E7%9A%84%E4%BD%BF%E7%94%A8/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">catkin_simple的使用</h2>
         </a>
       
       <div class="card-text--row">上一篇</div>
@@ -596,7 +570,7 @@ document.addEventListener("DOMContentLoaded", function() {
     <span>目录</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CPP"><span class="toc-number">2.</span> <span class="toc-text">CPP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Python"><span class="toc-number">3.</span> <span class="toc-text">Python</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E5%87%BA%E8%83%8C%E6%99%AF-%E5%AE%B9%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">提出背景-容器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%B9%E5%99%A8-docker"><span class="toc-number">2.</span> <span class="toc-text">容器-docker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BE%E4%BE%8B%E8%AF%B4%E6%98%8E"><span class="toc-number">3.</span> <span class="toc-text">举例说明</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%9D%E5%A4%96%E6%93%8D%E4%BD%9C"><span class="toc-number">4.</span> <span class="toc-text">额外操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#docker-compose"><span class="toc-number">5.</span> <span class="toc-text">docker-compose</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%9D%E5%A4%96%E5%86%85%E5%AE%B9"><span class="toc-number">6.</span> <span class="toc-text">额外内容</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#docker%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="toc-number">6.1.</span> <span class="toc-text">docker文件结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8D%E5%90%8C%E7%89%88%E6%9C%ACimage"><span class="toc-number">6.2.</span> <span class="toc-text">不同版本image</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#daemon-json%E6%96%87%E4%BB%B6"><span class="toc-number">6.3.</span> <span class="toc-text">daemon.json文件</span></a></li></ol></li></ol>
   </div>
 </section>
 
