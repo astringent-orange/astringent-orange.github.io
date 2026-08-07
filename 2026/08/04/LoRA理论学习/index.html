@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color" content="#3367D6"/>
+  <link rel="apple-touch-icon" href="/icons-192.png">
+  <link rel="manifest" href="/manifest.json">
+  
+  <meta name="generator" content="Hexo 7.3.0">
+
+  
+    <meta name="description" content="Mian的个人博客">
+  
+
+  
+
+  
+    <meta name="author" content="Mian">
+  
+
+  
+
+  
+
+  <title>LoRA理论学习 | Mian的笔记</title>
+
+  
+
+  
+    <link rel="shortcut icon" href="/favicon.ico">
+  
+
+  
+
+  
+
+  
+
+  
+<link rel="stylesheet" href="/css/style.css">
+
+</head>
+<body>
+  <div class="root-container">
+    
+<!-- header container -->
+<header class="header-container post">
+  
+  
+  
+    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png)"></div>
+  
+
+  <!-- navbar -->
+<nav class="navbar">
+  <div class="navbar-content">
+    <!-- logo -->
+    <div class="navbar-logo">
+      <a href="/">
+        
+          Mian的笔记
+        
+      </a>
+    </div>
+
+    <!-- link -->
+    <div class="navbar-link">
+      <div class="navbar-btn">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+
+      <ul class="navbar-list">
+        
+          
+            <li class="navbar-list-item">
+              <a href="/">首页</a>
+            </li>
+          
+        
+          
+            <li class="navbar-list-item dropdown">
+              <a href="#" class="dropdown-toggle" aria-expanded="false">
+                文档 <span class="arrow">&#9662;</span>
+              </a>
+
+              <ul class="dropdown-menu">
+                
+                  <li>
+                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
+                      无人机实验
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
+                      无人机工程
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/categories/%E6%9D%82%E8%AE%B0/">
+                      杂记
+                    </a>
+                  </li>
+                
+                  <li>
+                    <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
+                      大模型
+                    </a>
+                  </li>
+                
+              </ul>
+            </li>
+          
+        
+          
+            <li class="navbar-list-item">
+              <a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a>
+            </li>
+          
+        
+      </ul>
+
+      <div class="navbar-search">
+        <button class="navbar-search-toggle" type="button" aria-label="Open search" aria-expanded="false">
+          <span class="navbar-search-icon" aria-hidden="true"></span>
+        </button>
+        <form class="navbar-search-form" role="search">
+          <input
+            class="navbar-search-input"
+            type="search"
+            name="q"
+            placeholder="搜索文章..."
+            autocomplete="off"
+          />
+        </form>
+        <div class="navbar-search-results" hidden>
+          <div class="navbar-search-state">&#36755;&#20837;&#20851;&#38190;&#35789;&#24320;&#22987;&#25628;&#32034;</div>
+          <div class="navbar-search-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  const dropdown = document.querySelector(".dropdown");
+  const search = document.querySelector(".navbar-search");
+
+  if (dropdown) {
+    const menu = dropdown.querySelector(".dropdown-menu");
+    const toggle = dropdown.querySelector(".dropdown-toggle");
+
+    function closeMenu() {
+      dropdown.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+
+    function openMenu() {
+      dropdown.classList.add("is-open");
+      toggle.setAttribute("aria-expanded", "true");
+    }
+
+    toggle.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const opened = dropdown.classList.contains("is-open");
+      if (opened) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    document.addEventListener("click", function(e) {
+      if (!dropdown.contains(e.target)) {
+        closeMenu();
+      }
+    });
+
+    menu.addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        closeMenu();
+      }
+    });
+  }
+
+  if (search) {
+    const searchToggle = search.querySelector(".navbar-search-toggle");
+    const searchForm = search.querySelector(".navbar-search-form");
+    const searchInput = search.querySelector(".navbar-search-input");
+    const searchResults = search.querySelector(".navbar-search-results");
+    const searchState = search.querySelector(".navbar-search-state");
+    const searchList = search.querySelector(".navbar-search-list");
+    const searchIndexPath = "/search.json";
+    const searchBasePath = "/";
+    const searchPagePath = "/search/";
+    let searchIndex = null;
+    let searchIndexPromise = null;
+
+    function escapeHTML(value) {
+      return String(value).replace(/[&<>"']/g, function(char) {
+        const entityMap = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#39;"
+        };
+        return entityMap[char];
+      });
+    }
+
+    function escapeRegExp(value) {
+      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    }
+
+    function buildSnippet(item, keyword) {
+      const source = item.excerpt || item.content || "";
+      if (!source) return "";
+
+      const normalizedKeyword = keyword.trim().toLowerCase();
+      const sourceLower = source.toLowerCase();
+      const matchIndex = normalizedKeyword ? sourceLower.indexOf(normalizedKeyword) : -1;
+      const start = matchIndex >= 0 ? Math.max(0, matchIndex - 24) : 0;
+      const snippet = source.slice(start, start + 88).trim();
+
+      return start > 0 ? "..." + snippet : snippet;
+    }
+
+    function highlightText(text, keyword) {
+      if (!keyword) return escapeHTML(text);
+      const safeKeyword = escapeRegExp(keyword.trim());
+      if (!safeKeyword) return escapeHTML(text);
+
+      return escapeHTML(text).replace(new RegExp("(" + safeKeyword + ")", "ig"), "<mark>$1</mark>");
+    }
+
+    function setSearchState(message, type) {
+      searchState.textContent = message;
+      searchState.dataset.state = type || "idle";
+      searchState.hidden = false;
+    }
+
+    function clearSearchResults() {
+      searchList.innerHTML = "";
+    }
+
+    function showResultsPanel() {
+      searchResults.hidden = false;
+      search.classList.add("show-results");
+    }
+
+    function hideResultsPanel() {
+      searchResults.hidden = true;
+      search.classList.remove("show-results");
+    }
+
+    function ensureSearchIndex() {
+      if (searchIndex) return Promise.resolve(searchIndex);
+      if (searchIndexPromise) return searchIndexPromise;
+
+      setSearchState("\u6b63\u5728\u52a0\u8f7d\u641c\u7d22\u7d22\u5f15...", "loading");
+      showResultsPanel();
+
+      searchIndexPromise = fetch(searchIndexPath)
+        .then(function(response) {
+            if (!response.ok) throw new Error("Failed to load search index");
+            return response.json();
+          })
+        .then(function(data) {
+          searchIndex = Array.isArray(data) ? data : [];
+          return searchIndex;
+        })
+        .catch(function() {
+          setSearchState("\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25", "error");
+          return [];
+        });
+
+      return searchIndexPromise;
+    }
+
+    function renderSearchResults(items, keyword) {
+      clearSearchResults();
+      showResultsPanel();
+
+      if (!keyword.trim()) {
+        setSearchState("\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22", "idle");
+        return;
+      }
+
+      if (!items.length) {
+        setSearchState("\u672a\u627e\u5230\u76f8\u5173\u6587\u7ae0", "empty");
+        return;
+      }
+
+      searchState.hidden = true;
+      const html = items.map(function(item) {
+        const snippet = buildSnippet(item, keyword);
+        const metaParts = []
+          .concat(item.categories || [])
+          .concat(item.tags || []);
+
+        return [
+          '<a class="navbar-search-result-item" href="' + searchBasePath + escapeHTML(item.path) + '">',
+          '<span class="navbar-search-result-title">' + highlightText(item.title || "Untitled", keyword) + "</span>",
+          snippet ? '<span class="navbar-search-result-snippet">' + highlightText(snippet, keyword) + "</span>" : "",
+          metaParts.length ? '<span class="navbar-search-result-meta">' + escapeHTML(metaParts.slice(0, 3).join(" / ")) + "</span>" : "",
+          "</a>"
+        ].join("");
+      }).join("");
+
+      searchList.innerHTML = html;
+    }
+
+    function performSearch(keyword) {
+      ensureSearchIndex().then(function(index) {
+        const trimmedKeyword = keyword.trim();
+        if (!trimmedKeyword) {
+          renderSearchResults([], "");
+          return;
+        }
+
+        const normalizedKeyword = trimmedKeyword.toLowerCase();
+        const matchedItems = index.filter(function(item) {
+          const haystack = [
+            item.title,
+            item.excerpt,
+            item.content,
+            (item.tags || []).join(" "),
+            (item.categories || []).join(" ")
+          ].join(" ").toLowerCase();
+
+          return haystack.includes(normalizedKeyword);
+        }).sort(function(a, b) {
+          const aTitle = (a.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
+          const bTitle = (b.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
+          return bTitle - aTitle;
+        }).slice(0, 6);
+
+        renderSearchResults(matchedItems, trimmedKeyword);
+      });
+    }
+
+    function navigateToSearchPage(keyword) {
+      const trimmedKeyword = keyword.trim();
+      const target = trimmedKeyword ? searchPagePath + "?q=" + encodeURIComponent(trimmedKeyword) : searchPagePath;
+      window.location.href = target;
+    }
+
+    function closeSearch() {
+      search.classList.remove("is-open");
+      searchToggle.setAttribute("aria-expanded", "false");
+      hideResultsPanel();
+    }
+
+    function openSearch() {
+      search.classList.add("is-open");
+      searchToggle.setAttribute("aria-expanded", "true");
+      window.requestAnimationFrame(function() {
+        searchInput.focus();
+      });
+    }
+
+    searchToggle.addEventListener("click", function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (search.classList.contains("is-open")) {
+        closeSearch();
+      } else {
+        openSearch();
+        if (searchInput.value.trim()) {
+          performSearch(searchInput.value);
+        }
+      }
+    });
+
+    searchForm.addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
+
+    searchForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      navigateToSearchPage(searchInput.value);
+    });
+
+    searchInput.addEventListener("input", function() {
+      if (!search.classList.contains("is-open")) {
+        openSearch();
+      }
+      performSearch(searchInput.value);
+    });
+
+    document.addEventListener("click", function(e) {
+      if (!search.contains(e.target)) {
+        closeSearch();
+      }
+    });
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        closeSearch();
+      }
+    });
+
+    searchResults.addEventListener("click", function(e) {
+      e.stopPropagation();
+    });
+  }
+});
+</script>
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+    <div class="header-content">
+      <div class="post-text layout-block">
+        <div class="layout-margin">
+          <h1 class="title-wrap">LoRA理论学习</h1>
+          <h2 class="title-sub-wrap">
+            <strong>Mian</strong>
+            <span>发布于</span>
+            <time  class="article-date" datetime="2026-08-03T16:00:00.000Z" itemprop="datePublished">2026-08-04</time>
+          </h2>
+          
+          
+          <ul class="wrap-list dark">
+  
+    <li><a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">📒 大模型</a></li>
+    
+</ul>
+          <ul class="wrap-list dark">
+  
+    <li><a href="/tags/LoRA/">🏷️ LoRA</a></li>
+  
+    <li><a href="/tags/%E5%BE%AE%E8%B0%83/">🏷️ 微调</a></li>
+  
+    <li><a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">🏷️ 大模型</a></li>
+  
+</ul>
+        </div>
+      </div>
+    </div>
+  
+
+  
+  
+  
+</header>
+
+
+    <!-- 文章 -->
+
+<!-- 文章内容 -->
+<div class="body-container">
+  <article class="content-container layout-block post-container">
+    <div class="article-info">
+      
+      
+      
+      
+      <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。</p>
+<p>它试图解决一个问题：</p>
+<blockquote>
+<p>一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？</p>
+</blockquote>
+<p>普通微调会把原来的权重 $W$ 修改为：</p>
+<p>$$<br>W’ &#x3D; W + \Delta W<br>$$</p>
+<p>其中 $\Delta W$ 表示为了适应新任务而产生的权重变化。</p>
+<p>LoRA 的核心思想是：<strong>不直接训练巨大的 $\Delta W$，而是限制它只能通过两个较小矩阵的乘积来表示：</strong></p>
+<p>$$<br>\Delta W &#x3D; BA<br>$$</p>
+<p>于是：</p>
+<p>$$<br>W’ &#x3D; W + BA<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$W$：基础模型原来的权重，训练时冻结</li>
+<li>$A,B$：LoRA 新增加的小矩阵，训练时更新</li>
+<li>$\Delta W$：LoRA 对原模型产生的权重修正</li>
+</ul>
+<p>LoRA 为什么可以这样做，需要从矩阵的<strong>秩、低秩分解和 SVD</strong>开始理解。</p>
+<hr>
+<h2 id="秩与低秩分解"><a href="#秩与低秩分解" class="headerlink" title="秩与低秩分解"></a>秩与低秩分解</h2><h3 id="什么是矩阵的秩"><a href="#什么是矩阵的秩" class="headerlink" title="什么是矩阵的秩"></a>什么是矩阵的秩</h3><p>考虑矩阵：</p>
+<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 &amp; 3 \<br>0 &amp; 1 &amp; 1 \<br>1 &amp; 3 &amp; 4<br>\end{bmatrix}<br>$$</p>
+<p>它的三个列向量分别为：</p>
+<p>$$<br>\mathbf c_1&#x3D;<br>\begin{bmatrix}<br>1 \<br>0 \<br>1<br>\end{bmatrix}<br>$$</p>
+<p>$$<br>\mathbf c_2&#x3D;<br>\begin{bmatrix}<br>2 \<br>1 \<br>3<br>\end{bmatrix}<br>$$</p>
+<p>$$<br>\mathbf c_3&#x3D;<br>\begin{bmatrix}<br>3 \<br>1 \<br>4<br>\end{bmatrix}<br>$$</p>
+<p>可以发现：</p>
+<p>$$<br>\mathbf c_3&#x3D;\mathbf c_1+\mathbf c_2<br>$$</p>
+<p>因此第三列并没有提供一个新的独立方向。</p>
+<p>真正独立的只有 $\mathbf c_1$ 和 $\mathbf c_2$ 两个方向，所以：</p>
+<p>$$<br>\operatorname{rank}(M)&#x3D;2<br>$$</p>
+<p>矩阵的秩可以直观理解为：</p>
+<blockquote>
+<p><strong>矩阵中真正独立的信息方向的数量。</strong></p>
+</blockquote>
+<p>严格来说：</p>
+<h1 id="operatorname-rank-M"><a href="#operatorname-rank-M" class="headerlink" title="$$\operatorname{rank}(M)"></a>$$<br>\operatorname{rank}(M)</h1><p>\dim(\operatorname{Col}(M))<br>$$</p>
+<p>也就是矩阵列空间的维数。</p>
+<p>由于行秩等于列秩，也可以通过线性无关的行向量数量理解矩阵的秩。</p>
+<h3 id="从线性变换角度理解秩"><a href="#从线性变换角度理解秩" class="headerlink" title="从线性变换角度理解秩"></a>从线性变换角度理解秩</h3><p>一个矩阵：</p>
+<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>可以看成一个线性映射：</p>
+<p>$$<br>M:\mathbb R^n\rightarrow\mathbb R^m<br>$$</p>
+<p>输入：</p>
+<p>$$<br>\mathbf x\in\mathbb R^n<br>$$</p>
+<p>输出：</p>
+<p>$$<br>\mathbf y&#x3D;M\mathbf x<br>$$</p>
+<p>矩阵的秩表示所有可能的输出 $M\mathbf x$ 最终能够覆盖多少个独立方向。</p>
+<p>例如：</p>
+<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 0 \<br>2 &amp; 0 \<br>3 &amp; 0<br>\end{bmatrix}<br>$$</p>
+<p>对于：</p>
+<p>$$<br>\mathbf x&#x3D;<br>\begin{bmatrix}<br>x_1 \<br>x_2<br>\end{bmatrix}<br>$$</p>
+<p>有：</p>
+<h1 id="M-mathbf-x"><a href="#M-mathbf-x" class="headerlink" title="$$M\mathbf x"></a>$$<br>M\mathbf x</h1><h1 id="begin-bmatrix-x-1-2x-1-3x-1-end-bmatrix"><a href="#begin-bmatrix-x-1-2x-1-3x-1-end-bmatrix" class="headerlink" title="\begin{bmatrix}x_1 \2x_1 \3x_1\end{bmatrix}"></a>\begin{bmatrix}<br>x_1 \<br>2x_1 \<br>3x_1<br>\end{bmatrix}</h1><p>x_1<br>\begin{bmatrix}<br>1 \<br>2 \<br>3<br>\end{bmatrix}<br>$$</p>
+<p>虽然输出位于三维空间 $\mathbb R^3$，但所有可能的输出都只能位于同一条直线上，因此：</p>
+<p>$$<br>\operatorname{rank}(M)&#x3D;1<br>$$</p>
+<p>所以从线性变换的角度看：</p>
+<blockquote>
+<p><strong>秩就是一个线性变换最终真正能够产生多少个独立输出方向。</strong></p>
+</blockquote>
+<h3 id="为什么低秩矩阵可以拆成两个小矩阵"><a href="#为什么低秩矩阵可以拆成两个小矩阵" class="headerlink" title="为什么低秩矩阵可以拆成两个小矩阵"></a>为什么低秩矩阵可以拆成两个小矩阵</h3><p>假设：</p>
+<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>并且：</p>
+<p>$$<br>\operatorname{rank}(M)&#x3D;r<br>$$</p>
+<p>这意味着 $M$ 虽然可能有 $n$ 个列向量，但所有列实际上都位于某个 $r$ 维子空间中。</p>
+<p>因此，只需要找到 $r$ 个线性无关的基向量：</p>
+<p>$$<br>\mathbf b_1,\mathbf b_2,\dots,\mathbf b_r<br>$$</p>
+<p>就能够表示 $M$ 的所有列。</p>
+<p>把这些基向量组成矩阵：</p>
+<p>$$<br>B&#x3D;<br>\begin{bmatrix}<br>\mathbf b_1 &amp; \mathbf b_2 &amp; \cdots &amp; \mathbf b_r<br>\end{bmatrix}<br>$$</p>
+<p>于是：</p>
+<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
+<p>对于 $M$ 的任意一列 $\mathbf m_j$，一定存在一组系数：</p>
+<p>$$<br>c_{1j},c_{2j},\dots,c_{rj}<br>$$</p>
+<p>使得：</p>
+<h1 id="mathbf-m-j"><a href="#mathbf-m-j" class="headerlink" title="$$\mathbf m_j"></a>$$<br>\mathbf m_j</h1><p>c_{1j}\mathbf b_1<br>+<br>c_{2j}\mathbf b_2<br>+\cdots+<br>c_{rj}\mathbf b_r<br>$$</p>
+<p>把这些系数写成向量：</p>
+<p>$$<br>\mathbf c_j&#x3D;<br>\begin{bmatrix}<br>c_{1j} \<br>c_{2j} \<br>\vdots \<br>c_{rj}<br>\end{bmatrix}<br>$$</p>
+<p>那么：</p>
+<p>$$<br>\mathbf m_j&#x3D;B\mathbf c_j<br>$$</p>
+<p>再把所有列对应的坐标向量放到一起：</p>
+<p>$$<br>C&#x3D;<br>\begin{bmatrix}<br>\mathbf c_1 &amp; \mathbf c_2 &amp; \cdots &amp; \mathbf c_n<br>\end{bmatrix}<br>$$</p>
+<p>其中：</p>
+<p>$$<br>C\in\mathbb R^{r\times n}<br>$$</p>
+<p>于是整个矩阵可以写成：</p>
+<p>$$<br>M&#x3D;BC<br>$$</p>
+<p>其中：</p>
+<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
+<p>$$<br>C\in\mathbb R^{r\times n}<br>$$</p>
+<p>这叫作矩阵的<strong>秩分解</strong>。</p>
+<p>本质上：</p>
+<ul>
+<li>$B$ 保存 $r$ 个真正独立的基础方向</li>
+<li>$C$ 保存原矩阵每一列如何由这些方向组合出来</li>
+</ul>
+<p>因此，一个矩阵即使包含很多元素，只要真正独立的方向很少，就可以通过两个更小的矩阵完整表示。</p>
+<h3 id="一个具体的秩分解例子"><a href="#一个具体的秩分解例子" class="headerlink" title="一个具体的秩分解例子"></a>一个具体的秩分解例子</h3><p>考虑：</p>
+<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 &amp; 3 \<br>2 &amp; 4 &amp; 6 \<br>1 &amp; 1 &amp; 2<br>\end{bmatrix}<br>$$</p>
+<p>三个列向量分别为：</p>
+<p>$$<br>\mathbf c_1&#x3D;<br>\begin{bmatrix}<br>1 \<br>2 \<br>1<br>\end{bmatrix}<br>$$</p>
+<p>$$<br>\mathbf c_2&#x3D;<br>\begin{bmatrix}<br>2 \<br>4 \<br>1<br>\end{bmatrix}<br>$$</p>
+<p>$$<br>\mathbf c_3&#x3D;<br>\begin{bmatrix}<br>3 \<br>6 \<br>2<br>\end{bmatrix}<br>$$</p>
+<p>可以发现：</p>
+<p>$$<br>\mathbf c_3&#x3D;\mathbf c_1+\mathbf c_2<br>$$</p>
+<p>所以：</p>
+<p>$$<br>\operatorname{rank}(M)&#x3D;2<br>$$</p>
+<p>选择前两列作为列空间的一组基：</p>
+<p>$$<br>B&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 \<br>2 &amp; 4 \<br>1 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>三列在这组基下的坐标分别是：</p>
+<h1 id="mathbf-c-1"><a href="#mathbf-c-1" class="headerlink" title="$$\mathbf c_1"></a>$$<br>\mathbf c_1</h1><p>1\mathbf c_1+0\mathbf c_2<br>$$</p>
+<h1 id="mathbf-c-2"><a href="#mathbf-c-2" class="headerlink" title="$$\mathbf c_2"></a>$$<br>\mathbf c_2</h1><p>0\mathbf c_1+1\mathbf c_2<br>$$</p>
+<h1 id="mathbf-c-3"><a href="#mathbf-c-3" class="headerlink" title="$$\mathbf c_3"></a>$$<br>\mathbf c_3</h1><p>1\mathbf c_1+1\mathbf c_2<br>$$</p>
+<p>所以系数矩阵为：</p>
+<p>$$<br>C&#x3D;<br>\begin{bmatrix}<br>1 &amp; 0 &amp; 1 \<br>0 &amp; 1 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>最终：</p>
+<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 \<br>2 &amp; 4 \<br>1 &amp; 1<br>\end{bmatrix}<br>\begin{bmatrix}<br>1 &amp; 0 &amp; 1 \<br>0 &amp; 1 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>也就是：</p>
+<p>$$<br>M&#x3D;BC<br>$$</p>
+<p>原矩阵大小为：</p>
+<p>$$<br>3\times3<br>$$</p>
+<p>分解后变成：</p>
+<p>$$<br>(3\times2)(2\times3)<br>$$</p>
+<p>中间维度 $2$ 正好就是矩阵的秩。</p>
+<h3 id="秩为-1-的特殊情况"><a href="#秩为-1-的特殊情况" class="headerlink" title="秩为 1 的特殊情况"></a>秩为 1 的特殊情况</h3><p>如果：</p>
+<p>$$<br>\operatorname{rank}(M)&#x3D;1<br>$$</p>
+<p>意味着所有列都位于同一个方向上。</p>
+<p>例如：</p>
+<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 &amp; -1 &amp; 3 \<br>2 &amp; 4 &amp; -2 &amp; 6 \<br>3 &amp; 6 &amp; -3 &amp; 9<br>\end{bmatrix}<br>$$</p>
+<p>所有列都可以由：</p>
+<p>$$<br>\mathbf u&#x3D;<br>\begin{bmatrix}<br>1 \<br>2 \<br>3<br>\end{bmatrix}<br>$$</p>
+<p>生成，各列的系数分别是：</p>
+<p>$$<br>1,\quad2,\quad-1,\quad3<br>$$</p>
+<p>所以：</p>
+<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 \<br>2 \<br>3<br>\end{bmatrix}<br>\begin{bmatrix}<br>1 &amp; 2 &amp; -1 &amp; 3<br>\end{bmatrix}<br>$$</p>
+<p>也就是：</p>
+<p>$$<br>M&#x3D;\mathbf u\mathbf v^\mathsf T<br>$$</p>
+<p>这种列向量乘行向量的形式称为<strong>外积</strong>。</p>
+<p>一个秩为 1 的矩阵，本质上只需要：</p>
+<blockquote>
+<p>一个基础方向 + 每一列在这个方向上的系数。</p>
+</blockquote>
+<h3 id="为什么两个小矩阵的乘积一定是低秩的"><a href="#为什么两个小矩阵的乘积一定是低秩的" class="headerlink" title="为什么两个小矩阵的乘积一定是低秩的"></a>为什么两个小矩阵的乘积一定是低秩的</h3><p>假设：</p>
+<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
+<p>$$<br>A\in\mathbb R^{r\times n}<br>$$</p>
+<p>那么：</p>
+<p>$$<br>BA\in\mathbb R^{m\times n}<br>$$</p>
+<p>但一定满足：</p>
+<p>$$<br>\operatorname{rank}(BA)\le r<br>$$</p>
+<p>因为整个线性映射过程是：</p>
+<p>$$<br>\mathbb R^n<br>\xrightarrow{A}<br>\mathbb R^r<br>\xrightarrow{B}<br>\mathbb R^m<br>$$</p>
+<p>所有信息都必须先经过中间的 $r$ 维空间。</p>
+<p>因此最终不可能产生超过 $r$ 个独立方向。</p>
+<p>可以把 $\mathbb R^r$ 理解成一个<strong>低维瓶颈</strong>。</p>
+<h3 id="为什么这样可以减少参数"><a href="#为什么这样可以减少参数" class="headerlink" title="为什么这样可以减少参数"></a>为什么这样可以减少参数</h3><p>原矩阵：</p>
+<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>需要：</p>
+<p>$$<br>mn<br>$$</p>
+<p>个参数。</p>
+<p>如果写成：</p>
+<p>$$<br>M&#x3D;BA<br>$$</p>
+<p>其中：</p>
+<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
+<p>$$<br>A\in\mathbb R^{r\times n}<br>$$</p>
+<p>参数数量变为：</p>
+<p>$$<br>mr+rn<br>$$</p>
+<p>即：</p>
+<p>$$<br>r(m+n)<br>$$</p>
+<p>只要：</p>
+<p>$$<br>r\ll\min(m,n)<br>$$</p>
+<p>参数量就会大幅减少。</p>
+<p>例如：</p>
+<p>$$<br>M\in\mathbb R^{4096\times4096}<br>$$</p>
+<p>原矩阵包含：</p>
+<p>$$<br>4096^2&#x3D;16,777,216<br>$$</p>
+<p>个参数。</p>
+<p>如果：</p>
+<p>$$<br>r&#x3D;8<br>$$</p>
+<p>则：</p>
+<p>$$<br>A\in\mathbb R^{8\times4096}<br>$$</p>
+<p>$$<br>B\in\mathbb R^{4096\times8}<br>$$</p>
+<p>参数数量变为：</p>
+<h1 id="8-times4096-4096-times8"><a href="#8-times4096-4096-times8" class="headerlink" title="$$8\times4096+4096\times8"></a>$$<br>8\times4096+4096\times8</h1><p>65,536<br>$$</p>
+<p>约为原矩阵的：</p>
+<p>$$<br>0.39%<br>$$</p>
+<h3 id="低秩分解的限制"><a href="#低秩分解的限制" class="headerlink" title="低秩分解的限制"></a>低秩分解的限制</h3><p>并不是任何大矩阵都能被两个很小的矩阵<strong>精确</strong>表示。</p>
+<p>如果：</p>
+<p>$$<br>M&#x3D;BA<br>$$</p>
+<p>并且中间维度为 $r$，那么一定有：</p>
+<p>$$<br>\operatorname{rank}(M)\le r<br>$$</p>
+<p>所以一个：</p>
+<p>$$<br>\operatorname{rank}(M)&#x3D;100<br>$$</p>
+<p>的矩阵，不可能精确写成：</p>
+<p>$$<br>(m\times8)(8\times n)<br>$$</p>
+<p>因为右边矩阵乘积的秩最多为 8。</p>
+<p>因此：</p>
+<blockquote>
+<p>只有本身就是低秩的矩阵，才能被足够小的两个矩阵精确表示。</p>
+</blockquote>
+<p>对于一般矩阵，我们只能寻找：</p>
+<p>$$<br>M\approx BA<br>$$</p>
+<p>也就是一个<strong>低秩近似</strong>。</p>
+<p>这就引出了 SVD。</p>
+<hr>
+<h2 id="SVD-与低秩近似"><a href="#SVD-与低秩近似" class="headerlink" title="SVD 与低秩近似"></a>SVD 与低秩近似</h2><h3 id="什么是-SVD"><a href="#什么是-SVD" class="headerlink" title="什么是 SVD"></a>什么是 SVD</h3><p>SVD 全称：</p>
+<p><strong>Singular Value Decomposition</strong></p>
+<p>中文叫作<strong>奇异值分解</strong>。</p>
+<p>任意实矩阵：</p>
+<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>都可以写成：</p>
+<p>$$<br>M&#x3D;U\Sigma V^\mathsf T<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$U$：由左奇异向量组成</li>
+<li>$V$：由右奇异向量组成</li>
+<li>$\Sigma$：保存奇异值</li>
+</ul>
+<p>$U$ 和 $V$ 是正交矩阵：</p>
+<p>$$<br>U^\mathsf TU&#x3D;I<br>$$</p>
+<p>$$<br>V^\mathsf TV&#x3D;I<br>$$</p>
+<p>因此：</p>
+<p>$$<br>U^{-1}&#x3D;U^\mathsf T<br>$$</p>
+<p>$$<br>V^{-1}&#x3D;V^\mathsf T<br>$$</p>
+<p>正交矩阵在几何上可以理解为旋转或翻转，不改变向量长度和夹角。</p>
+<h3 id="SVD-的几何意义"><a href="#SVD-的几何意义" class="headerlink" title="SVD 的几何意义"></a>SVD 的几何意义</h3><p>因为：</p>
+<h1 id="M-mathbf-x-1"><a href="#M-mathbf-x-1" class="headerlink" title="$$M\mathbf x"></a>$$<br>M\mathbf x</h1><p>U\Sigma V^\mathsf T\mathbf x<br>$$</p>
+<p>矩阵作用在向量上时从右向左计算。</p>
+<p>整个线性变换可以拆成三步：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">输入 x</span><br><span class="line">  ↓</span><br><span class="line">Vᵀ：把输入转到一组特殊的正交方向</span><br><span class="line">  ↓</span><br><span class="line">Σ：沿不同方向分别放大或缩小</span><br><span class="line">  ↓</span><br><span class="line">U：把结果转到最终输出方向</span><br><span class="line">  ↓</span><br><span class="line">输出</span><br></pre></td></tr></table></figure>
+
+<p>因此 SVD 可以理解为：</p>
+<blockquote>
+<p><strong>把一个复杂线性变换拆成“换方向 → 缩放 → 再换方向”。</strong></p>
+</blockquote>
+<h3 id="奇异值和奇异向量"><a href="#奇异值和奇异向量" class="headerlink" title="奇异值和奇异向量"></a>奇异值和奇异向量</h3><p>SVD 中有一个非常重要的关系：</p>
+<h1 id="M-mathbf-v-i"><a href="#M-mathbf-v-i" class="headerlink" title="$$M\mathbf v_i"></a>$$<br>M\mathbf v_i</h1><p>\sigma_i\mathbf u_i<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$\mathbf v_i$：第 $i$ 个右奇异向量，即输入空间中的特殊方向</li>
+<li>$\mathbf u_i$：第 $i$ 个左奇异向量，即对应的输出方向</li>
+<li>$\sigma_i$：第 $i$ 个奇异值，即这个方向的缩放强度</li>
+</ul>
+<p>可以写成：</p>
+<p>$$<br>\mathbf v_i<br>\xrightarrow{M}<br>\sigma_i\mathbf u_i<br>$$</p>
+<p>例如：</p>
+<p>$$<br>\sigma_1&#x3D;100<br>$$</p>
+<p>而：</p>
+<p>$$<br>\sigma_{10}&#x3D;0.01<br>$$</p>
+<p>意味着第一个方向对矩阵的作用非常强，而第十个方向的影响很弱。</p>
+<p>所以奇异值可以理解为：</p>
+<blockquote>
+<p><strong>矩阵不同独立变化方向的重要程度。</strong></p>
+</blockquote>
+<h3 id="奇异值是怎么得到的"><a href="#奇异值是怎么得到的" class="headerlink" title="奇异值是怎么得到的"></a>奇异值是怎么得到的</h3><p>对于：</p>
+<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>构造：</p>
+<p>$$<br>M^\mathsf TM<br>$$</p>
+<p>它是一个 $n\times n$ 的对称矩阵：</p>
+<p>$$<br>(M^\mathsf TM)^\mathsf T&#x3D;M^\mathsf TM<br>$$</p>
+<p>对于任意向量 $\mathbf x$：</p>
+<h1 id="mathbf-x-mathsf-TM-mathsf-TM-mathbf-x"><a href="#mathbf-x-mathsf-TM-mathsf-TM-mathbf-x" class="headerlink" title="$$\mathbf x^\mathsf TM^\mathsf TM\mathbf x"></a>$$<br>\mathbf x^\mathsf TM^\mathsf TM\mathbf x</h1><p>(M\mathbf x)^\mathsf T(M\mathbf x)<br>$$</p>
+<p>所以：</p>
+<h1 id="mathbf-x-mathsf-TM-mathsf-TM-mathbf-x-1"><a href="#mathbf-x-mathsf-TM-mathsf-TM-mathbf-x-1" class="headerlink" title="$$\mathbf x^\mathsf TM^\mathsf TM\mathbf x"></a>$$<br>\mathbf x^\mathsf TM^\mathsf TM\mathbf x</h1><p>\lVert M\mathbf x\rVert^2<br>\ge0<br>$$</p>
+<p>因此 $M^\mathsf TM$ 是半正定矩阵，它的特征值满足：</p>
+<p>$$<br>\lambda_i\ge0<br>$$</p>
+<p>假设：</p>
+<h1 id="M-mathsf-TM-mathbf-v-i"><a href="#M-mathsf-TM-mathbf-v-i" class="headerlink" title="$$M^\mathsf TM\mathbf v_i"></a>$$<br>M^\mathsf TM\mathbf v_i</h1><p>\lambda_i\mathbf v_i<br>$$</p>
+<p>那么定义：</p>
+<p>$$<br>\sigma_i&#x3D;\sqrt{\lambda_i}<br>$$</p>
+<p>$\sigma_i$ 就是矩阵 $M$ 的奇异值，而 $\mathbf v_i$ 是对应的右奇异向量。</p>
+<p>对于：</p>
+<p>$$<br>\sigma_i&gt;0<br>$$</p>
+<p>左奇异向量可以通过：</p>
+<h1 id="mathbf-u-i"><a href="#mathbf-u-i" class="headerlink" title="$$\mathbf u_i"></a>$$<br>\mathbf u_i</h1><p>\frac{M\mathbf v_i}{\sigma_i}<br>$$</p>
+<p>得到。</p>
+<p>之所以对特征值开平方，是因为：</p>
+<p>$$<br>\lVert M\mathbf v_i\rVert^2&#x3D;\lambda_i<br>$$</p>
+<p>所以实际的长度缩放倍数为：</p>
+<p>$$<br>\lVert M\mathbf v_i\rVert&#x3D;\sqrt{\lambda_i}&#x3D;\sigma_i<br>$$</p>
+<h3 id="SVD-与秩的关系"><a href="#SVD-与秩的关系" class="headerlink" title="SVD 与秩的关系"></a>SVD 与秩的关系</h3><p>SVD 可以展开成：</p>
+<h1 id="M"><a href="#M" class="headerlink" title="$$M"></a>$$<br>M</h1><p>\sigma_1\mathbf u_1\mathbf v_1^\mathsf T<br>+<br>\sigma_2\mathbf u_2\mathbf v_2^\mathsf T<br>+\cdots<br>$$</p>
+<p>每一项：</p>
+<p>$$<br>\sigma_i\mathbf u_i\mathbf v_i^\mathsf T<br>$$</p>
+<p>都是一个秩最多为 1 的矩阵。</p>
+<p>因此可以把任意矩阵理解成：</p>
+<blockquote>
+<p>多个秩为 1 的基本变化模式叠加而成。</p>
+</blockquote>
+<p>并且：</p>
+<h1 id="operatorname-rank-M-1"><a href="#operatorname-rank-M-1" class="headerlink" title="$$\operatorname{rank}(M)"></a>$$<br>\operatorname{rank}(M)</h1><p>\text{非零奇异值的数量}<br>$$</p>
+<p>如果只有两个非零奇异值，那么：</p>
+<p>$$<br>\operatorname{rank}(M)&#x3D;2<br>$$</p>
+<h3 id="截断-SVD"><a href="#截断-SVD" class="headerlink" title="截断 SVD"></a>截断 SVD</h3><p>假设：</p>
+<h1 id="M-1"><a href="#M-1" class="headerlink" title="$$M"></a>$$<br>M</h1><p>\sum_{i&#x3D;1}^{k}<br>\sigma_i\mathbf u_i\mathbf v_i^\mathsf T<br>$$</p>
+<p>并按照：</p>
+<p>$$<br>\sigma_1\ge\sigma_2\ge\cdots<br>$$</p>
+<p>排列。</p>
+<p>例如：</p>
+<p>$$<br>100,\quad30,\quad5,\quad0.1,\quad0.01,\quad0.001<br>$$</p>
+<p>后面的奇异方向影响已经很弱。</p>
+<p>于是可以只保留前 $r$ 个：</p>
+<h1 id="M-r"><a href="#M-r" class="headerlink" title="$$M_r"></a>$$<br>M_r</h1><p>\sum_{i&#x3D;1}^{r}<br>\sigma_i\mathbf u_i\mathbf v_i^\mathsf T<br>$$</p>
+<p>例如只保留两个方向：</p>
+<h1 id="M-2"><a href="#M-2" class="headerlink" title="$$M_2"></a>$$<br>M_2</h1><p>\sigma_1\mathbf u_1\mathbf v_1^\mathsf T<br>+<br>\sigma_2\mathbf u_2\mathbf v_2^\mathsf T<br>$$</p>
+<p>此时：</p>
+<p>$$<br>\operatorname{rank}(M_2)\le2<br>$$</p>
+<p>同时：</p>
+<p>$$<br>M\approx M_2<br>$$</p>
+<p>这个过程称为<strong>截断 SVD（Truncated SVD）</strong>。</p>
+<p>它的思想就是：</p>
+<blockquote>
+<p>保留最重要的变化方向，舍弃作用很弱的方向。</p>
+</blockquote>
+<h3 id="如何把截断-SVD-写成两个矩阵"><a href="#如何把截断-SVD-写成两个矩阵" class="headerlink" title="如何把截断 SVD 写成两个矩阵"></a>如何把截断 SVD 写成两个矩阵</h3><p>截断以后：</p>
+<h1 id="M-r-1"><a href="#M-r-1" class="headerlink" title="$$M_r"></a>$$<br>M_r</h1><p>U_r\Sigma_rV_r^\mathsf T<br>$$</p>
+<p>其中：</p>
+<p>$$<br>U_r\in\mathbb R^{m\times r}<br>$$</p>
+<p>$$<br>\Sigma_r\in\mathbb R^{r\times r}<br>$$</p>
+<p>$$<br>V_r^\mathsf T\in\mathbb R^{r\times n}<br>$$</p>
+<p>定义：</p>
+<p>$$<br>B&#x3D;U_r\Sigma_r<br>$$</p>
+<p>$$<br>A&#x3D;V_r^\mathsf T<br>$$</p>
+<p>那么：</p>
+<p>$$<br>M_r&#x3D;BA<br>$$</p>
+<p>于是：</p>
+<p>$$<br>M\approx BA<br>$$</p>
+<p>也可以把奇异值平均分给两边：</p>
+<p>$$<br>B&#x3D;U_r\Sigma_r^{1&#x2F;2}<br>$$</p>
+<p>$$<br>A&#x3D;\Sigma_r^{1&#x2F;2}V_r^\mathsf T<br>$$</p>
+<p>因为：</p>
+<p>$$<br>\Sigma_r^{1&#x2F;2}\Sigma_r^{1&#x2F;2}&#x3D;\Sigma_r<br>$$</p>
+<p>所以：</p>
+<h1 id="BA"><a href="#BA" class="headerlink" title="$$BA"></a>$$<br>BA</h1><h1 id="U-r-Sigma-rV-r-mathsf-T"><a href="#U-r-Sigma-rV-r-mathsf-T" class="headerlink" title="U_r\Sigma_rV_r^\mathsf T"></a>U_r\Sigma_rV_r^\mathsf T</h1><p>M_r<br>$$</p>
+<h3 id="为什么截断-SVD-是好的低秩近似"><a href="#为什么截断-SVD-是好的低秩近似" class="headerlink" title="为什么截断 SVD 是好的低秩近似"></a>为什么截断 SVD 是好的低秩近似</h3><p>截断 SVD 有一个非常重要的性质：</p>
+<blockquote>
+<p>在所有秩不超过 $r$ 的矩阵中，截断 SVD 得到的 $M_r$ 是对原矩阵 $M$ 的最佳低秩近似。</p>
+</blockquote>
+<p>例如使用 Frobenius 范数：</p>
+<h1 id="lVert-M-M-r-rVert-F"><a href="#lVert-M-M-r-rVert-F" class="headerlink" title="$$\lVert M-M_r\rVert_F"></a>$$<br>\lVert M-M_r\rVert_F</h1><p>\sqrt{<br>\sigma_{r+1}^2+<br>\sigma_{r+2}^2+<br>\cdots<br>}<br>$$</p>
+<p>因此，如果被舍弃的奇异值：</p>
+<p>$$<br>\sigma_{r+1},\sigma_{r+2},\dots<br>$$</p>
+<p>都很小，那么：</p>
+<p>$$<br>M_r\approx M<br>$$</p>
+<p>会非常准确。</p>
+<p>所以一个矩阵即使严格来说并不是低秩的，只要绝大部分重要变化集中在少数奇异方向上，也可能具有非常好的低秩近似。</p>
+<hr>
+<h2 id="从低秩近似到-LoRA"><a href="#从低秩近似到-LoRA" class="headerlink" title="从低秩近似到 LoRA"></a>从低秩近似到 LoRA</h2><h3 id="完整微调在做什么"><a href="#完整微调在做什么" class="headerlink" title="完整微调在做什么"></a>完整微调在做什么</h3><p>神经网络中的一个普通线性层：</p>
+<p>$$<br>y&#x3D;Wx<br>$$</p>
+<p>假设：</p>
+<p>$$<br>W\in\mathbb R^{4096\times4096}<br>$$</p>
+<p>完整微调会改变 $W$：</p>
+<p>$$<br>W’&#x3D;W+\Delta W<br>$$</p>
+<p>其中：</p>
+<p>$$<br>\Delta W\in\mathbb R^{4096\times4096}<br>$$</p>
+<p>这意味着完整微调允许 $\Delta W$ 在整个高维参数空间中自由变化。</p>
+<h3 id="LoRA-的核心假设"><a href="#LoRA-的核心假设" class="headerlink" title="LoRA 的核心假设"></a>LoRA 的核心假设</h3><p>假设基础模型已经学会：</p>
+<ul>
+<li>语言结构</li>
+<li>中文和英文</li>
+<li>通用知识</li>
+<li>文本生成</li>
+<li>基础推理</li>
+<li>编程能力</li>
+</ul>
+<p>现在只是希望它学习一个新的客服任务。</p>
+<p>模型可能并不需要重新学习整个语言系统，只需要调整：</p>
+<ul>
+<li>回答风格</li>
+<li>信息关注方式</li>
+<li>输出结构</li>
+<li>特定术语</li>
+<li>行为倾向</li>
+</ul>
+<p>因此可以提出一个假设：</p>
+<blockquote>
+<p>模型为了适应新任务而真正需要的权重变化，可能主要集中在少数几个方向中。</p>
+</blockquote>
+<p>也就是说，虽然完整的：</p>
+<p>$$<br>\Delta W<br>$$</p>
+<p>可能非常大，但它的<strong>有效变化维度</strong>可能比较低。</p>
+<p>因此 LoRA 直接规定：</p>
+<p>$$<br>\Delta W&#x3D;BA<br>$$</p>
+<p>其中：</p>
+<p>$$<br>A\in\mathbb R^{r\times n}<br>$$</p>
+<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
+<p>于是：</p>
+<h1 id="operatorname-rank-Delta-W"><a href="#operatorname-rank-Delta-W" class="headerlink" title="$$\operatorname{rank}(\Delta W)"></a>$$<br>\operatorname{rank}(\Delta W)</h1><p>\operatorname{rank}(BA)<br>\le r<br>$$</p>
+<p>这相当于主动限制：</p>
+<blockquote>
+<p>权重更新只能存在于一个低维子空间中。</p>
+</blockquote>
+<h3 id="SVD-和-LoRA-的区别"><a href="#SVD-和-LoRA-的区别" class="headerlink" title="SVD 和 LoRA 的区别"></a>SVD 和 LoRA 的区别</h3><p>从 SVD 的角度，可以设想：</p>
+<p>先完整微调得到：</p>
+<p>$$<br>\Delta W<br>$$</p>
+<p>然后：</p>
+<h1 id="Delta-W"><a href="#Delta-W" class="headerlink" title="$$\Delta W"></a>$$<br>\Delta W</h1><p>U\Sigma V^\mathsf T<br>$$</p>
+<p>再只保留前 $r$ 个奇异方向：</p>
+<h1 id="Delta-W-r"><a href="#Delta-W-r" class="headerlink" title="$$\Delta W_r"></a>$$<br>\Delta W_r</h1><p>U_r\Sigma_rV_r^\mathsf T<br>$$</p>
+<p>最后写成：</p>
+<p>$$<br>\Delta W_r&#x3D;BA<br>$$</p>
+<p>数学上这是可行的，但这<strong>不是 LoRA 实际采用的方法</strong>。</p>
+<p>如果先完整训练出 $\Delta W$，完整微调最昂贵的部分已经发生了。</p>
+<p>LoRA 真正的做法是从训练开始就直接规定：</p>
+<p>$$<br>\Delta W:&#x3D;BA<br>$$</p>
+<p>然后直接训练 $A$ 和 $B$。</p>
+<p>可以类比为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">先完整微调再 SVD：</span><br><span class="line"></span><br><span class="line">先写 10000 字</span><br><span class="line">      ↓</span><br><span class="line">找出最重要内容</span><br><span class="line">      ↓</span><br><span class="line">压缩成 1000 字</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">LoRA：</span><br><span class="line"></span><br><span class="line">一开始就规定只能写 1000 字</span><br><span class="line">      ↓</span><br><span class="line">直接寻找这 1000 字中的最佳答案</span><br></pre></td></tr></table></figure>
+
+<p>因此：</p>
+<blockquote>
+<p><strong>SVD 帮助我们理解为什么低秩表示能够保留主要变化；LoRA 则直接在低秩参数空间中寻找答案。</strong></p>
+</blockquote>
+<hr>
+<h2 id="LoRA-的训练与计算过程"><a href="#LoRA-的训练与计算过程" class="headerlink" title="LoRA 的训练与计算过程"></a>LoRA 的训练与计算过程</h2><h3 id="LoRA-如何加入线性层"><a href="#LoRA-如何加入线性层" class="headerlink" title="LoRA 如何加入线性层"></a>LoRA 如何加入线性层</h3><p>原来的线性层：</p>
+<p>$$<br>y&#x3D;Wx<br>$$</p>
+<p>LoRA 规定：</p>
+<p>$$<br>\Delta W&#x3D;BA<br>$$</p>
+<p>所以：</p>
+<p>$$<br>W’&#x3D;W+BA<br>$$</p>
+<p>代入：</p>
+<p>$$<br>y&#x3D;(W+BA)x<br>$$</p>
+<p>利用分配律：</p>
+<p>$$<br>y&#x3D;Wx+BAx<br>$$</p>
+<p>于是可以理解成两条并行路径：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">                    ┌──── W ────→ Wx ────┐</span><br><span class="line">x ──────────────────┤                     ├──→ 相加 → y</span><br><span class="line">                    └── A → B ─→ BAx ────┘</span><br></pre></td></tr></table></figure>
+
+<p>其中：</p>
+<ul>
+<li>$Wx$：基础模型原来的计算</li>
+<li>$BAx$：LoRA 产生的额外修正</li>
+<li>$W$：冻结</li>
+<li>$A,B$：参与训练</li>
+</ul>
+<p>LoRA 本质上是在原模型旁边增加了一条<strong>可训练的小型修正分支</strong>。</p>
+<h3 id="A-和-B-分别做什么"><a href="#A-和-B-分别做什么" class="headerlink" title="$A$ 和 $B$ 分别做什么"></a>$A$ 和 $B$ 分别做什么</h3><p>假设：</p>
+<p>$$<br>x\in\mathbb R^{4096}<br>$$</p>
+<p>选择：</p>
+<p>$$<br>r&#x3D;8<br>$$</p>
+<p>那么：</p>
+<p>$$<br>A\in\mathbb R^{8\times4096}<br>$$</p>
+<p>首先：</p>
+<p>$$<br>z&#x3D;Ax<br>$$</p>
+<p>得到：</p>
+<p>$$<br>z\in\mathbb R^8<br>$$</p>
+<p>即：</p>
+<p>$$<br>\mathbb R^{4096}<br>\xrightarrow{A}<br>\mathbb R^8<br>$$</p>
+<p>然后：</p>
+<p>$$<br>B\in\mathbb R^{4096\times8}<br>$$</p>
+<p>再计算：</p>
+<p>$$<br>Bz&#x3D;BAx<br>$$</p>
+<p>得到：</p>
+<p>$$<br>Bz\in\mathbb R^{4096}<br>$$</p>
+<p>所以整个 LoRA 分支为：</p>
+<p>$$<br>\mathbb R^{4096}<br>\xrightarrow{A}<br>\mathbb R^8<br>\xrightarrow{B}<br>\mathbb R^{4096}<br>$$</p>
+<p>可以粗略理解为：</p>
+<ul>
+<li>$A$：把高维输入映射到少量低维变化特征</li>
+<li>$B$：把这些低维变化重新映射回原输出空间</li>
+</ul>
+<p>中间的 $r$ 维空间就是 LoRA 的<strong>低秩瓶颈</strong>。</p>
+<p>需要注意的是，某个具体维度通常不能直接解释成“礼貌”“法律知识”之类明确的人类概念，它只是模型自己学到的数学表示。</p>
+<h3 id="LoRA-实际训练什么"><a href="#LoRA-实际训练什么" class="headerlink" title="LoRA 实际训练什么"></a>LoRA 实际训练什么</h3><p>加入 LoRA 后：</p>
+<p>$$<br>y&#x3D;Wx+BAx<br>$$</p>
+<p>根据模型输出与目标结果之间的差异计算损失：</p>
+<p>$$<br>L<br>$$</p>
+<p>完整微调会直接更新：</p>
+<p>$$<br>W<br>$$</p>
+<p>例如：</p>
+<p>$$<br>W<br>\leftarrow<br>W-\eta<br>\frac{\partial L}{\partial W}<br>$$</p>
+<p>LoRA 中则冻结：</p>
+<p>$$<br>W<br>$$</p>
+<p>只训练：</p>
+<p>$$<br>A<br>$$</p>
+<p>和：</p>
+<p>$$<br>B<br>$$</p>
+<p>即：</p>
+<p>$$<br>A<br>\leftarrow<br>A-\eta<br>\frac{\partial L}{\partial A}<br>$$</p>
+<p>$$<br>B<br>\leftarrow<br>B-\eta<br>\frac{\partial L}{\partial B}<br>$$</p>
+<p>所以训练过程实际上是在寻找一组 $A,B$，使：</p>
+<p>$$<br>W+BA<br>$$</p>
+<p>在当前任务上的损失尽可能低。</p>
+<p>可以理解为：</p>
+<blockquote>
+<p>完整微调是在所有可能的 $\Delta W$ 中寻找答案；LoRA 则只在满足 $\Delta W&#x3D;BA$ 的低秩更新空间中寻找答案。</p>
+</blockquote>
+<h3 id="为什么初始化时不影响原模型"><a href="#为什么初始化时不影响原模型" class="headerlink" title="为什么初始化时不影响原模型"></a>为什么初始化时不影响原模型</h3><p>LoRA 常采用类似：</p>
+<p>$$<br>A&#x3D;\text{随机初始化}<br>$$</p>
+<p>$$<br>B&#x3D;0<br>$$</p>
+<p>的初始化方式。</p>
+<p>因为：</p>
+<p>$$<br>B&#x3D;0<br>$$</p>
+<p>所以：</p>
+<p>$$<br>BA&#x3D;0<br>$$</p>
+<p>训练刚开始时：</p>
+<p>$$<br>y&#x3D;Wx+BAx<br>$$</p>
+<p>实际上就是：</p>
+<p>$$<br>y&#x3D;Wx<br>$$</p>
+<p>因此 LoRA 刚加入模型时不会破坏基础模型原来的行为。</p>
+<p>随着训练进行：</p>
+<p>$$<br>BA\neq0<br>$$</p>
+<p>LoRA 才逐渐形成任务相关的权重修正。</p>
+<h3 id="Rank"><a href="#Rank" class="headerlink" title="Rank"></a>Rank</h3><p>LoRA 最重要的超参数之一是：</p>
+<p>$$<br>r<br>$$</p>
+<p>常见设置例如：</p>
+<p>$$<br>r&#x3D;4,8,16,32,64<br>$$</p>
+<p>如果：</p>
+<p>$$<br>r&#x3D;8<br>$$</p>
+<p>那么：</p>
+<p>$$<br>\operatorname{rank}(\Delta W)\le8<br>$$</p>
+<p>也就是说权重更新最多包含 8 个独立变化方向。</p>
+<p>rank 越小：</p>
+<ul>
+<li>参数越少</li>
+<li>显存占用越低</li>
+<li>训练越快</li>
+<li>对更新空间限制越强</li>
+</ul>
+<p>rank 越大：</p>
+<ul>
+<li>参数越多</li>
+<li>能表达更复杂的权重变化</li>
+<li>更新自由度更高</li>
+</ul>
+<p>所以可以把 $r$ 理解成：</p>
+<blockquote>
+<p><strong>LoRA 允许权重更新拥有多少个独立变化方向。</strong></p>
+</blockquote>
+<h3 id="Alpha"><a href="#Alpha" class="headerlink" title="Alpha"></a>Alpha</h3><p>实际 LoRA 通常写成：</p>
+<h1 id="Delta-W-1"><a href="#Delta-W-1" class="headerlink" title="$$\Delta W"></a>$$<br>\Delta W</h1><p>\frac{\alpha}{r}BA<br>$$</p>
+<p>因此：</p>
+<h1 id="y"><a href="#y" class="headerlink" title="$$y"></a>$$<br>y</h1><p>Wx+<br>\frac{\alpha}{r}BAx<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$r$：LoRA 的 rank</li>
+<li>$\alpha$：缩放参数</li>
+</ul>
+<p>可以简单理解为：</p>
+<p>$$<br>BA<br>$$</p>
+<p>决定：</p>
+<blockquote>
+<p>权重修改的方向和结构。</p>
+</blockquote>
+<p>而：</p>
+<p>$$<br>\frac{\alpha}{r}<br>$$</p>
+<p>控制：</p>
+<blockquote>
+<p>LoRA 更新的整体数值尺度。</p>
+</blockquote>
+<p>因此最终有效权重是：</p>
+<h1 id="W’"><a href="#W’" class="headerlink" title="$$W’"></a>$$<br>W’</h1><p>W+<br>\frac{\alpha}{r}BA<br>$$</p>
+<hr>
+<h2 id="LoRA-在-Transformer-中的实际使用"><a href="#LoRA-在-Transformer-中的实际使用" class="headerlink" title="LoRA 在 Transformer 中的实际使用"></a>LoRA 在 Transformer 中的实际使用</h2><p>Transformer 中包含大量线性变换。</p>
+<p>Attention 中常见：</p>
+<p>$$<br>W_Q,\quad W_K,\quad W_V,\quad W_O<br>$$</p>
+<p>代码中通常对应：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">q_proj</span><br><span class="line">k_proj</span><br><span class="line">v_proj</span><br><span class="line">o_proj</span><br></pre></td></tr></table></figure>
+
+<p>MLP 中还常见：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gate_proj</span><br><span class="line">up_proj</span><br><span class="line">down_proj</span><br></pre></td></tr></table></figure>
+
+<p>LoRA 通常不是整个模型只使用一组 $A,B$，而是给选中的多个权重矩阵分别增加自己的 LoRA。</p>
+<p>例如：</p>
+<h1 id="W-Q’"><a href="#W-Q’" class="headerlink" title="$$W_Q’"></a>$$<br>W_Q’</h1><p>W_Q+B_QA_Q<br>$$</p>
+<h1 id="W-V’"><a href="#W-V’" class="headerlink" title="$$W_V’"></a>$$<br>W_V’</h1><p>W_V+B_VA_V<br>$$</p>
+<p>一个多层 Transformer 可能类似：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Layer 1</span><br><span class="line">├── q_proj</span><br><span class="line">│   └── A₁, B₁</span><br><span class="line">└── v_proj</span><br><span class="line">    └── A₂, B₂</span><br><span class="line"></span><br><span class="line">Layer 2</span><br><span class="line">├── q_proj</span><br><span class="line">│   └── A₃, B₃</span><br><span class="line">└── v_proj</span><br><span class="line">    └── A₄, B₄</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">Layer N</span><br></pre></td></tr></table></figure>
+
+<p>每一个目标权重矩阵都有自己的低秩更新。</p>
+<h3 id="为什么很多小更新能够明显改变模型"><a href="#为什么很多小更新能够明显改变模型" class="headerlink" title="为什么很多小更新能够明显改变模型"></a>为什么很多小更新能够明显改变模型</h3><p>Transformer 中，一层的输出会成为下一层的输入。</p>
+<p>可以简化表示为：</p>
+<p>$$<br>h_1&#x3D;f_1(h_0)+\Delta_1<br>$$</p>
+<p>$$<br>h_2&#x3D;f_2(h_1)+\Delta_2<br>$$</p>
+<p>$$<br>h_3&#x3D;f_3(h_2)+\Delta_3<br>$$</p>
+<p>如果前面一层发生了一点变化：</p>
+<p>$$<br>h_1\rightarrow h_1’<br>$$</p>
+<p>那么下一层接收到的输入也发生变化：</p>
+<p>$$<br>f_2(h_1)<br>\rightarrow<br>f_2(h_1’)<br>$$</p>
+<p>这个差异会继续向后传播。</p>
+<p>因此，一个 LoRA 层可能只造成较小变化，但很多层共同作用后，可以明显改变模型的：</p>
+<ul>
+<li>回答风格</li>
+<li>输出格式</li>
+<li>专业表达方式</li>
+<li>特定任务能力</li>
+<li>行为偏好</li>
+</ul>
+<hr>
+<h2 id="LoRA-的保存、推理与合并"><a href="#LoRA-的保存、推理与合并" class="headerlink" title="LoRA 的保存、推理与合并"></a>LoRA 的保存、推理与合并</h2><h3 id="训练完成后保存什么"><a href="#训练完成后保存什么" class="headerlink" title="训练完成后保存什么"></a>训练完成后保存什么</h3><p>因为基础模型中的：</p>
+<p>$$<br>W<br>$$</p>
+<p>始终被冻结，所以训练结束后不需要重新保存整个基础模型。</p>
+<p>只需要保存：</p>
+<ul>
+<li>每个目标层中的 $A$</li>
+<li>每个目标层中的 $B$</li>
+<li>rank $r$</li>
+<li>alpha</li>
+<li>target modules</li>
+<li>其他少量配置</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">基础模型       14 GB</span><br><span class="line"></span><br><span class="line">客服 LoRA      50 MB</span><br><span class="line">法律 LoRA      70 MB</span><br><span class="line">SQL LoRA       40 MB</span><br></pre></td></tr></table></figure>
+
+<p>不同任务可以共享同一个基础模型：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Base Model + 客服 LoRA</span><br><span class="line"></span><br><span class="line">Base Model + 法律 LoRA</span><br><span class="line"></span><br><span class="line">Base Model + SQL LoRA</span><br></pre></td></tr></table></figure>
+
+<h3 id="推理时如何使用"><a href="#推理时如何使用" class="headerlink" title="推理时如何使用"></a>推理时如何使用</h3><p>推理时，对于安装了 LoRA 的线性层：</p>
+<h1 id="y-1"><a href="#y-1" class="headerlink" title="$$y"></a>$$<br>y</h1><p>Wx+<br>\frac{\alpha}{r}BAx<br>$$</p>
+<p>模型首先计算：</p>
+<p>$$<br>Wx<br>$$</p>
+<p>再加上 LoRA 学到的修正：</p>
+<p>$$<br>\frac{\alpha}{r}BAx<br>$$</p>
+<p>这些修正在多个 Transformer 层中逐渐传播，最终影响模型生成结果。</p>
+<h3 id="LoRA-Merge"><a href="#LoRA-Merge" class="headerlink" title="LoRA Merge"></a>LoRA Merge</h3><p>因为：</p>
+<h1 id="W’-1"><a href="#W’-1" class="headerlink" title="$$W’"></a>$$<br>W’</h1><p>W+<br>\frac{\alpha}{r}BA<br>$$</p>
+<p>所以训练完成以后，也可以提前计算：</p>
+<h1 id="W-text-merged"><a href="#W-text-merged" class="headerlink" title="$$W_{\text{merged}}"></a>$$<br>W_{\text{merged}}</h1><p>W+<br>\frac{\alpha}{r}BA<br>$$</p>
+<p>之后直接使用：</p>
+<p>$$<br>y&#x3D;W_{\text{merged}}x<br>$$</p>
+<p>这个过程叫作 <strong>LoRA Merge</strong>。</p>
+<p>未合并时：</p>
+<p>$$<br>Wx+\frac{\alpha}{r}BAx<br>$$</p>
+<p>优点是：</p>
+<ul>
+<li>可以随时加载或卸载 LoRA</li>
+<li>一个基础模型可以共享给多个任务</li>
+<li>可以快速切换不同 LoRA</li>
+</ul>
+<p>合并以后：</p>
+<p>$$<br>W_{\text{merged}}x<br>$$</p>
+<p>部署更加简单，但失去了快速切换和关闭 LoRA 的灵活性。</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整个 LoRA 的思维链路可以概括为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">一个权重矩阵 W 可能包含非常多参数</span><br><span class="line">                ↓</span><br><span class="line">微调实际上是在寻找权重变化 ΔW</span><br><span class="line">                ↓</span><br><span class="line">参数很多，不意味着存在同样多的独立变化方向</span><br><span class="line">                ↓</span><br><span class="line">矩阵的秩描述真正独立的方向数量</span><br><span class="line">                ↓</span><br><span class="line">如果 rank(M) = r</span><br><span class="line">则 M 可以精确写成：</span><br><span class="line"></span><br><span class="line">        M = BA</span><br><span class="line"></span><br><span class="line">其中：</span><br><span class="line"></span><br><span class="line">        B: m × r</span><br><span class="line">        A: r × n</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">因为所有信息都必须经过 r 维中间空间</span><br><span class="line"></span><br><span class="line">        rank(BA) ≤ r</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">一般矩阵虽然不一定严格低秩，</span><br><span class="line">但可能存在很好的低秩近似</span><br><span class="line">                ↓</span><br><span class="line">SVD 将矩阵拆成多个</span><br><span class="line">“输入方向 × 缩放强度 × 输出方向”</span><br><span class="line">                ↓</span><br><span class="line">较大的奇异值对应更重要的变化方向</span><br><span class="line">                ↓</span><br><span class="line">保留前 r 个方向可以得到：</span><br><span class="line"></span><br><span class="line">        M ≈ M_r = BA</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">因此猜测：</span><br><span class="line">模型微调真正有用的 ΔW</span><br><span class="line">也可能主要集中在少数方向</span><br><span class="line">                ↓</span><br><span class="line">LoRA 不先求完整 ΔW，</span><br><span class="line">而是从一开始直接规定：</span><br><span class="line"></span><br><span class="line">        ΔW = BA</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">冻结巨大的基础权重 W</span><br><span class="line">只训练小矩阵 A 和 B</span><br><span class="line">                ↓</span><br><span class="line">实际前向计算：</span><br><span class="line"></span><br><span class="line">        y = Wx + (α/r)BAx</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">最终相当于：</span><br><span class="line"></span><br><span class="line">        W&#x27; = W + (α/r)BA</span><br></pre></td></tr></table></figure>
+
+<p>LoRA 最核心的思想并不是简单地：</p>
+<blockquote>
+<p>“把一个大矩阵拆成两个小矩阵。”</p>
+</blockquote>
+<p>更准确地说：</p>
+<blockquote>
+<p><strong>LoRA 假设一个已经训练好的模型为了适应新任务，真正需要的权重变化主要存在于一个低维子空间中。因此，它直接把权重更新限制为低秩形式 $\Delta W&#x3D;BA$，冻结原模型，只训练小矩阵 $A$ 和 $B$，从而以很少的可训练参数完成模型适配。</strong></p>
+</blockquote>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">LoRA: Low-Rank Adaptation of Large Language Models</a></p>
+
+      </section>
+
+      
+      
+        <nav class="article-nav">
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+    
+    <div class="card-text">
+      
+        <a href="/2026/08/07/10_Jetson-Orin-NX%E5%88%B7%E6%9C%BAUbuntu-20.04/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">10_Jetson Orin  NX刷机Ubuntu 20.04</h2>
+        </a>
+      
+      <div class="card-text--row">下一篇</div>
+    </div>
+  </article>
+</div>
+
+          
+          
+            <div class="article-nav-item layout-padding">
+  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
+    
+    
+    <div class="card-text">
+      
+        <a href="/2026/06/09/zotero%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5%E4%BF%AE%E5%A4%8D/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">zotero文件同步修复</h2>
+        </a>
+      
+      <div class="card-text--row">上一篇</div>
+    </div>
+  </article>
+</div>
+
+          
+        </nav>
+      
+
+      <section class="page-message-container layout-padding">
+        
+
+
+  
+  
+
+  
+  
+
+
+      </section>
+    </div>
+    <div class="widget-info">
+      <section class="widget-author widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-body">
+    
+      <img src="https://github.com/astringent-orange.png" class="soft-size--round soft-style--box" alt="Mian">
+    
+    
+      <h2>Mian</h2>
+    
+    
+      <p>每天成长一点</p>
+    
+
+    <div class="count-box">
+      <div class="count-box--item">
+        <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
+</svg>
+        <span>28</span>
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+        4
+      </div>
+      <div class="count-box--item">
+        <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+        37
+      </div>
+    </div>
+  </div>
+</section>
+
+      
+<section class="widget-toc widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-toc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M134.50666666 767.46666668H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.23999999v50.13333333c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H134.50666666c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.13333333c0.10666668-27.73333333 22.50666668-50.24000001 50.24000001-50.24000001zM84.37333332 541.65333333h326.18666669c27.73333333 0 50.24000001 22.39999999 50.23999999 50.13333334v50.24000001c0 27.73333333-22.50666668 50.24000001-50.24000002 50.23999999H84.37333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.23999999v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333334zM134.50666666 315.83999999H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.24000001v50.24000001c0 27.73333333-22.50666668 50.13333334-50.24000001 50.13333333H134.50666666c-27.73333333 0-50.24000001-22.39999999-50.23999999-50.13333333v-50.24000001c0.10666668-27.84000001 22.50666668-50.24000001 50.24000001-50.23999999zM209.81333332 89.91999999h326.18666671c27.73333333 0 50.24000001 22.39999999 50.23999997 50.13333335v50.23999999c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H209.81333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333333zM692.05333333 623.36l274.66666669 176.00000002c23.36000001 14.93333333 30.08 45.97333334 15.14666666 69.33333332L954.77333334 910.93333333c-14.93333333 23.25333334-45.97333334 30.08-69.33333335 15.14666667l-274.66666666-176c-23.36000001-14.93333333-30.08-45.97333334-15.14666667-69.33333333l27.09333334-42.24000001c14.93333333-23.36000001 46.08000001-30.08 69.33333333-15.14666666z" fill="currentColor"></path>
+</svg>
+    <span>目录</span>
+  </div>
+  <div class="widget-body">
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%A9%E4%B8%8E%E4%BD%8E%E7%A7%A9%E5%88%86%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">秩与低秩分解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%9F%A9%E9%98%B5%E7%9A%84%E7%A7%A9"><span class="toc-number">2.1.</span> <span class="toc-text">什么是矩阵的秩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2%E8%A7%92%E5%BA%A6%E7%90%86%E8%A7%A3%E7%A7%A9"><span class="toc-number">2.2.</span> <span class="toc-text">从线性变换角度理解秩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%8E%E7%A7%A9%E7%9F%A9%E9%98%B5%E5%8F%AF%E4%BB%A5%E6%8B%86%E6%88%90%E4%B8%A4%E4%B8%AA%E5%B0%8F%E7%9F%A9%E9%98%B5"><span class="toc-number">2.3.</span> <span class="toc-text">为什么低秩矩阵可以拆成两个小矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%85%B7%E4%BD%93%E7%9A%84%E7%A7%A9%E5%88%86%E8%A7%A3%E4%BE%8B%E5%AD%90"><span class="toc-number">2.4.</span> <span class="toc-text">一个具体的秩分解例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A7%A9%E4%B8%BA-1-%E7%9A%84%E7%89%B9%E6%AE%8A%E6%83%85%E5%86%B5"><span class="toc-number">2.5.</span> <span class="toc-text">秩为 1 的特殊情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%A4%E4%B8%AA%E5%B0%8F%E7%9F%A9%E9%98%B5%E7%9A%84%E4%B9%98%E7%A7%AF%E4%B8%80%E5%AE%9A%E6%98%AF%E4%BD%8E%E7%A7%A9%E7%9A%84"><span class="toc-number">2.6.</span> <span class="toc-text">为什么两个小矩阵的乘积一定是低秩的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E6%A0%B7%E5%8F%AF%E4%BB%A5%E5%87%8F%E5%B0%91%E5%8F%82%E6%95%B0"><span class="toc-number">2.7.</span> <span class="toc-text">为什么这样可以减少参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8E%E7%A7%A9%E5%88%86%E8%A7%A3%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-number">2.8.</span> <span class="toc-text">低秩分解的限制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SVD-%E4%B8%8E%E4%BD%8E%E7%A7%A9%E8%BF%91%E4%BC%BC"><span class="toc-number">3.</span> <span class="toc-text">SVD 与低秩近似</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-SVD"><span class="toc-number">3.1.</span> <span class="toc-text">什么是 SVD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SVD-%E7%9A%84%E5%87%A0%E4%BD%95%E6%84%8F%E4%B9%89"><span class="toc-number">3.2.</span> <span class="toc-text">SVD 的几何意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A5%87%E5%BC%82%E5%80%BC%E5%92%8C%E5%A5%87%E5%BC%82%E5%90%91%E9%87%8F"><span class="toc-number">3.3.</span> <span class="toc-text">奇异值和奇异向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A5%87%E5%BC%82%E5%80%BC%E6%98%AF%E6%80%8E%E4%B9%88%E5%BE%97%E5%88%B0%E7%9A%84"><span class="toc-number">3.4.</span> <span class="toc-text">奇异值是怎么得到的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SVD-%E4%B8%8E%E7%A7%A9%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.5.</span> <span class="toc-text">SVD 与秩的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%AA%E6%96%AD-SVD"><span class="toc-number">3.6.</span> <span class="toc-text">截断 SVD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8A%8A%E6%88%AA%E6%96%AD-SVD-%E5%86%99%E6%88%90%E4%B8%A4%E4%B8%AA%E7%9F%A9%E9%98%B5"><span class="toc-number">3.7.</span> <span class="toc-text">如何把截断 SVD 写成两个矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%AA%E6%96%AD-SVD-%E6%98%AF%E5%A5%BD%E7%9A%84%E4%BD%8E%E7%A7%A9%E8%BF%91%E4%BC%BC"><span class="toc-number">3.8.</span> <span class="toc-text">为什么截断 SVD 是好的低秩近似</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%BD%8E%E7%A7%A9%E8%BF%91%E4%BC%BC%E5%88%B0-LoRA"><span class="toc-number">4.</span> <span class="toc-text">从低秩近似到 LoRA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E5%BE%AE%E8%B0%83%E5%9C%A8%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">4.1.</span> <span class="toc-text">完整微调在做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LoRA-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%81%87%E8%AE%BE"><span class="toc-number">4.2.</span> <span class="toc-text">LoRA 的核心假设</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SVD-%E5%92%8C-LoRA-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.3.</span> <span class="toc-text">SVD 和 LoRA 的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LoRA-%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">LoRA 的训练与计算过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#LoRA-%E5%A6%82%E4%BD%95%E5%8A%A0%E5%85%A5%E7%BA%BF%E6%80%A7%E5%B1%82"><span class="toc-number">5.1.</span> <span class="toc-text">LoRA 如何加入线性层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#A-%E5%92%8C-B-%E5%88%86%E5%88%AB%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">5.2.</span> <span class="toc-text">$A$ 和 $B$ 分别做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LoRA-%E5%AE%9E%E9%99%85%E8%AE%AD%E7%BB%83%E4%BB%80%E4%B9%88"><span class="toc-number">5.3.</span> <span class="toc-text">LoRA 实际训练什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%88%9D%E5%A7%8B%E5%8C%96%E6%97%B6%E4%B8%8D%E5%BD%B1%E5%93%8D%E5%8E%9F%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.4.</span> <span class="toc-text">为什么初始化时不影响原模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rank"><span class="toc-number">5.5.</span> <span class="toc-text">Rank</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Alpha"><span class="toc-number">5.6.</span> <span class="toc-text">Alpha</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LoRA-%E5%9C%A8-Transformer-%E4%B8%AD%E7%9A%84%E5%AE%9E%E9%99%85%E4%BD%BF%E7%94%A8"><span class="toc-number">6.</span> <span class="toc-text">LoRA 在 Transformer 中的实际使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BE%88%E5%A4%9A%E5%B0%8F%E6%9B%B4%E6%96%B0%E8%83%BD%E5%A4%9F%E6%98%8E%E6%98%BE%E6%94%B9%E5%8F%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">6.1.</span> <span class="toc-text">为什么很多小更新能够明显改变模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LoRA-%E7%9A%84%E4%BF%9D%E5%AD%98%E3%80%81%E6%8E%A8%E7%90%86%E4%B8%8E%E5%90%88%E5%B9%B6"><span class="toc-number">7.</span> <span class="toc-text">LoRA 的保存、推理与合并</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E5%AE%8C%E6%88%90%E5%90%8E%E4%BF%9D%E5%AD%98%E4%BB%80%E4%B9%88"><span class="toc-number">7.1.</span> <span class="toc-text">训练完成后保存什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E6%97%B6%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="toc-number">7.2.</span> <span class="toc-text">推理时如何使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LoRA-Merge"><span class="toc-number">7.3.</span> <span class="toc-text">LoRA Merge</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">9.</span> <span class="toc-text">参考文献</span></a></li></ol>
+  </div>
+</section>
+
+
+
+      
+
+      <section class="widget-categories widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
+</svg>
+      <span>CATEGORIES</span>
+  </div>
+  <div class="widget-body">
+    <ul class="categories-list">
+      
+        <li class="categories-list-item">
+          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
+            无人机实验 (18)
+          </a>
+        </li>
+        
+        <li class="categories-list-item">
+          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
+            无人机工程 (8)
+          </a>
+        </li>
+        
+        <li class="categories-list-item">
+          <a href="/categories/%E6%9D%82%E8%AE%B0/">
+            杂记 (1)
+          </a>
+        </li>
+        
+        <li class="categories-list-item">
+          <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
+            大模型 (1)
+          </a>
+        </li>
+        
+    </ul>
+  </div>
+</section>
+
+      <section class="widget-tags widget-item  layout-margin content-padding--primary soft-size--large soft-style--box">
+  <div class="widget-title">
+    <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
+</svg>
+    <span>TAGS</span>
+  </div>
+  <div class="widget-body">
+    <div class="tags-cloud">
+      <a href="/tags/AprilTag/" style="font-size: 10px;" class="tags-cloud-0">AprilTag</a> <a href="/tags/CPP/" style="font-size: 14.44px;" class="tags-cloud-4">CPP</a> <a href="/tags/FlightMare/" style="font-size: 17.78px;" class="tags-cloud-8">FlightMare</a> <a href="/tags/Gazebo/" style="font-size: 14.44px;" class="tags-cloud-4">Gazebo</a> <a href="/tags/IntelRealsenseD435/" style="font-size: 13.33px;" class="tags-cloud-3">IntelRealsenseD435</a> <a href="/tags/LoRA/" style="font-size: 10px;" class="tags-cloud-0">LoRA</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 12.22px;" class="tags-cloud-2">NUC13</a> <a href="/tags/Python/" style="font-size: 10px;" class="tags-cloud-0">Python</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12.22px;" class="tags-cloud-2">Ubuntu20-04</a> <a href="/tags/Unity/" style="font-size: 16.67px;" class="tags-cloud-7">Unity</a> <a href="/tags/astar/" style="font-size: 11.11px;" class="tags-cloud-1">astar</a> <a href="/tags/catkin/" style="font-size: 11.11px;" class="tags-cloud-1">catkin</a> <a href="/tags/cmake/" style="font-size: 11.11px;" class="tags-cloud-1">cmake</a> <a href="/tags/docker/" style="font-size: 11.11px;" class="tags-cloud-1">docker</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/jetson/" style="font-size: 10px;" class="tags-cloud-0">jetson</a> <a href="/tags/octomap/" style="font-size: 13.33px;" class="tags-cloud-3">octomap</a> <a href="/tags/px4/" style="font-size: 15.56px;" class="tags-cloud-6">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/vins/" style="font-size: 11.11px;" class="tags-cloud-1">vins</a> <a href="/tags/vitfly/" style="font-size: 11.11px;" class="tags-cloud-1">vitfly</a> <a href="/tags/zotero/" style="font-size: 10px;" class="tags-cloud-0">zotero</a> <a href="/tags/%E4%BB%BF%E7%9C%9F/" style="font-size: 18.89px;" class="tags-cloud-9">仿真</a> <a href="/tags/%E4%BF%AE%E5%A4%8D/" style="font-size: 10px;" class="tags-cloud-0">修复</a> <a href="/tags/%E5%8A%A8%E5%8A%9B%E5%AD%A6/" style="font-size: 11.11px;" class="tags-cloud-1">动力学</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%9D%9A%E6%9E%9C%E4%BA%91/" style="font-size: 10px;" class="tags-cloud-0">坚果云</a> <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" style="font-size: 10px;" class="tags-cloud-0">大模型</a> <a href="/tags/%E5%AE%9E%E6%9C%BA/" style="font-size: 13.33px;" class="tags-cloud-3">实机</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E5%BE%AE%E8%B0%83/" style="font-size: 10px;" class="tags-cloud-0">微调</a> <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" style="font-size: 10px;" class="tags-cloud-0">模块化</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 10px;" class="tags-cloud-0">视觉定位</a> <a href="/tags/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/" style="font-size: 11.11px;" class="tags-cloud-1">路径规划</a> <a href="/tags/%E9%A3%9E%E6%8E%A7/" style="font-size: 11.11px;" class="tags-cloud-1">飞控</a>
+    </div>
+  </div>
+</section>
+    </div>
+  </article>
+</div>
+
+<div class="comments" style="max-width:1200px;margin:40px auto;">
+<script src="https://giscus.app/client.js"
+        data-repo="astringent-orange/astringent-orange.github.io"
+        data-repo-id="R_kgDORiSglw"
+        data-category="General"
+        data-category-id="DIC_kwDORiSgl84C4XZB"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="zh-CN"
+        crossorigin="anonymous"
+        async>
+</script>
+</div> 
+
+    <!-- footer container -->
+<footer id="footer" class="footer">
+  <div class="footer-container">
+    
+    <div class="social-icons">
+      
+        
+      
+        
+      
+        
+      
+        
+          <a href="https://github.com/astrigent-orange/astrigent-orange" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
+            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
+</svg>
+          </a>
+        
+      
+        
+      
+    </div>
+     
+    <p>&copy; 2026 <a href="/" target="_blank">Mian</a></p>
+
+    
+
+    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+
+    <p>
+      <a href="javascript:;" id="theme-light">🌞 浅色</a>
+      <a href="javascript:;" id="theme-dark">🌛 深色</a>
+      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
+    </p>
+  </div>
+</footer>
+  </div>
+
+  <div class="back-to-top-fixed soft-size--round soft-style--box">
+    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
+      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
+      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
+    </svg>
+  </div>
+
+  
+  
+
+
+
+ 
+<!-- mathjax -->
+
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [
+      ['$', '$']
+    ],
+    displayMath: [
+      ['$$', '$$']
+    ],
+    processEscapes: true
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+
+
+
+
+
+
+
+<!-- copy button  -->
+<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+
+<!-- https://clipboardjs.com/ -->
+
+
+<script type="text/javascript">
+	(function () {
+		function setCopiedState(button) {
+			if (!button) return;
+			button.classList.add("copied");
+			setTimeout(() => {
+				button.classList.remove("copied");
+			}, 3000);
+		}
+
+		window.addEventListener("DOMContentLoaded", () => {
+			const copyBtnClass = "copy-btn";
+			document.querySelectorAll('figure.highlight').forEach((elem) => {
+				const codeContent = elem.querySelector("td.code");
+				if (!codeContent) return;
+				const copyButton = document.createElement('button');
+				const codeText = codeContent.innerText;
+				copyButton.setAttribute("class", copyBtnClass);
+				copyButton.setAttribute("title", "复制代码");
+				copyButton.setAttribute("aria-label", "复制代码");
+				copyButton.setAttribute("type", "button");
+				copyButton.setAttribute("data-clipboard-text", codeText);
+				copyButton.addEventListener("click", async () => {
+					try {
+						if (navigator.clipboard && window.isSecureContext) {
+							await navigator.clipboard.writeText(codeText);
+						} else {
+							const textArea = document.createElement("textarea");
+							textArea.value = codeText;
+							textArea.setAttribute("readonly", "");
+							textArea.style.position = "absolute";
+							textArea.style.left = "-9999px";
+							document.body.appendChild(textArea);
+							textArea.select();
+							document.execCommand("copy");
+							document.body.removeChild(textArea);
+						}
+						setCopiedState(copyButton);
+					} catch (error) {
+						console.error("Copy failed:", error);
+					}
+				});
+				elem.insertBefore(copyButton, elem.children[0]);
+			});
+
+			if (window.ClipboardJS) {
+				const clipboard = new ClipboardJS('.' + copyBtnClass);
+				clipboard.on('success', function (e) {
+					setCopiedState(e.trigger);
+					e.clearSelection();
+				});
+				clipboard.on('error', function (e) {
+					console.error('ClipboardJS error:', e.trigger);
+				});
+			}
+		})
+	})();
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  
+  <!-- 尾部用户自定义相关内容 -->
+</body>
+</html>
