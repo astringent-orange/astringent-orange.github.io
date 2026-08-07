@@ -24,7 +24,7 @@
 
   
 
-  <title>AprilTag视觉定位 | Mian的笔记</title>
+  <title>10_Jetson Orin  NX刷机Ubuntu 20.04 | Mian的笔记</title>
 
   
 
@@ -433,24 +433,24 @@ document.addEventListener("DOMContentLoaded", function() {
     <div class="header-content">
       <div class="post-text layout-block">
         <div class="layout-margin">
-          <h1 class="title-wrap">AprilTag视觉定位</h1>
+          <h1 class="title-wrap">10_Jetson Orin  NX刷机Ubuntu 20.04</h1>
           <h2 class="title-sub-wrap">
             <strong>Mian</strong>
             <span>发布于</span>
-            <time  class="article-date" datetime="2026-03-17T16:00:00.000Z" itemprop="datePublished">2026-03-18</time>
+            <time  class="article-date" datetime="2026-08-06T16:00:00.000Z" itemprop="datePublished">2026-08-07</time>
           </h2>
           
           
           <ul class="wrap-list dark">
   
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
+    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
     
 </ul>
           <ul class="wrap-list dark">
   
-    <li><a href="/tags/AprilTag/">🏷️ AprilTag</a></li>
+    <li><a href="/tags/jetson/">🏷️ jetson</a></li>
   
-    <li><a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/">🏷️ 视觉定位</a></li>
+    <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
   
 </ul>
         </div>
@@ -475,291 +475,59 @@ document.addEventListener("DOMContentLoaded", function() {
       
       
       <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在阅读无人机跟踪论文<a target="_blank" rel="noopener" href="http://arxiv.org/abs/2011.03968">Fast-Tracker</a>时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a>进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/fast-tracker01-93191883c8bc.png"><br>补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/AprilTag01-38e46038e887.png"><br>关于ApirlTag，其是由密歇根大学的Edwin Olson于2011年发表的，虽然看起来像是二维码，但是于日常中常见的二维码有许多不同。即AprilTag的核心目的不是为了存储大量数据，而是为了<strong>在极端的环境（光照不均、距离很远、角度倾斜、部分被遮挡）下，依然能被摄像头瞬间认出来，并精确计算出它在三维空间中的位置和姿态（即 6个自由度：前后、左右、上下，以及俯仰、偏航、滚转）。</strong> 所以AprilTag看起来比一般的二维码简单许多。<br><em>注意AprilTag不仅是一种标签生成的方式，也是一种标签检测系统</em></p>
-<h2 id="算法框架"><a href="#算法框架" class="headerlink" title="算法框架"></a>算法框架</h2><p>对于每一张输入的灰度图，都将进行以下操作</p>
-<h3 id="边缘检测"><a href="#边缘检测" class="headerlink" title="边缘检测"></a>边缘检测</h3><ol>
-<li>计算像素“梯度”：计算相邻点像素值变化的值与方向</li>
-<li>聚类与画线：将变化程度与方向相近的点聚类，然后拟合出一条直线</li>
-</ol>
-<h3 id="四边形检测"><a href="#四边形检测" class="headerlink" title="四边形检测"></a>四边形检测</h3><ol>
-<li>在上述所有线段中寻找首尾相连、逆时针环绕的四条线段</li>
-<li>抗遮挡：允许线段的端点之间存在缺口，即不必真的“首尾相连”</li>
-</ol>
-<h3 id="位姿估计"><a href="#位姿估计" class="headerlink" title="位姿估计"></a>位姿估计</h3><ol>
-<li>系统提前知道真实的AprilTag是边长已知的正方形，但由于透视，其在照片中可能变成了一个梯形或者菱形</li>
-<li>系统通过对比已知的正方形和照片中畸变的四边形，并利用相机参数，可以求出 <strong>单应性矩阵</strong> ，类似于变换矩阵，从而可以逆向推断出照片中的ApirlTag的位姿</li>
-</ol>
-<h3 id="读取ID"><a href="#读取ID" class="headerlink" title="读取ID"></a>读取ID</h3><ol>
-<li>AprilTag不仅能推断出标签的位姿，还能识别内部的自带的ID</li>
-<li>而AprilTag并不是简单将低于&#x2F;高于固定灰度值的部分分为白色&#x2F;黑色，而是建立一个随空间变化的光照模型，即通过相对亮度区分，于是可以应对光照不均匀的问题</li>
-</ol>
-<h3 id="纠错防伪"><a href="#纠错防伪" class="headerlink" title="纠错防伪"></a>纠错防伪</h3><p>画面中可能存在例如斑马线、黑白格子衫这样的物体，要如何保证系统不会认错标签？</p>
-<ol>
-<li>保证汉明距离：系统生成的每一张AprilTag，其黑白格子的图案和其他的标签都有巨大差别，保证即使读错了几个格子也能猜出正确的ID</li>
-<li>图案复杂：AprilTag编码在设计之初就淘汰了如纯黑这样几何复杂度低、且易在自然中产生的图案</li>
-</ol>
-<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>假设输入一张(w, h)的灰度图，其数值为0~255，系统应该如何处理</p>
-<h3 id="边缘检测-1"><a href="#边缘检测-1" class="headerlink" title="边缘检测"></a>边缘检测</h3><p>此处方法与ARTag的检测器相似。是整个过程中最为耗时的部分，通常可以以一半的分辨率执行，提高4倍速度。</p>
-<h4 id="计算梯度"><a href="#计算梯度" class="headerlink" title="计算梯度"></a>计算梯度</h4><p>首先对于图像上的任意一点 <code>(x,y)</code>，考察它水平方向和垂直方向的亮度差</p>
-<ul>
-<li>水平差分：$g_x &#x3D; I(x+1,y) - I(x-1,y)$</li>
-<li>垂直差分：$g_y &#x3D; I(x,y+1) - I(x,y-1)$<br>从而可以计算出梯度的大小与方向</li>
-<li>梯度幅值：$M(x,y) &#x3D; \sqrt{g_x(x,y)^2 + g_y(x,y)^2}$</li>
-<li>梯度方向：$\theta(x,y) &#x3D; \operatorname{arctan2}(g_y(x,y), g_x(x,y))$</li>
-</ul>
-<h4 id="聚类"><a href="#聚类" class="headerlink" title="聚类"></a>聚类</h4><p>经过上述操作，图上每一个像素点p都有了两个物理量，然后使用基于图的聚类方法。<br>创建一个图，其中每个节点代表一个像素。在相邻像素之间添加边，边权重等于像素在梯度方向上的差异：</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>买来的jetson电脑默认系统版本为<code>ubuntu 22.04</code>，需要配置为<code>ros noetic</code>需要的20.4来适配无人机算法环境。大部分内容都可以<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39599112/article/details/151679837">参考</a>，本文仅对其中一些内容进行补充</p>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><h3 id="主机准备"><a href="#主机准备" class="headerlink" title="主机准备"></a>主机准备</h3><p>需要准备一台有图形界面的<code>ubuntu</code>电脑以下载官方刷机软件<code>Nividia SDK Manager</code>，虚拟机或者实机都可以。注意到软件官网虽然也提供了windows版本的软件，但是windows版本现在仅适用于<code>Jetson AGX</code>系列，不适用于<code>Orin</code>系列。</p>
+<h3 id="下载刷机软件"><a href="#下载刷机软件" class="headerlink" title="下载刷机软件"></a>下载刷机软件</h3><p>在<a target="_blank" rel="noopener" href="https://developer.nvidia.com/sdk-manager#getting-started">官网页面</a>下载软件，正常情况都是选择linux下的x86_64选项<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/10_Jetson-Orin-NX%E5%88%B7%E6%9C%BAUbuntu-20.04/02d1b80b-c88f-483c-a730-a94dcc7eb42a-385285d58192.png"><br>下载完成后，进入到下载目录运行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install ./下载的文件.deb`</span><br><span class="line"></span><br><span class="line">sdkmanager --version</span><br></pre></td></tr></table></figure>
+<p>如果能正常显示则表示安装成功，可使用图形界面或者终端运行<code>sdkmanager</code>打开软件。</p>
+<h3 id="注册-登录SDK-Manager"><a href="#注册-登录SDK-Manager" class="headerlink" title="注册&#x2F;登录SDK Manager"></a>注册&#x2F;登录SDK Manager</h3><p>注意首次运行时需要通过 NVIDIA Developer 账号登录。没有账号时，需要先在 NVIDIA Developer 网站注册。SDK Manager 会调用浏览器完成登录认证。</p>
+<h2 id="进行刷机"><a href="#进行刷机" class="headerlink" title="进行刷机"></a>进行刷机</h2><h3 id="Jetson进入恢复模式"><a href="#Jetson进入恢复模式" class="headerlink" title="Jetson进入恢复模式"></a>Jetson进入恢复模式</h3><p>图片参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39599112/article/details/151679837">参考文献</a>，使用杜邦线将REC引脚与对应GND引脚短接进入恢复模式，然后上电开机，将jetson使用数据线连接到之前下载sdk manager的主机上。值得注意的是，在恢复模式下jetson的风扇应该是不会运行的，如果风扇在转则说明退出恢复模式了。</p>
+<h3 id="SDK-Manager配置"><a href="#SDK-Manager配置" class="headerlink" title="SDK Manager配置"></a>SDK Manager配置</h3><p>在jetson用数据线连接上主机后，在主机上打开sdk manager，理论上应该有如下界面<code>STEP 1</code>。其中<code>target hardware</code>应该能检测到要安装的电脑，主要取消勾选<code>host machine</code>。而关于<code>SDK VERSION</code>选项实际上代表了系统的版本，<code>JetPack</code>的版本与ubuntu的版本是一一对应的，其中jetpack 5.x对应ubuntu20.04，jetpack 6.x对应ubuntu22.04，jetpack 7.x对应ubuntu24.04。这里由于我们需要ubuntu 20.04所以选择jetpack 5.1.6。<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/10_Jetson-Orin-NX%E5%88%B7%E6%9C%BAUbuntu-20.04/77f4b7d1-aff8-4f33-872e-3f606248655b-823f3c32e364.png"><br>其中关于deepstream的部分通常可以不勾选，后续也可以单独安装。</p>
+<p>接下来在<code>STEP 2</code>与<code>STEP 3</code>中可以继续参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39599112/article/details/151679837">参考文献</a>。需要额外说明的是，安装时会先安装ubuntu系统，然后再安装各依赖包。而安装依赖包时，已经可以不用恢复模式了（可能此时jetson的风扇已经在转了）。而在安装sdk之前，推荐先进入系统中安装一些基础系统包，否则sdk可能安装失败。</p>
+<p>推荐操作为先长按jetson电源键进行关机（不用拔掉与主机的连接线），然后拔掉REC引脚的短接线，然后将jetson外接显示器、键盘、鼠标后重新开机。要注意的是，将jetson关机重启对于sdk manager安装过程是无害的，可以将sdk manager保持在<code>install</code>步骤的界面（具体图像参考参考文献），只是会显示无法连接到jetson而已。重启之后可以观察到，sdk manager仍然可以检测到jetson。（如果拔掉了与主机的连接线，再插回去即可）</p>
+<p>继续参考<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39599112/article/details/151679837">参考文献</a>在jetson上连接网络以及使用<code>fishros</code>进行基础环境的安装，并测试ssh是否能正常启用，完成之后回到sdk manager的界面继续操作。在点击install之前，此处与参考文献有一点不同的是，我们之前没有拔掉jetson与主机的连接线，所以<code>connection</code>选项中我们选择用usb。</p>
+<p>点击install之后等待安装完成即可。注意，jetson连接的显示器等外设可以保留，以供下文的其他软件安装。</p>
+<h2 id="机载软件安装"><a href="#机载软件安装" class="headerlink" title="机载软件安装"></a>机载软件安装</h2><h3 id="nomachine"><a href="#nomachine" class="headerlink" title="nomachine"></a>nomachine</h3><p>由于架构不同，jetson上需要安装<code>arm64</code>的版本。在官网首页中，不要选择<code>download now</code>而是选择<code>ohter operating system</code><br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/10_Jetson-Orin-NX%E5%88%B7%E6%9C%BAUbuntu-20.04/c103524f-cecd-4f90-8377-ff2ce146a9f4-c737fdd0a68c.png"><br>然后选择最下方的<code>NoMachine Personal Edition for ARM</code>，选择页面中第二项deb版本进行下载，下载完成后进入到下载文件夹运行<code>sudo apt install ./下载的包.deb</code>安装即可。安装完成后通常需要先运行一次nomachine，确认其是开机自启动以及分享屏幕</p>
+<h3 id="Miniconda"><a href="#Miniconda" class="headerlink" title="Miniconda"></a>Miniconda</h3><p>运行以下指令安装miniconda</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/Downloads</span><br><span class="line">wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh</span><br><span class="line">bash Miniconda3-latest-Linux-aarch64.sh</span><br></pre></td></tr></table></figure>
 
-$$
-W_{i,j} = \theta(p_i) - \theta(p_j) \pmod{2\pi}
-$$
-
-
-<p>然后按照权重从小到大去尝试把节点合并为一个“component”。即初始时一个节点代表了一个component，后续可能有多个component的合并。假设现在有两个相邻的component，$n$ 和 $m$，通过以下条件判断是否要将其合并：</p>
-
-$$
-D(n \cup m) \le \min(D(n), D(m)) + \frac{K_D}{|n \cup m|}
-$$
-$$
-M(n \cup m) \le \min(M(n), M(m)) + \frac{K_M}{|n \cup m|}
-$$
-
-<p>其中：</p>
-<ul>
-<li>$D(n) &#x3D; \max_{p \in n} \theta(p) - \min_{p \in n} \theta(p)$ 为方向极差</li>
-<li>$K(n) &#x3D; \max_{p \in n} M(p) - \min_{p \in n} M(p)$ 为幅值极差</li>
-<li>$|n \cup m|$：代表合并后群落包含的<strong>像素总数</strong>。 </li>
-<li>$K_D$：人为设定的常数。 </li>
-<li><strong>巧妙之处</strong>：公式右侧的 $\frac{K_D}{|n \cup m|}$ 是一个动态宽容度项。当群落很小（像素少）时，分母小，宽容度极大，允许像素快速抱团，具有极强的抗噪能力；当群落成长为长线段时（像素多），宽容度迅速趋近于 0，算法变得极其严苛，强制保证最终提取出的线段必须是“笔直且方向均匀”的。</li>
-</ul>
-<h4 id="画线"><a href="#画线" class="headerlink" title="画线"></a>画线</h4><p>使用最小二乘法，对于一个component的像素拟合出几何直线方程<br><strong>1.计算加权重心</strong> 以像素的梯度幅值 $M$ 作为权重 $w_i$，由于处在“悬崖”边缘的像素更具代表性，赋予其更高权重。设共有 $N$ 个像素，计算加权平均坐标 $(\bar{x}, \bar{y})$：</p>
-
-$$
-\bar{x} = \frac{\sum_{i=1}^{N} w_i \cdot x_i}{\sum_{i=1}^{N} w_i}, \quad
-\bar{y} = \frac{\sum_{i=1}^{N} w_i \cdot y_i}{\sum_{i=1}^{N} w_i}
-$$
-
-
-<p>随后将所有坐标平移至重心处（去中心化）：$x_i^{\prime} &#x3D; x_i - \bar{x}, \quad y_i^{\prime} &#x3D; y_i - \bar{y}$</p>
-<p><strong>2. 构建加权协方差矩阵</strong> 利用去中心化后的坐标，构建一个 $2 \times 2$ 的加权协方差矩阵 $\mathbf{C}$ 来描述像素的几何分布形态：</p>
-
-$$
-\mathbf{C} =
-\begin{bmatrix}
-C_{xx} & C_{xy} \\
-C_{xy} & C_{yy}
-\end{bmatrix}
-$$
-
-
-<p>其中矩阵元素的计算公式如下：</p>
-
-$$
-C_{xx} = \frac{\sum_{i=1}^{N} w_i \cdot (x_i^{\prime})^2}{\sum_{i=1}^{N} w_i}, \quad
-C_{yy} = \frac{\sum_{i=1}^{N} w_i \cdot (y_i^{\prime})^2}{\sum_{i=1}^{N} w_i}, \quad
-C_{xy} = \frac{\sum_{i=1}^{N} w_i \cdot x_i^{\prime} \cdot y_i^{\prime}}{\sum_{i=1}^{N} w_i}
-$$
-
-
-
-<p><strong>3. 求解特征向量得到直线方程</strong> 直线的走向（倾斜角 $\theta$）即为该协方差矩阵最大特征值对应的特征向量方向。其解析解可以直接通过下式计算：</p>
-
-$$
-\theta = \frac{1}{2} \operatorname{arctan2}\bigl(2 C_{xy}, C_{xx} - C_{yy}\bigr)
-$$
-
-
-<p>最终，利用倾斜角  $\theta$  和重心  $(\bar{x}, \bar{y})$ ，我们可以直接写出没有任何数学奇点的亚像素级直线标准方程 $Ax + By + C &#x3D; 0$： </p>
-
-$$
-A = -\sin\theta, \quad B = \cos\theta, \quad C = -(A\bar{x} + B\bar{y})
-$$
-
-<h3 id="四边形检测-1"><a href="#四边形检测-1" class="headerlink" title="四边形检测"></a>四边形检测</h3><p>使用深度为4的深度优先搜索，并在深度一考虑所有线段，而在深度二至四考虑所有开始距离前一个线段结束位置“足够近”并且遵循逆时针缠绕 顺序的线段。</p>
-<p>通过调整“足够接近”阈值来处理对遮挡和分割错误的鲁棒性:通过使阈值变大,可以处理边缘 周围的显着间隙。文中“足够接近”的阈值是线长度的两倍加上五个额外像素。</p>
-<p>在找到四边形后边可以得到对应四个角在二维图像中的坐标</p>
-<h3 id="位姿估计-1"><a href="#位姿估计-1" class="headerlink" title="位姿估计"></a>位姿估计</h3><p>在找到了二维照片上的 4 个精确角点后，我们需要将其映射回真实的三维物理空间。这里用到了计算机视觉中最经典的“小孔相机投影模型”。<br><strong>1. 建立巧妙的世界坐标系</strong> 将世界坐标系的原点强行定义在<strong>真实 AprilTag 的正中心</strong>，并让标签平铺在 $X-Y$ 平面上。这一设定的绝妙之处在于，标签上所有点的物理 $Z$ 坐标全部归零：</p>
-
-$$
-Z_w = 0
-$$
-
-
-<p><strong>2. 投影矩阵的“降维打击”</strong> 根据相机的透视投影公式，世界坐标 $(X_w, Y_w, Z_w)$ 投影到图像像素坐标 $(u, v)$ 满足以下关系：</p>
-
-$$
-s
-\begin{bmatrix}
-u \\
-v \\
-1
-\end{bmatrix}
-=
-\mathbf{K}
-\begin{bmatrix}
-\mathbf{r_1} & \mathbf{r_2} & \mathbf{r_3} & \mathbf{t}
-\end{bmatrix}
-\begin{bmatrix}
-X_w \\
-Y_w \\
-Z_w \\
-1
-\end{bmatrix}
-$$
-
+<p><strong>注意</strong> </p>
 <blockquote>
-<p><strong>参数说明：</strong> </p>
-<ul>
-<li>$s$：透视缩放因子（由于“近大远小”丢失的深度信息）。 </li>
-<li>$\mathbf{K}$：相机的 $3 \times 3$ 内参矩阵（包含焦距和光心）。 </li>
-<li>$\mathbf{r_1}, \mathbf{r_2}, \mathbf{r_3}$：相机旋转矩阵 $\mathbf{R}$ 的三个列向量。 </li>
-<li>$\mathbf{t}$：平移向量 $[t_x, t_y, t_z]^T$，即相机到标签中心的真实物理距离。</li>
-</ul>
+<p>Jetson 上 Conda 的创建方式与普通 Ubuntu 基本相同，但由于 Jetson 使用 ARM64 架构且 CUDA 由 JetPack 管理，因此 PyTorch、torchvision 等 GPU 相关库不能直接使用普通 x86 CUDA wheel，需要安装 NVIDIA 提供的 Jetson ARM64 版本，部分库还需要源码编译。</p>
 </blockquote>
-<p> 由于 $Z_w &#x3D; 0$，矩阵乘法中涉及 $\mathbf{r_3}$ 的项统统被消灭（乘以 0）。原本 $3 \times 4$ 的复杂空间投影，完美坍缩为一个 $3 \times 3$ 的平面映射矩阵，这就是**单应性矩阵 $\mathbf{H}$**：</p>
+<p>简单来说，由于架构不同jetson上部分GPU相关库不能直接安装，需要安装专有版本或者自行构建，具体情况建议询问ai。推荐是在可以访问ai的电脑上ssh登录到jetson，而不是在jetson上直接访问ai。</p>
+<h3 id="Mavros"><a href="#Mavros" class="headerlink" title="Mavros"></a>Mavros</h3><p>安装<code>mavros</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> apt install -y \</span><br><span class="line">  ros-noetic-mavros \</span><br><span class="line">  ros-noetic-mavros-extras \</span><br><span class="line">  ros-noetic-mavros-msgs \</span><br><span class="line">  geographiclib-tools</span><br></pre></td></tr></table></figure>
+<p>安装GeographicLib 数据，缺少地理数据可能导致 <code>mavros_node</code> 退出</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp</span><br><span class="line"></span><br><span class="line">wget https://raw.githubusercontent.com/mavlink/mavros/master/mavros/scripts/install_geographiclib_datasets.sh</span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> bash install_geographiclib_datasets.sh</span><br></pre></td></tr></table></figure>
+<p>检查是否安装成功</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /opt/ros/noetic/setup.bash</span><br><span class="line"></span><br><span class="line">rospack find mavros</span><br><span class="line">rospack find mavros_extras</span><br><span class="line">rosversion mavros</span><br></pre></td></tr></table></figure>
 
-$$
-s
-\begin{bmatrix}
-u \\
-v \\
-1
-\end{bmatrix}
-=
-\mathbf{K}
-\begin{bmatrix}
-\mathbf{r_1} & \mathbf{r_2} & \mathbf{t}
-\end{bmatrix}
-\begin{bmatrix}
-X_w \\
-Y_w \\
-1
-\end{bmatrix}
-\quad \Longrightarrow \quad
-\mathbf{H}
-=
-\mathbf{K}
-\begin{bmatrix}
-\mathbf{r_1} & \mathbf{r_2} & \mathbf{t}
-\end{bmatrix}
-$$
+<h3 id="相机驱动"><a href="#相机驱动" class="headerlink" title="相机驱动"></a>相机驱动</h3><p>这里使用<code>Intel Realsense D435</code>机载相机<br>安装 RealSense 官方软件源</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y curl gpg apt-transport-https</span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">mkdir</span> -p /etc/apt/keyrings</span><br><span class="line"></span><br><span class="line">curl -sSf https://librealsense.realsenseai.com/Debian/librealsenseai.asc | \</span><br><span class="line">gpg --dearmor | <span class="built_in">sudo</span> <span class="built_in">tee</span> /etc/apt/keyrings/librealsenseai.gpg &gt; /dev/null</span><br></pre></td></tr></table></figure>
+<p>添加 Ubuntu 20.04（focal）源：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;deb [signed-by=/etc/apt/keyrings/librealsenseai.gpg] https://librealsense.realsenseai.com/Debian/apt-repo focal main&quot;</span> | \</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">tee</span> /etc/apt/sources.list.d/librealsense.list</span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br></pre></td></tr></table></figure>
+<p>安装 librealsense</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y \</span><br><span class="line">  librealsense2-utils \</span><br><span class="line">  librealsense2-dev</span><br></pre></td></tr></table></figure>
+<p>连接相机运行官方接口进行测试<code>realsense-viewer</code>，如果成功则继续安装 ROS Noetic 的 RealSense 驱动</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y \</span><br><span class="line">  ros-noetic-realsense2-camera \</span><br><span class="line">  ros-noetic-realsense2-description</span><br></pre></td></tr></table></figure>
+<p>然后进行测试，在终端一中</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /opt/ros/noetic/setup.bash</span><br><span class="line"></span><br><span class="line">roslaunch realsense2_camera rs_camera.launch</span><br></pre></td></tr></table></figure>
+<p>然后在终端二中<code>rostopic list | grep camera</code></p>
+<h3 id="额外工具"><a href="#额外工具" class="headerlink" title="额外工具"></a>额外工具</h3><p>安装终端工具与网络工具</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"></span><br><span class="line"><span class="built_in">sudo</span> apt install -y \</span><br><span class="line">  terminator \</span><br><span class="line">  net-tools</span><br></pre></td></tr></table></figure>
+<p>安装vscode，需要使用微软官方 ARM64 软件源</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt install -y wget gpg</span><br><span class="line"></span><br><span class="line">wget -qO- https://packages.microsoft.com/keys/microsoft.asc | \</span><br><span class="line"><span class="built_in">sudo</span> gpg --dearmor -o /usr/share/keyrings/microsoft.gpg</span><br></pre></td></tr></table></figure>
+<p>添加源</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> <span class="built_in">tee</span> /etc/apt/sources.list.d/vscode.sources &gt; /dev/null &lt;&lt;<span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">Types: deb</span><br><span class="line">URIs: https://packages.microsoft.com/repos/code</span><br><span class="line">Suites: stable</span><br><span class="line">Components: main</span><br><span class="line">Architectures: arm64</span><br><span class="line">Signed-By: /usr/share/keyrings/microsoft.gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+<p>安装</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y code</span><br></pre></td></tr></table></figure>
+<p>安装 PlotJuggler分析工具</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">source</span> /opt/ros/noetic/setup.bash</span><br><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install ros-<span class="variable">$ROS_DISTRO</span>-plotjuggler-ros</span><br></pre></td></tr></table></figure>
+<p>安装Ceres Solver数学工具，部分无人机项目会依赖</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">sudo</span> apt update</span><br><span class="line"><span class="built_in">sudo</span> apt install -y \</span><br><span class="line">    libceres-dev \</span><br><span class="line">    libgoogle-glog-dev \</span><br><span class="line">    libgflags-dev \</span><br><span class="line">    libeigen3-dev \</span><br><span class="line">    libsuitesparse-dev \</span><br><span class="line">    liblapack-dev</span><br></pre></td></tr></table></figure>
 
-
-<p><em>(通过四对已知的角点坐标，运用直接线性变换 DLT 算法即可解出 $\mathbf{H}$ 的所有元素。)</em></p>
-<p>解出单应性矩阵 $\mathbf{H}$ 后，我们需要逆向剥离出我们真正想要的平移向量 $\mathbf{t}$（距离）和旋转矩阵 $\mathbf{R}$（姿态）。<br><strong>3. 消除相机内参干扰</strong> 在等式两边同时左乘相机内参矩阵的逆 $\mathbf{K}^{-1}$，我们将计算结果记为三个列向量 $\mathbf{h_1}, \mathbf{h_2}, \mathbf{h_3}$：</p>
-
-$$
-\mathbf{K}^{-1}\mathbf{H}
-=
-\begin{bmatrix}
-\mathbf{h_1} & \mathbf{h_2} & \mathbf{h_3}
-\end{bmatrix}
-=
-s
-\begin{bmatrix}
-\mathbf{r_1} & \mathbf{r_2} & \mathbf{t}
-\end{bmatrix}
-$$
-
-
-<p>这实际上给出了三个极其关键的等式：</p>
-
-$$
-\mathbf{h_1} = s \cdot \mathbf{r_1}, \quad
-\mathbf{h_2} = s \cdot \mathbf{r_2}, \quad
-\mathbf{h_3} = s \cdot \mathbf{t}
-$$
-
-
-<p><strong>4. 利用刚体物理定理求解缩放因子 $s$</strong> 在真实的物理空间中，旋转矩阵的列向量 $\mathbf{r_1}$ 和 $\mathbf{r_2}$ 代表方向轴，它们的<strong>模长（长度）必须严格等于 1</strong>（即 $|\mathbf{r_1}| &#x3D; |\mathbf{r_2}| &#x3D; 1$）。基于这个物理公理，我们可以直接算出透视缩放因子 $s$。为了减少图像噪点误差，通常取前两列模长的几何平均值：</p>
-
-$$
-s = \sqrt{\|\mathbf{h_1}\| \cdot \|\mathbf{h_2}\|}
-$$
-
-
-<p><strong>5. 提取平移距离与旋转轴</strong> 既然 $s$ 已经求出，终极目标瞬间解开：</p>
-<ul>
-<li><strong>物理距离（平移向量）</strong>：直接拿到了无人机距离目标的绝对 $X, Y, Z$ 坐标！</li>
-</ul>
-
-$$
-\mathbf{t} = \frac{\mathbf{h_3}}{s}
-$$
-
-
-<ul>
-<li><strong>物理姿态（旋转向量）</strong>：解出真实的 $X$ 轴和 $Y$ 轴朝向。</li>
-</ul>
-
-$$
-\mathbf{r_1} = \frac{\mathbf{h_1}}{s}, \quad
-\mathbf{r_2} = \frac{\mathbf{h_2}}{s}
-$$
-
-
-<ul>
-<li><strong>找回丢失的 $Z$ 轴</strong>：利用三维几何的右手法则，通过向量的叉乘（Cross Product）无中生有地生成垂直于平面的第三个旋转轴：</li>
-</ul>
-
-$$
-\mathbf{r_3} = \mathbf{r_1} \times \mathbf{r_2}
-$$
-
-
-<p>至此，我们初步拼凑出了 $3 \times 3$ 的旋转矩阵 $\tilde{\mathbf{R}} &#x3D; \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{r_3} \end{bmatrix}$。</p>
-<p><strong>6.旋转矩阵正交化</strong> 由于像素离散误差和镜头畸变，我们粗略拼凑出来的 $\tilde{\mathbf{R}}$ 往往并不完美（三个轴可能不绝对正交）。如果将其直接输入无人机飞控，会导致严重的姿态计算错误。<br><strong>数学解法（极分解）：</strong> 我们需要寻找一个在三维旋转群 $SO(3)$ 中，距离 $\tilde{\mathbf{R}}$ 最近的“绝对完美的正交旋转矩阵” $\mathbf{R}^*$。通过对粗糙矩阵 $\tilde{\mathbf{R}}$ 进行奇异值分解（SVD）：</p>
-
-$$
-\tilde{\mathbf{R}} = \mathbf{U} \mathbf{\Sigma} \mathbf{V}^T
-$$
-
-
-<p>将代表拉伸变形的对角阵 $\mathbf{\Sigma}$ 强制替换为单位阵 $\mathbf{I}$，即可得到完全正交的最优旋转矩阵：</p>
-
-$$
-\mathbf{R}^* = \mathbf{U} \mathbf{V}^T
-$$
-
-
-<h3 id="读取ID-1"><a href="#读取ID-1" class="headerlink" title="读取ID"></a>读取ID</h3><p>在真实的物理环境中，光照往往是极度不均匀的。比如标签一半暴露在刺眼的阳光下，一半掩盖在浓重的树荫里。此时，阴影区域的“纯白色”像素，其绝对亮度可能比阳光区域的“纯黑色”像素还要暗。如果使用一个全局固定的亮度阈值（如 128）去二值化图像，阴影区的密码将全军覆没。 </p>
-<p><strong>数学解法：建立空间光照曲面</strong> AprilTag 利用了其本身固有的几何设计：标签的最外圈固定是一层白边，往内固定是一层黑框。这些边框的颜色是<strong>绝对已知</strong>的。 算法在这些已知的白边和黑框中采样若干像素点 $(x_i, y_i)$ 以及它们的真实灰度值 $I_i$，并在数学上假设光照强度的变化在二维空间中是一个<strong>双线性平面（Bilinear Surface）</strong>。<br>为此，算法分别构建了两个连续的二维空间亮度函数：<br><strong>黑色区域的光照曲面模型</strong>：</p>
-
-$$
-I_{\text{black}}(x, y) = A_1 x + B_1 xy + C_1 y + D_1
-$$
-
-
-<p><strong>白色区域的光照曲面模型</strong>：</p>
-
-$$
-I_{\text{white}}(x, y) = A_2 x + B_2 xy + C_2 y + D_2
-$$
-
-
-<p>现在，算法准备去读取标签内部的任意一个数据网格（密码位）。假设该网格中心的像素坐标为 $(x_k, y_k)$。我们不再去和一个死板的固定数字比大小，而是将该坐标分别代入刚刚拟合出的两张曲面方程中，计算出它**专属的动态阈值 $T(x_k, y_k)$**（即黑与白的中间值）：</p>
-
-$$
-T(x_k, y_k) = \frac{I_{\text{black}}(x_k, y_k) + I_{\text{white}}(x_k, y_k)}{2}
-$$
-
-
-<p>最后，用该坐标点真实的相机传感器亮度 $I_{\text{actual}}(x_k, y_k)$ 与其专属阈值进行比较，直接输出二进制位：</p>
-
-$$
-\text{Bit}(x_k, y_k) =
-\begin{cases}
-1 \text{ (白)} & \text{if } I_{\text{actual}}(x_k, y_k) > T(x_k, y_k) \\
-0 \text{ (黑)} & \text{if } I_{\text{actual}}(x_k, y_k) \le T(x_k, y_k)
-\end{cases}
-$$
-
-<h3 id="纠错防伪-1"><a href="#纠错防伪-1" class="headerlink" title="纠错防伪"></a>纠错防伪</h3><p>除了上面所有的检测措施之外，AprilTag在设计时还加入了许多限制</p>
-<h4 id="汉明距离纠错"><a href="#汉明距离纠错" class="headerlink" title="汉明距离纠错"></a>汉明距离纠错</h4><p>为了保证即使部分被遮挡也能成功读取，在设计时保证了任何两个标签之间有足够的汉明距离，例如36h10一族标签代表了有36个格子，最小汉明距离为10</p>
-<h4 id="旋转不变性"><a href="#旋转不变性" class="headerlink" title="旋转不变性"></a>旋转不变性</h4><p>AprilTag还限制了任意标签在旋转后与原来的自己也保持最小汉明距离，从而可以迅速读出标签的旋转</p>
-<h4 id="几何复杂度"><a href="#几何复杂度" class="headerlink" title="几何复杂度"></a>几何复杂度</h4><p>自然界中也可能出现类似的图形，例如一个方形窗户中的光阴。AprilTag设定了每个标签绘制所需要的最少矩形个数，排除了如纯黑色标签这种形式</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>AprilTag通过数学上的精妙运算，实现了一种快速准确且能够在极端环境运行的视觉定位系统</p>
-<p>ApirlTag（2011）在后续还推出了<a target="_blank" rel="noopener" href="http://ieeexplore.ieee.org/document/7759617/">ApirlTag2</a>（2016）、<a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/8967787/">ApirlTag3</a>（2019）。分别实现了更精准快速的检测器、更多样化的标签生成机制。</p>
-<h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><p><a target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/5979561/">AprilTag</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>GPT5.6<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39599112/article/details/151679837">https://blog.csdn.net/qq_39599112/article/details/151679837</a></p>
 
       </section>
 
@@ -767,22 +535,6 @@ $$
       
         <nav class="article-nav">
           
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2026/04/01/7.1_astar%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92%E6%94%B9%E8%BF%9B%E2%80%94%E2%80%94%E8%BE%B9%E9%A3%9E%E8%BE%B9%E8%A7%84%E5%88%92/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">7.1_astar路径规划改进——边飞边规划</h2>
-        </a>
-      
-      <div class="card-text--row">下一篇</div>
-    </div>
-  </article>
-</div>
-
-          
           
             <div class="article-nav-item layout-padding">
   <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
@@ -790,8 +542,8 @@ $$
     
     <div class="card-text">
       
-        <a href="/2026/03/12/7_astar%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92%E5%AE%9E%E9%AA%8C/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">7_astar路径规划实验</h2>
+        <a href="/2026/06/09/zotero%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5%E4%BF%AE%E5%A4%8D/" itemprop="url">
+          <h2 class="card-text--title text-ellipsis">zotero文件同步修复</h2>
         </a>
       
       <div class="card-text--row">上一篇</div>
@@ -861,7 +613,7 @@ $$
     <span>目录</span>
   </div>
   <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AE%97%E6%B3%95%E6%A1%86%E6%9E%B6"><span class="toc-number">2.</span> <span class="toc-text">算法框架</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B"><span class="toc-number">2.1.</span> <span class="toc-text">边缘检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E6%A3%80%E6%B5%8B"><span class="toc-number">2.2.</span> <span class="toc-text">四边形检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1"><span class="toc-number">2.3.</span> <span class="toc-text">位姿估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96ID"><span class="toc-number">2.4.</span> <span class="toc-text">读取ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A0%E9%94%99%E9%98%B2%E4%BC%AA"><span class="toc-number">2.5.</span> <span class="toc-text">纠错防伪</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B7%E4%BD%93%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">具体实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BE%B9%E7%BC%98%E6%A3%80%E6%B5%8B-1"><span class="toc-number">3.1.</span> <span class="toc-text">边缘检测</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%A1%E7%AE%97%E6%A2%AF%E5%BA%A6"><span class="toc-number">3.1.1.</span> <span class="toc-text">计算梯度</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%81%9A%E7%B1%BB"><span class="toc-number">3.1.2.</span> <span class="toc-text">聚类</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%BB%E7%BA%BF"><span class="toc-number">3.1.3.</span> <span class="toc-text">画线</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E6%A3%80%E6%B5%8B-1"><span class="toc-number">3.2.</span> <span class="toc-text">四边形检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E4%BC%B0%E8%AE%A1-1"><span class="toc-number">3.3.</span> <span class="toc-text">位姿估计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%BB%E5%8F%96ID-1"><span class="toc-number">3.4.</span> <span class="toc-text">读取ID</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%A0%E9%94%99%E9%98%B2%E4%BC%AA-1"><span class="toc-number">3.5.</span> <span class="toc-text">纠错防伪</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%B1%89%E6%98%8E%E8%B7%9D%E7%A6%BB%E7%BA%A0%E9%94%99"><span class="toc-number">3.5.1.</span> <span class="toc-text">汉明距离纠错</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%97%8B%E8%BD%AC%E4%B8%8D%E5%8F%98%E6%80%A7"><span class="toc-number">3.5.2.</span> <span class="toc-text">旋转不变性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%87%A0%E4%BD%95%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="toc-number">3.5.3.</span> <span class="toc-text">几何复杂度</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9"><span class="toc-number">5.</span> <span class="toc-text">参考内容</span></a></li></ol>
+    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="toc-number">2.</span> <span class="toc-text">前期准备</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E5%87%86%E5%A4%87"><span class="toc-number">2.1.</span> <span class="toc-text">主机准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E5%88%B7%E6%9C%BA%E8%BD%AF%E4%BB%B6"><span class="toc-number">2.2.</span> <span class="toc-text">下载刷机软件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E5%86%8C-%E7%99%BB%E5%BD%95SDK-Manager"><span class="toc-number">2.3.</span> <span class="toc-text">注册&#x2F;登录SDK Manager</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%9B%E8%A1%8C%E5%88%B7%E6%9C%BA"><span class="toc-number">3.</span> <span class="toc-text">进行刷机</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Jetson%E8%BF%9B%E5%85%A5%E6%81%A2%E5%A4%8D%E6%A8%A1%E5%BC%8F"><span class="toc-number">3.1.</span> <span class="toc-text">Jetson进入恢复模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SDK-Manager%E9%85%8D%E7%BD%AE"><span class="toc-number">3.2.</span> <span class="toc-text">SDK Manager配置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%BA%E8%BD%BD%E8%BD%AF%E4%BB%B6%E5%AE%89%E8%A3%85"><span class="toc-number">4.</span> <span class="toc-text">机载软件安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#nomachine"><span class="toc-number">4.1.</span> <span class="toc-text">nomachine</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Miniconda"><span class="toc-number">4.2.</span> <span class="toc-text">Miniconda</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Mavros"><span class="toc-number">4.3.</span> <span class="toc-text">Mavros</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%B8%E6%9C%BA%E9%A9%B1%E5%8A%A8"><span class="toc-number">4.4.</span> <span class="toc-text">相机驱动</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%9D%E5%A4%96%E5%B7%A5%E5%85%B7"><span class="toc-number">4.5.</span> <span class="toc-text">额外工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
   </div>
 </section>
 
