@@ -1,504 +1,379 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="theme-color" content="#3367D6"/>
-  <link rel="apple-touch-icon" href="/icons-192.png">
-  <link rel="manifest" href="/manifest.json">
-  
-  <meta name="generator" content="Hexo 7.3.0">
 
-  
-    <meta name="description" content="Mian的个人博客">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言复现vitfly实验，包含基础的下载、测试、训练。预计在测试部分需要分析代码的结构，后续该如何修改。在训练部分，首先需要知道整个训练的流程，怎么将整个流程部署到服务器上，得到一个大概的训练框架；然后是学会怎么采集数据集，标准化。预计在运行之后可以对具体的内容进行分析，得到更好的idea-&gt;而在此之前，可能需要去调研vitfly的后续工作，快要两年的论文，到现在的进展如何，有什么引用  本">
+<meta property="og:type" content="article">
+<meta property="og:title" content="9_ViTFly实验复现">
+<meta property="og:url" content="https://astringent-orange.github.io/2026/05/06/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Mian的笔记">
+<meta property="og:description" content="前言复现vitfly实验，包含基础的下载、测试、训练。预计在测试部分需要分析代码的结构，后续该如何修改。在训练部分，首先需要知道整个训练的流程，怎么将整个流程部署到服务器上，得到一个大概的训练框架；然后是学会怎么采集数据集，标准化。预计在运行之后可以对具体的内容进行分析，得到更好的idea-&gt;而在此之前，可能需要去调研vitfly的后续工作，快要两年的论文，到现在的进展如何，有什么引用  本">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/d6451eaaa75e52459319b18403368792-aa76e8117496.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/2455a0dcbd5398b86c83dd9457c8d912-6d70540aeac1.png">
+<meta property="article:published_time" content="2026-05-05T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-05T16:00:00.000Z">
+<meta property="article:author" content="Mian">
+<meta property="article:tag" content="ROS1">
+<meta property="article:tag" content="仿真">
+<meta property="article:tag" content="FlightMare">
+<meta property="article:tag" content="Unity">
+<meta property="article:tag" content="vitfly">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/d6451eaaa75e52459319b18403368792-aa76e8117496.png">
+  
+  
+  
+  <title>9_ViTFly实验复现 - Mian的笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
-  
-    <meta name="author" content="Mian">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
   
 
-  
 
   
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-  <title>9_ViTFly实验复现 | Mian的笔记</title>
 
-  
-
-  
-    <link rel="shortcut icon" href="/favicon.ico">
-  
-
-  
-
-  
-
-  
-
-  
-<link rel="stylesheet" href="/css/style.css">
-
-</head>
 <body>
-  <div class="root-container">
+  
+
+  <header>
     
-<!-- header container -->
-<header class="header-container post">
-  
-  
-  
-    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png)"></div>
-  
 
-  <!-- navbar -->
-<nav class="navbar">
-  <div class="navbar-content">
-    <!-- logo -->
-    <div class="navbar-logo">
-      <a href="/">
-        
-          Mian的笔记
-        
-      </a>
-    </div>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Mian的笔记</strong>
+    </a>
 
-    <!-- link -->
-    <div class="navbar-link">
-      <div class="navbar-btn">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-      <ul class="navbar-list">
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
           
-            <li class="navbar-list-item">
-              <a href="/">首页</a>
-            </li>
           
-        
           
-            <li class="navbar-list-item dropdown">
-              <a href="#" class="dropdown-toggle" aria-expanded="false">
-                文档 <span class="arrow">&#9662;</span>
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
               </a>
-
-              <ul class="dropdown-menu">
-                
-                  <li>
-                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-                      无人机实验
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-                      无人机工程
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E6%9D%82%E8%AE%B0/">
-                      杂记
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-                      大模型
-                    </a>
-                  </li>
-                
-              </ul>
             </li>
           
         
           
-            <li class="navbar-list-item">
-              <a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a>
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
             </li>
           
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
         
       </ul>
-
-      <div class="navbar-search">
-        <button class="navbar-search-toggle" type="button" aria-label="Open search" aria-expanded="false">
-          <span class="navbar-search-icon" aria-hidden="true"></span>
-        </button>
-        <form class="navbar-search-form" role="search">
-          <input
-            class="navbar-search-input"
-            type="search"
-            name="q"
-            placeholder="搜索文章..."
-            autocomplete="off"
-          />
-        </form>
-        <div class="navbar-search-results" hidden>
-          <div class="navbar-search-state">&#36755;&#20837;&#20851;&#38190;&#35789;&#24320;&#22987;&#25628;&#32034;</div>
-          <div class="navbar-search-list"></div>
-        </div>
-      </div>
     </div>
   </div>
 </nav>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const dropdown = document.querySelector(".dropdown");
-  const search = document.querySelector(".navbar-search");
-
-  if (dropdown) {
-    const menu = dropdown.querySelector(".dropdown-menu");
-    const toggle = dropdown.querySelector(".dropdown-toggle");
-
-    function closeMenu() {
-      dropdown.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-    }
-
-    function openMenu() {
-      dropdown.classList.add("is-open");
-      toggle.setAttribute("aria-expanded", "true");
-    }
-
-    toggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const opened = dropdown.classList.contains("is-open");
-      if (opened) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-
-    document.addEventListener("click", function(e) {
-      if (!dropdown.contains(e.target)) {
-        closeMenu();
-      }
-    });
-
-    menu.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        closeMenu();
-      }
-    });
-  }
-
-  if (search) {
-    const searchToggle = search.querySelector(".navbar-search-toggle");
-    const searchForm = search.querySelector(".navbar-search-form");
-    const searchInput = search.querySelector(".navbar-search-input");
-    const searchResults = search.querySelector(".navbar-search-results");
-    const searchState = search.querySelector(".navbar-search-state");
-    const searchList = search.querySelector(".navbar-search-list");
-    const searchIndexPath = "/search.json";
-    const searchBasePath = "/";
-    const searchPagePath = "/search/";
-    let searchIndex = null;
-    let searchIndexPromise = null;
-
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, function(char) {
-        const entityMap = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          "\"": "&quot;",
-          "'": "&#39;"
-        };
-        return entityMap[char];
-      });
-    }
-
-    function escapeRegExp(value) {
-      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }
-
-    function buildSnippet(item, keyword) {
-      const source = item.excerpt || item.content || "";
-      if (!source) return "";
-
-      const normalizedKeyword = keyword.trim().toLowerCase();
-      const sourceLower = source.toLowerCase();
-      const matchIndex = normalizedKeyword ? sourceLower.indexOf(normalizedKeyword) : -1;
-      const start = matchIndex >= 0 ? Math.max(0, matchIndex - 24) : 0;
-      const snippet = source.slice(start, start + 88).trim();
-
-      return start > 0 ? "..." + snippet : snippet;
-    }
-
-    function highlightText(text, keyword) {
-      if (!keyword) return escapeHTML(text);
-      const safeKeyword = escapeRegExp(keyword.trim());
-      if (!safeKeyword) return escapeHTML(text);
-
-      return escapeHTML(text).replace(new RegExp("(" + safeKeyword + ")", "ig"), "<mark>$1</mark>");
-    }
-
-    function setSearchState(message, type) {
-      searchState.textContent = message;
-      searchState.dataset.state = type || "idle";
-      searchState.hidden = false;
-    }
-
-    function clearSearchResults() {
-      searchList.innerHTML = "";
-    }
-
-    function showResultsPanel() {
-      searchResults.hidden = false;
-      search.classList.add("show-results");
-    }
-
-    function hideResultsPanel() {
-      searchResults.hidden = true;
-      search.classList.remove("show-results");
-    }
-
-    function ensureSearchIndex() {
-      if (searchIndex) return Promise.resolve(searchIndex);
-      if (searchIndexPromise) return searchIndexPromise;
-
-      setSearchState("\u6b63\u5728\u52a0\u8f7d\u641c\u7d22\u7d22\u5f15...", "loading");
-      showResultsPanel();
-
-      searchIndexPromise = fetch(searchIndexPath)
-        .then(function(response) {
-            if (!response.ok) throw new Error("Failed to load search index");
-            return response.json();
-          })
-        .then(function(data) {
-          searchIndex = Array.isArray(data) ? data : [];
-          return searchIndex;
-        })
-        .catch(function() {
-          setSearchState("\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25", "error");
-          return [];
-        });
-
-      return searchIndexPromise;
-    }
-
-    function renderSearchResults(items, keyword) {
-      clearSearchResults();
-      showResultsPanel();
-
-      if (!keyword.trim()) {
-        setSearchState("\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22", "idle");
-        return;
-      }
-
-      if (!items.length) {
-        setSearchState("\u672a\u627e\u5230\u76f8\u5173\u6587\u7ae0", "empty");
-        return;
-      }
-
-      searchState.hidden = true;
-      const html = items.map(function(item) {
-        const snippet = buildSnippet(item, keyword);
-        const metaParts = []
-          .concat(item.categories || [])
-          .concat(item.tags || []);
-
-        return [
-          '<a class="navbar-search-result-item" href="' + searchBasePath + escapeHTML(item.path) + '">',
-          '<span class="navbar-search-result-title">' + highlightText(item.title || "Untitled", keyword) + "</span>",
-          snippet ? '<span class="navbar-search-result-snippet">' + highlightText(snippet, keyword) + "</span>" : "",
-          metaParts.length ? '<span class="navbar-search-result-meta">' + escapeHTML(metaParts.slice(0, 3).join(" / ")) + "</span>" : "",
-          "</a>"
-        ].join("");
-      }).join("");
-
-      searchList.innerHTML = html;
-    }
-
-    function performSearch(keyword) {
-      ensureSearchIndex().then(function(index) {
-        const trimmedKeyword = keyword.trim();
-        if (!trimmedKeyword) {
-          renderSearchResults([], "");
-          return;
-        }
-
-        const normalizedKeyword = trimmedKeyword.toLowerCase();
-        const matchedItems = index.filter(function(item) {
-          const haystack = [
-            item.title,
-            item.excerpt,
-            item.content,
-            (item.tags || []).join(" "),
-            (item.categories || []).join(" ")
-          ].join(" ").toLowerCase();
-
-          return haystack.includes(normalizedKeyword);
-        }).sort(function(a, b) {
-          const aTitle = (a.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
-          const bTitle = (b.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
-          return bTitle - aTitle;
-        }).slice(0, 6);
-
-        renderSearchResults(matchedItems, trimmedKeyword);
-      });
-    }
-
-    function navigateToSearchPage(keyword) {
-      const trimmedKeyword = keyword.trim();
-      const target = trimmedKeyword ? searchPagePath + "?q=" + encodeURIComponent(trimmedKeyword) : searchPagePath;
-      window.location.href = target;
-    }
-
-    function closeSearch() {
-      search.classList.remove("is-open");
-      searchToggle.setAttribute("aria-expanded", "false");
-      hideResultsPanel();
-    }
-
-    function openSearch() {
-      search.classList.add("is-open");
-      searchToggle.setAttribute("aria-expanded", "true");
-      window.requestAnimationFrame(function() {
-        searchInput.focus();
-      });
-    }
-
-    searchToggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (search.classList.contains("is-open")) {
-        closeSearch();
-      } else {
-        openSearch();
-        if (searchInput.value.trim()) {
-          performSearch(searchInput.value);
-        }
-      }
-    });
-
-    searchForm.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-
-    searchForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      navigateToSearchPage(searchInput.value);
-    });
-
-    searchInput.addEventListener("input", function() {
-      if (!search.classList.contains("is-open")) {
-        openSearch();
-      }
-      performSearch(searchInput.value);
-    });
-
-    document.addEventListener("click", function(e) {
-      if (!search.contains(e.target)) {
-        closeSearch();
-      }
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        closeSearch();
-      }
-    });
-
-    searchResults.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-  }
-});
-</script>
-
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-    <div class="header-content">
-      <div class="post-text layout-block">
-        <div class="layout-margin">
-          <h1 class="title-wrap">9_ViTFly实验复现</h1>
-          <h2 class="title-sub-wrap">
-            <strong>Mian</strong>
-            <span>发布于</span>
-            <time  class="article-date" datetime="2026-05-05T16:00:00.000Z" itemprop="datePublished">2026-05-06</time>
-          </h2>
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
           
           
-          <ul class="wrap-list dark">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
-    
-</ul>
-          <ul class="wrap-list dark">
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/%E4%BB%BF%E7%9C%9F/">🏷️ 仿真</a></li>
-  
-    <li><a href="/tags/FlightMare/">🏷️ FlightMare</a></li>
-  
-    <li><a href="/tags/Unity/">🏷️ Unity</a></li>
-  
-    <li><a href="/tags/vitfly/">🏷️ vitfly</a></li>
-  
-</ul>
-        </div>
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
       </div>
     </div>
-  
+  </div>
+</div>
 
   
-  
-  
-</header>
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="9_ViTFly实验复现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-05-06 00:00" pubdate>
+          2026年5月6日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.8k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          32 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
 
 
-    <!-- 文章 -->
+        
+      </div>
 
-<!-- 文章内容 -->
-<div class="body-container">
-  <article class="content-container layout-block post-container">
-    <div class="article-info">
       
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
       
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
       
-      
-      <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>复现vitfly实验，包含基础的下载、测试、训练。预计在测试部分需要分析代码的结构，后续该如何修改。在训练部分，首先需要知道整个训练的流程，怎么将整个流程部署到服务器上，得到一个大概的训练框架；然后是学会怎么采集数据集，标准化。预计在运行之后可以对具体的内容进行分析，得到更好的idea-&gt;而在此之前，可能需要去调研vitfly的后续工作，快要两年的论文，到现在的进展如何，有什么引用</p>
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">9_ViTFly实验复现</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>复现vitfly实验，包含基础的下载、测试、训练。预计在测试部分需要分析代码的结构，后续该如何修改。在训练部分，首先需要知道整个训练的流程，怎么将整个流程部署到服务器上，得到一个大概的训练框架；然后是学会怎么采集数据集，标准化。预计在运行之后可以对具体的内容进行分析，得到更好的idea-&gt;而在此之前，可能需要去调研vitfly的后续工作，快要两年的论文，到现在的进展如何，有什么引用</p>
 <blockquote>
 <p>本文部分内容由AI生成，仅供参考</p>
 </blockquote>
 <h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><h3 id="测试过程"><a href="#测试过程" class="headerlink" title="测试过程"></a>测试过程</h3><p>按照<code>readme</code>的内容进行复现，但是其中没有提到关于虚拟环境的构建，需要手动操作</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">cd ./src/vitfly/flightmare</span><br><span class="line">conda env create -f environment.yml</span><br><span class="line">conda activate pubflight</span><br><span class="line">pip install torchvision uniplot</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd ./src/vitfly/flightmare<br>conda env create -f environment.yml<br>conda activate pubflight<br>pip install torchvision uniplot<br></code></pre></td></tr></table></figure>
 
-<h3 id="测试问题"><a href="#测试问题" class="headerlink" title="测试问题"></a>测试问题</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">问题 1: 缺少 Python 依赖包                                                                                                                                                      </span><br><span class="line">  - 现象: ModuleNotFoundError: No module named &#x27;torchvision&#x27; 和 No module named &#x27;uniplot&#x27;  </span><br><span class="line">  - 原因: pubflight conda 环境缺少 torchvision 和 uniplot。setup_ros.bash 中的 sudo pip    </span><br><span class="line">  install uniplot 安装到了系统 Python，而非 conda 环境                                     </span><br><span class="line">  - 解决: 在 pubflight 环境中 pip install torchvision uniplot</span><br><span class="line">                                                                                           </span><br><span class="line">  ---                                                                                      </span><br><span class="line">问题 2: std::bad_alloc 导致 visionsim_node 崩溃                                                                                                                                    </span><br><span class="line">  - 现象: ROS 节点 dodgeros_pilot 在加载 pilot 参数后立即崩溃，exit code -6</span><br><span class="line">  - 原因: EIGEN_STACK_ALLOCATION_LIMIT=1048576（约 1MB）设置过大。Linux 线程默认栈仅       </span><br><span class="line">  8MB，多个 Eigen 固定大小矩阵的栈分配导致栈溢出。涉及 6 个 CMakeLists.txt                 </span><br><span class="line">  文件（envsim、dodgelib、flightlib、dodgeros、flightrender、flightros），首批只修复了     </span><br><span class="line">  envsim，但其链接的 dodgelib 和 flightlib 共享库仍用旧值编译                              </span><br><span class="line">  - 解决: 将所有 6 个 CMakeLists.txt 中的值从 1048576 改为 131072（128KB），catkin clean -y</span><br><span class="line">   &amp;&amp; catkin build 完整重编译                                                              </span><br><span class="line">   </span><br><span class="line">  ---                                                                                      </span><br><span class="line">问题 3: ParameterException — Quadrotor 配置文件冲突                                                                                              </span><br><span class="line">  - 现象: Quadrotor file is set manually an in YAML!</span><br><span class="line">  - 原因: ros_pilot.cpp 传入的 quad_file 参数是                                            </span><br><span class="line">  .../quads/（目录路径，空文件名）。fs::path::has_filename() 对末尾带 /&quot;&quot; 的路径返回       </span><br><span class="line">  true，导致 quad_file 未被 clear。同时 YAML 中 quadrotor                                  </span><br><span class="line">  行被注释，两边都无法正确解析。第一轮尝试取消 YAML 注释反而触发了&quot;同时设置&quot;的冲突检测     </span><br><span class="line">  - 解决: 保持 YAML 注释，修改 ros_pilot.cpp:41 将目录路径改为完整文件路径</span><br><span class="line">  .../quads/kingfisher.yaml                                                                </span><br><span class="line">   </span><br><span class="line">  ---                                                                                      </span><br><span class="line">问题 4: PyTorch 设备不匹配 (1) — 输入张量在 CPU，模型在 CUDA                                                                                       </span><br><span class="line">  - 现象: RuntimeError: Input type (torch.FloatTensor) and weight type </span><br><span class="line">  (torch.cuda.FloatTensor) should be the same                                              </span><br><span class="line">  - 原因: run_competition.py 将模型加载到 CUDA（model.to(device)），但 user_code.py 中</span><br><span class="line">  ToTensor() 和 torch.tensor() 默认创建 CPU 张量，直接传入 CUDA 模型导致不匹配             </span><br><span class="line">  - 解决: 在 user_code.py 中添加 device = next(trained_model.parameters()).device，所有输入</span><br><span class="line">  张量（img、desiredVel、q、hidden_state）通过 .to(device) 移到模型所在设备                </span><br><span class="line">                                                            </span><br><span class="line">  ---                                                                                      </span><br><span class="line">问题 5: PyTorch 设备不匹配 (2) — CUDA 张量无法转 numpy                                                                                           </span><br><span class="line">  - 现象: TypeError: can&#x27;t convert cuda:0 device type tensor to numpy</span><br><span class="line">  - 原因: 模型输出 x 在 CUDA 上，直接调用 .numpy() 不允许。必须先移到 CPU                  </span><br><span class="line">  - 解决: x.squeeze().detach().numpy() → x.squeeze().detach().cpu().numpy() </span><br></pre></td></tr></table></figure>
+<h3 id="测试问题"><a href="#测试问题" class="headerlink" title="测试问题"></a>测试问题</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs shell">问题 1: 缺少 Python 依赖包                                                                                                                                                      <br>  - 现象: ModuleNotFoundError: No module named &#x27;torchvision&#x27; 和 No module named &#x27;uniplot&#x27;  <br>  - 原因: pubflight conda 环境缺少 torchvision 和 uniplot。setup_ros.bash 中的 sudo pip    <br>  install uniplot 安装到了系统 Python，而非 conda 环境                                     <br>  - 解决: 在 pubflight 环境中 pip install torchvision uniplot<br>                                                                                           <br>  ---                                                                                      <br>问题 2: std::bad_alloc 导致 visionsim_node 崩溃                                                                                                                                    <br>  - 现象: ROS 节点 dodgeros_pilot 在加载 pilot 参数后立即崩溃，exit code -6<br>  - 原因: EIGEN_STACK_ALLOCATION_LIMIT=1048576（约 1MB）设置过大。Linux 线程默认栈仅       <br>  8MB，多个 Eigen 固定大小矩阵的栈分配导致栈溢出。涉及 6 个 CMakeLists.txt                 <br>  文件（envsim、dodgelib、flightlib、dodgeros、flightrender、flightros），首批只修复了     <br>  envsim，但其链接的 dodgelib 和 flightlib 共享库仍用旧值编译                              <br>  - 解决: 将所有 6 个 CMakeLists.txt 中的值从 1048576 改为 131072（128KB），catkin clean -y<br>   &amp;&amp; catkin build 完整重编译                                                              <br>   <br>  ---                                                                                      <br>问题 3: ParameterException — Quadrotor 配置文件冲突                                                                                              <br>  - 现象: Quadrotor file is set manually an in YAML!<br>  - 原因: ros_pilot.cpp 传入的 quad_file 参数是                                            <br>  .../quads/（目录路径，空文件名）。fs::path::has_filename() 对末尾带 /&quot;&quot; 的路径返回       <br>  true，导致 quad_file 未被 clear。同时 YAML 中 quadrotor                                  <br>  行被注释，两边都无法正确解析。第一轮尝试取消 YAML 注释反而触发了&quot;同时设置&quot;的冲突检测     <br>  - 解决: 保持 YAML 注释，修改 ros_pilot.cpp:41 将目录路径改为完整文件路径<br>  .../quads/kingfisher.yaml                                                                <br>   <br>  ---                                                                                      <br>问题 4: PyTorch 设备不匹配 (1) — 输入张量在 CPU，模型在 CUDA                                                                                       <br>  - 现象: RuntimeError: Input type (torch.FloatTensor) and weight type <br>  (torch.cuda.FloatTensor) should be the same                                              <br>  - 原因: run_competition.py 将模型加载到 CUDA（model.to(device)），但 user_code.py 中<br>  ToTensor() 和 torch.tensor() 默认创建 CPU 张量，直接传入 CUDA 模型导致不匹配             <br>  - 解决: 在 user_code.py 中添加 device = next(trained_model.parameters()).device，所有输入<br>  张量（img、desiredVel、q、hidden_state）通过 .to(device) 移到模型所在设备                <br>                                                            <br>  ---                                                                                      <br>问题 5: PyTorch 设备不匹配 (2) — CUDA 张量无法转 numpy                                                                                           <br>  - 现象: TypeError: can&#x27;t convert cuda:0 device type tensor to numpy<br>  - 原因: 模型输出 x 在 CUDA 上，直接调用 .numpy() 不允许。必须先移到 CPU                  <br>  - 解决: x.squeeze().detach().numpy() → x.squeeze().detach().cpu().numpy() <br></code></pre></td></tr></table></figure>
 
-<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><p><strong>图像</strong> 仿真环境与rviz<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/d6451eaaa75e52459319b18403368792-aa76e8117496.png"><br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/2455a0dcbd5398b86c83dd9457c8d912-6d70540aeac1.png"></p>
+<h3 id="测试结果"><a href="#测试结果" class="headerlink" title="测试结果"></a>测试结果</h3><p><strong>图像</strong> 仿真环境与rviz<br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/d6451eaaa75e52459319b18403368792-aa76e8117496.png" srcset="/img/loading.gif" lazyload><br><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/2455a0dcbd5398b86c83dd9457c8d912-6d70540aeac1.png" srcset="/img/loading.gif" lazyload></p>
 <p><strong>表格</strong> 终端统计输出</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">Here is a plot of your trajectory in the xy plane</span><br><span class="line">┌────────────────────────────────────────────────────────────┐</span><br><span class="line">││                                ▐▜                         │</span><br><span class="line">││                                ▛▝▖                        │</span><br><span class="line">││                                ▌ ▌                        │</span><br><span class="line">││               ▗█              ▐▘ ▚                        │</span><br><span class="line">││               ▛▝▌             ▐  ▐                        │ 0.5</span><br><span class="line">││              ▐  ▚             ▐  ▐                        │</span><br><span class="line">││              ▛  ▐             ▛   ▌                       │</span><br><span class="line">││             ▟   ▐▖            ▘   ▌                       │</span><br><span class="line">││▗▄▖         ▄▘    ▌           ▗▌   ▚                       │</span><br><span class="line">│▗▛ ▀▜▄▄▄▄▀▀▀▀▘     ▌           ▐    ▐                       │</span><br><span class="line">│▟                  ▐           ▟    ▐                       │</span><br><span class="line">│▘──────────────────▐───────────▌────▝▌──────────────────────│ 0.0</span><br><span class="line">││                   ▌       ▗▄▟      ▌                      │</span><br><span class="line">││                   ▚    ▄▀▀▀        ▚                      │</span><br><span class="line">││                   ▝▖ ▗▛▘           ▐▖    ▄▄▛▀▀▜▄▄▄▄▖  ▗▄▄▄│</span><br><span class="line">││                    ▀▛▘              ▙  ▗▛▘         ▀▀▀▀   │</span><br><span class="line">││                                     ▝▙▟▀                  │</span><br><span class="line">└────────────────────────────────────────────────────────────┘</span><br><span class="line"> 0                  20                 40                  60</span><br><span class="line">Here is a plot of your average velocity per 1m x-segment</span><br><span class="line">┌────────────────────────────────────────────────────────────┐</span><br><span class="line">│        ▘▘                                                  │</span><br><span class="line">│     ▖ ▖  ▖                                                 │</span><br><span class="line">│                                                            │ 6</span><br><span class="line">│           ▘                                                │</span><br><span class="line">│    ▖ ▖                                                     │</span><br><span class="line">│            ▖       ▖▖ ▖     ▖         ▗  ▗  ▗ ▗      ▗     │</span><br><span class="line">│             ▖        ▖ ▖▖▖▖▖    ▗  ▗ ▗ ▗▗  ▗   ▗ ▗▗▗▗ ▗▗▗▗ │ 5</span><br><span class="line">│   ▖              ▖▖          ▗▗   ▗ ▗     ▗  ▗  ▗         ▗│</span><br><span class="line">│                 ▖              ▗ ▗                         │</span><br><span class="line">│                                                            │</span><br><span class="line">│  ▖           ▘▘                                            │ 4</span><br><span class="line">│                ▘                                           │</span><br><span class="line">│                                                            │</span><br><span class="line">│                                                            │</span><br><span class="line">│▘                                                           │ 3</span><br><span class="line">│                                                            │</span><br><span class="line">│ ▖                                                          │</span><br><span class="line">└────────────────────────────────────────────────────────────┘</span><br><span class="line">         10        20        30        40        50        60</span><br><span class="line">Here is a plot of the distance to the closest obstacles</span><br><span class="line">┌────────────────────────────────────────────────────────────┐</span><br><span class="line">│▀▀▀▀▀▀▀▀▀▀▀▀▙▖                                              │</span><br><span class="line">│             ▜▖                                             │</span><br><span class="line">│             │▜▖                                            │ 6</span><br><span class="line">│             │ ▙                                            │</span><br><span class="line">│             │ ▐▖                                    ▟▖     │</span><br><span class="line">│             │  ▙                               ▙   ▗▌▌     │</span><br><span class="line">│             │  ▐                              ▐▀▙  ▟ ▐     │</span><br><span class="line">│             │   ▌                             ▟ ▝▄▟▘ ▐▖    │ 4</span><br><span class="line">│             │   ▜                 ▄           ▌       ▌    │</span><br><span class="line">│             │   ▐▖  █  █         ▗▛▌         ▐▘       ▜    │</span><br><span class="line">│             │    ▌ ▗▀▙▟▐▖       ▗▛ ▙         ▟        ▐▖   │</span><br><span class="line">│             │    ▜ ▐    ▌     ▟▖▞  ▐   ▟     ▌         ▌  ▗│</span><br><span class="line">│             │    ▝▖▛    ▐     ▌▀▘  ▝▌  ▛▌ ▗ ▐          ▜  ▞│ 2</span><br><span class="line">│             │     ▀▘    ▝▌   ▐▘     ▌ ▐ ▙ ▛▙▛          ▐▖▗▌│</span><br><span class="line">│             │            ▜ ▗▌▛      ▐ ▞ ▐▟▘             ▙▐ │</span><br><span class="line">│             │            ▝▙▟▝▘      ▐▖▌                 ▐▛ │</span><br><span class="line">│             │              ▀         █                     │</span><br><span class="line">└────────────────────────────────────────────────────────────┘</span><br><span class="line">              0                  5                 10</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs shell">Here is a plot of your trajectory in the xy plane<br>┌────────────────────────────────────────────────────────────┐<br>││                                ▐▜                         │<br>││                                ▛▝▖                        │<br>││                                ▌ ▌                        │<br>││               ▗█              ▐▘ ▚                        │<br>││               ▛▝▌             ▐  ▐                        │ 0.5<br>││              ▐  ▚             ▐  ▐                        │<br>││              ▛  ▐             ▛   ▌                       │<br>││             ▟   ▐▖            ▘   ▌                       │<br>││▗▄▖         ▄▘    ▌           ▗▌   ▚                       │<br>│▗▛ ▀▜▄▄▄▄▀▀▀▀▘     ▌           ▐    ▐                       │<br>│▟                  ▐           ▟    ▐                       │<br>│▘──────────────────▐───────────▌────▝▌──────────────────────│ 0.0<br>││                   ▌       ▗▄▟      ▌                      │<br>││                   ▚    ▄▀▀▀        ▚                      │<br>││                   ▝▖ ▗▛▘           ▐▖    ▄▄▛▀▀▜▄▄▄▄▖  ▗▄▄▄│<br>││                    ▀▛▘              ▙  ▗▛▘         ▀▀▀▀   │<br>││                                     ▝▙▟▀                  │<br>└────────────────────────────────────────────────────────────┘<br> 0                  20                 40                  60<br>Here is a plot of your average velocity per 1m x-segment<br>┌────────────────────────────────────────────────────────────┐<br>│        ▘▘                                                  │<br>│     ▖ ▖  ▖                                                 │<br>│                                                            │ 6<br>│           ▘                                                │<br>│    ▖ ▖                                                     │<br>│            ▖       ▖▖ ▖     ▖         ▗  ▗  ▗ ▗      ▗     │<br>│             ▖        ▖ ▖▖▖▖▖    ▗  ▗ ▗ ▗▗  ▗   ▗ ▗▗▗▗ ▗▗▗▗ │ 5<br>│   ▖              ▖▖          ▗▗   ▗ ▗     ▗  ▗  ▗         ▗│<br>│                 ▖              ▗ ▗                         │<br>│                                                            │<br>│  ▖           ▘▘                                            │ 4<br>│                ▘                                           │<br>│                                                            │<br>│                                                            │<br>│▘                                                           │ 3<br>│                                                            │<br>│ ▖                                                          │<br>└────────────────────────────────────────────────────────────┘<br>         10        20        30        40        50        60<br>Here is a plot of the distance to the closest obstacles<br>┌────────────────────────────────────────────────────────────┐<br>│▀▀▀▀▀▀▀▀▀▀▀▀▙▖                                              │<br>│             ▜▖                                             │<br>│             │▜▖                                            │ 6<br>│             │ ▙                                            │<br>│             │ ▐▖                                    ▟▖     │<br>│             │  ▙                               ▙   ▗▌▌     │<br>│             │  ▐                              ▐▀▙  ▟ ▐     │<br>│             │   ▌                             ▟ ▝▄▟▘ ▐▖    │ 4<br>│             │   ▜                 ▄           ▌       ▌    │<br>│             │   ▐▖  █  █         ▗▛▌         ▐▘       ▜    │<br>│             │    ▌ ▗▀▙▟▐▖       ▗▛ ▙         ▟        ▐▖   │<br>│             │    ▜ ▐    ▌     ▟▖▞  ▐   ▟     ▌         ▌  ▗│<br>│             │    ▝▖▛    ▐     ▌▀▘  ▝▌  ▛▌ ▗ ▐          ▜  ▞│ 2<br>│             │     ▀▘    ▝▌   ▐▘     ▌ ▐ ▙ ▛▙▛          ▐▖▗▌│<br>│             │            ▜ ▗▌▛      ▐ ▞ ▐▟▘             ▙▐ │<br>│             │            ▝▙▟▝▘      ▐▖▌                 ▐▛ │<br>│             │              ▀         █                     │<br>└────────────────────────────────────────────────────────────┘<br>              0                  5                 10<br></code></pre></td></tr></table></figure>
 
 <h2 id="训练"><a href="#训练" class="headerlink" title="训练"></a>训练</h2><h3 id="使用官方提供的数据"><a href="#使用官方提供的数据" class="headerlink" title="使用官方提供的数据"></a>使用官方提供的数据</h3><p>在单张4090显卡上进行100轮训练，耗时约30min，对模型进行测试，根据视觉图像可以发现模拟的动作幅度较大，易发生碰撞；且与官方论文中提到的不同，无人机只有在离障碍物很近的地方才会作出反应。在训练了300轮后再次进行测试，动作幅度减小了，但是依然存在碰撞和短视的问题。</p>
 <h2 id="实验讨论"><a href="#实验讨论" class="headerlink" title="实验讨论"></a>实验讨论</h2><h3 id="项目构成"><a href="#项目构成" class="headerlink" title="项目构成"></a>项目构成</h3><ol>
@@ -511,353 +386,443 @@ document.addEventListener("DOMContentLoaded", function() {
 </ol>
 <h2 id="参考内容"><a href="#参考内容" class="headerlink" title="参考内容"></a>参考内容</h2><p><a target="_blank" rel="noopener" href="https://github.com/anish-bhattacharya/vitfly">anish-bhattacharya&#x2F;vitfly: Official repository for the paper “Vision Transformers for End-to-End Vision-Based Quadrotor Obstacle Avoidance” by Bhattacharya, et al. (2024) from GRASP, Penn.</a></p>
 
-      </section>
-
-      
-      
-        <nav class="article-nav">
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2026/05/08/Docker-%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">Docker 入门知识</h2>
-        </a>
-      
-      <div class="card-text--row">下一篇</div>
-    </div>
-  </article>
-</div>
-
-          
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2026/04/27/catkin_simple%E7%9A%84%E4%BD%BF%E7%94%A8/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">catkin_simple的使用</h2>
-        </a>
-      
-      <div class="card-text--row">上一篇</div>
-    </div>
-  </article>
-</div>
-
-          
-        </nav>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
       
 
-      <section class="page-message-container layout-padding">
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
         
-
-
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" class="category-chain-item">无人机实验</a>
   
   
 
+      </span>
+    
   
-  
+</span>
 
-
-      </section>
     </div>
-    <div class="widget-info">
-      <section class="widget-author widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-body">
-    
-      <img src="https://github.com/astringent-orange.png" class="soft-size--round soft-style--box" alt="Mian">
-    
-    
-      <h2>Mian</h2>
-    
-    
-      <p>每天成长一点</p>
-    
-
-    <div class="count-box">
-      <div class="count-box--item">
-        <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
-</svg>
-        <span>28</span>
-      </div>
-      <div class="count-box--item">
-        <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
-</svg>
-        4
-      </div>
-      <div class="count-box--item">
-        <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
-</svg>
-        37
-      </div>
-    </div>
-  </div>
-</section>
-
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
       
-<section class="widget-toc widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-toc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M134.50666666 767.46666668H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.23999999v50.13333333c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H134.50666666c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.13333333c0.10666668-27.73333333 22.50666668-50.24000001 50.24000001-50.24000001zM84.37333332 541.65333333h326.18666669c27.73333333 0 50.24000001 22.39999999 50.23999999 50.13333334v50.24000001c0 27.73333333-22.50666668 50.24000001-50.24000002 50.23999999H84.37333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.23999999v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333334zM134.50666666 315.83999999H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.24000001v50.24000001c0 27.73333333-22.50666668 50.13333334-50.24000001 50.13333333H134.50666666c-27.73333333 0-50.24000001-22.39999999-50.23999999-50.13333333v-50.24000001c0.10666668-27.84000001 22.50666668-50.24000001 50.24000001-50.23999999zM209.81333332 89.91999999h326.18666671c27.73333333 0 50.24000001 22.39999999 50.23999997 50.13333335v50.23999999c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H209.81333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333333zM692.05333333 623.36l274.66666669 176.00000002c23.36000001 14.93333333 30.08 45.97333334 15.14666666 69.33333332L954.77333334 910.93333333c-14.93333333 23.25333334-45.97333334 30.08-69.33333335 15.14666667l-274.66666666-176c-23.36000001-14.93333333-30.08-45.97333334-15.14666667-69.33333333l27.09333334-42.24000001c14.93333333-23.36000001 46.08000001-30.08 69.33333333-15.14666666z" fill="currentColor"></path>
-</svg>
+        <a href="/tags/ROS1/" class="print-no-link">#ROS1</a>
+      
+        <a href="/tags/%E4%BB%BF%E7%9C%9F/" class="print-no-link">#仿真</a>
+      
+        <a href="/tags/FlightMare/" class="print-no-link">#FlightMare</a>
+      
+        <a href="/tags/Unity/" class="print-no-link">#Unity</a>
+      
+        <a href="/tags/vitfly/" class="print-no-link">#vitfly</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>9_ViTFly实验复现</div>
+      <div>https://astringent-orange.github.io/2026/05/06/9_ViTFly实验复现/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年5月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/05/08/Docker-%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/" title="Docker 入门知识">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Docker 入门知识</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/04/27/catkin_simple%E7%9A%84%E4%BD%BF%E7%94%A8/" title="catkin_simple的使用">
+                        <span class="hidden-mobile">catkin_simple的使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
     <span>目录</span>
-  </div>
-  <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="toc-number">2.</span> <span class="toc-text">测试</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E8%BF%87%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">测试过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E9%97%AE%E9%A2%98"><span class="toc-number">2.2.</span> <span class="toc-text">测试问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C"><span class="toc-number">2.3.</span> <span class="toc-text">测试结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83"><span class="toc-number">3.</span> <span class="toc-text">训练</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%AE%98%E6%96%B9%E6%8F%90%E4%BE%9B%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="toc-number">3.1.</span> <span class="toc-text">使用官方提供的数据</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%A8%E8%AE%BA"><span class="toc-number">4.</span> <span class="toc-text">实验讨论</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E6%9E%84%E6%88%90"><span class="toc-number">4.1.</span> <span class="toc-text">项目构成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">4.2.</span> <span class="toc-text">实验结果</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E5%86%85%E5%AE%B9"><span class="toc-number">5.</span> <span class="toc-text">参考内容</span></a></li></ol>
-  </div>
-</section>
-
-
-
-      
-
-      <section class="widget-categories widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
-</svg>
-      <span>CATEGORIES</span>
-  </div>
-  <div class="widget-body">
-    <ul class="categories-list">
-      
-        <li class="categories-list-item">
-          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-            无人机实验 (18)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-            无人机工程 (8)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E6%9D%82%E8%AE%B0/">
-            杂记 (1)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-            大模型 (1)
-          </a>
-        </li>
-        
-    </ul>
-  </div>
-</section>
-
-      <section class="widget-tags widget-item  layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
-</svg>
-    <span>TAGS</span>
-  </div>
-  <div class="widget-body">
-    <div class="tags-cloud">
-      <a href="/tags/AprilTag/" style="font-size: 10px;" class="tags-cloud-0">AprilTag</a> <a href="/tags/CPP/" style="font-size: 14.44px;" class="tags-cloud-4">CPP</a> <a href="/tags/FlightMare/" style="font-size: 17.78px;" class="tags-cloud-8">FlightMare</a> <a href="/tags/Gazebo/" style="font-size: 14.44px;" class="tags-cloud-4">Gazebo</a> <a href="/tags/IntelRealsenseD435/" style="font-size: 13.33px;" class="tags-cloud-3">IntelRealsenseD435</a> <a href="/tags/LoRA/" style="font-size: 10px;" class="tags-cloud-0">LoRA</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 12.22px;" class="tags-cloud-2">NUC13</a> <a href="/tags/Python/" style="font-size: 10px;" class="tags-cloud-0">Python</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12.22px;" class="tags-cloud-2">Ubuntu20-04</a> <a href="/tags/Unity/" style="font-size: 16.67px;" class="tags-cloud-7">Unity</a> <a href="/tags/astar/" style="font-size: 11.11px;" class="tags-cloud-1">astar</a> <a href="/tags/catkin/" style="font-size: 11.11px;" class="tags-cloud-1">catkin</a> <a href="/tags/cmake/" style="font-size: 11.11px;" class="tags-cloud-1">cmake</a> <a href="/tags/docker/" style="font-size: 11.11px;" class="tags-cloud-1">docker</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/jetson/" style="font-size: 10px;" class="tags-cloud-0">jetson</a> <a href="/tags/octomap/" style="font-size: 13.33px;" class="tags-cloud-3">octomap</a> <a href="/tags/px4/" style="font-size: 15.56px;" class="tags-cloud-6">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/vins/" style="font-size: 11.11px;" class="tags-cloud-1">vins</a> <a href="/tags/vitfly/" style="font-size: 11.11px;" class="tags-cloud-1">vitfly</a> <a href="/tags/zotero/" style="font-size: 10px;" class="tags-cloud-0">zotero</a> <a href="/tags/%E4%BB%BF%E7%9C%9F/" style="font-size: 18.89px;" class="tags-cloud-9">仿真</a> <a href="/tags/%E4%BF%AE%E5%A4%8D/" style="font-size: 10px;" class="tags-cloud-0">修复</a> <a href="/tags/%E5%8A%A8%E5%8A%9B%E5%AD%A6/" style="font-size: 11.11px;" class="tags-cloud-1">动力学</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%9D%9A%E6%9E%9C%E4%BA%91/" style="font-size: 10px;" class="tags-cloud-0">坚果云</a> <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" style="font-size: 10px;" class="tags-cloud-0">大模型</a> <a href="/tags/%E5%AE%9E%E6%9C%BA/" style="font-size: 13.33px;" class="tags-cloud-3">实机</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E5%BE%AE%E8%B0%83/" style="font-size: 10px;" class="tags-cloud-0">微调</a> <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" style="font-size: 10px;" class="tags-cloud-0">模块化</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 10px;" class="tags-cloud-0">视觉定位</a> <a href="/tags/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/" style="font-size: 11.11px;" class="tags-cloud-1">路径规划</a> <a href="/tags/%E9%A3%9E%E6%8E%A7/" style="font-size: 11.11px;" class="tags-cloud-1">飞控</a>
-    </div>
-  </div>
-</section>
-    </div>
-  </article>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
 
-<div class="comments" style="max-width:1200px;margin:40px auto;">
-<script src="https://giscus.app/client.js"
-        data-repo="astringent-orange/astringent-orange.github.io"
-        data-repo-id="R_kgDORiSglw"
-        data-category="General"
-        data-category-id="DIC_kwDORiSgl84C4XZB"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
-</script>
-</div> 
 
-    <!-- footer container -->
-<footer id="footer" class="footer">
-  <div class="footer-container">
-    
-    <div class="social-icons">
-      
-        
-      
-        
-      
-        
-      
-        
-          <a href="https://github.com/astrigent-orange/astrigent-orange" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
-            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
-</svg>
-          </a>
-        
-      
-        
-      
+
+  </aside>
+
+
     </div>
-     
-    <p>&copy; 2026 <a href="/" target="_blank">Mian</a></p>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
 
     
 
-    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
 
-    <p>
-      <a href="javascript:;" id="theme-light">🌞 浅色</a>
-      <a href="javascript:;" id="theme-dark">🌛 深色</a>
-      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
-    </p>
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
   </div>
-</footer>
-  </div>
+</div>
 
-  <div class="back-to-top-fixed soft-size--round soft-style--box">
-    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
-      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
-      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
-    </svg>
-  </div>
+    
 
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
   
   
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
- 
-<!-- mathjax -->
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
 
 
+
+
+  
 <script>
-MathJax = {
-  tex: {
-    inlineMath: [
-      ['$', '$']
-    ],
-    displayMath: [
-      ['$$', '$$']
-    ],
-    processEscapes: true
-  }
-};
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
 </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
 
 
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
 
-
-
-
-<!-- copy button  -->
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
-
-<!-- https://clipboardjs.com/ -->
-
-
-<script type="text/javascript">
-	(function () {
-		function setCopiedState(button) {
-			if (!button) return;
-			button.classList.add("copied");
-			setTimeout(() => {
-				button.classList.remove("copied");
-			}, 3000);
-		}
-
-		window.addEventListener("DOMContentLoaded", () => {
-			const copyBtnClass = "copy-btn";
-			document.querySelectorAll('figure.highlight').forEach((elem) => {
-				const codeContent = elem.querySelector("td.code");
-				if (!codeContent) return;
-				const copyButton = document.createElement('button');
-				const codeText = codeContent.innerText;
-				copyButton.setAttribute("class", copyBtnClass);
-				copyButton.setAttribute("title", "复制代码");
-				copyButton.setAttribute("aria-label", "复制代码");
-				copyButton.setAttribute("type", "button");
-				copyButton.setAttribute("data-clipboard-text", codeText);
-				copyButton.addEventListener("click", async () => {
-					try {
-						if (navigator.clipboard && window.isSecureContext) {
-							await navigator.clipboard.writeText(codeText);
-						} else {
-							const textArea = document.createElement("textarea");
-							textArea.value = codeText;
-							textArea.setAttribute("readonly", "");
-							textArea.style.position = "absolute";
-							textArea.style.left = "-9999px";
-							document.body.appendChild(textArea);
-							textArea.select();
-							document.execCommand("copy");
-							document.body.removeChild(textArea);
-						}
-						setCopiedState(copyButton);
-					} catch (error) {
-						console.error("Copy failed:", error);
-					}
-				});
-				elem.insertBefore(copyButton, elem.children[0]);
-			});
-
-			if (window.ClipboardJS) {
-				const clipboard = new ClipboardJS('.' + copyBtnClass);
-				clipboard.on('success', function (e) {
-					setCopiedState(e.trigger);
-					e.clearSelection();
-				});
-				clipboard.on('error', function (e) {
-					console.error('ClipboardJS error:', e.trigger);
-				});
-			}
-		})
-	})();
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
 </script>
 
 
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
 
 
 
 
 
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
 
 
   
 
-
-  
-
-
-  
-
-
-
-
-<script src="/js/script.js"></script>
-
-
-  
-  <!-- 尾部用户自定义相关内容 -->
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
 </body>
 </html>

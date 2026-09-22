@@ -1,489 +1,363 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="theme-color" content="#3367D6"/>
-  <link rel="apple-touch-icon" href="/icons-192.png">
-  <link rel="manifest" href="/manifest.json">
-  
-  <meta name="generator" content="Hexo 7.3.0">
 
-  
-    <meta name="description" content="Mian的个人博客">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="引言LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。 它试图解决一个问题：  一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？  普通微调会把原来的权重 $W$ 修改为： $$W’ &#x3D; W + \Delta W$$ 其中 $\Delta W$ 表示为了适应新任务而产生的权重变化。 LoRA 的核心思想是：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LoRA理论学习">
+<meta property="og:url" content="https://astringent-orange.github.io/2026/08/04/LoRA%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Mian的笔记">
+<meta property="og:description" content="引言LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。 它试图解决一个问题：  一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？  普通微调会把原来的权重 $W$ 修改为： $$W’ &#x3D; W + \Delta W$$ 其中 $\Delta W$ 表示为了适应新任务而产生的权重变化。 LoRA 的核心思想是：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-08-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-03T16:00:00.000Z">
+<meta property="article:author" content="Mian">
+<meta property="article:tag" content="LoRA">
+<meta property="article:tag" content="微调">
+<meta property="article:tag" content="大模型">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>LoRA理论学习 - Mian的笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
-  
-    <meta name="author" content="Mian">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
   
 
-  
 
   
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-  <title>LoRA理论学习 | Mian的笔记</title>
 
-  
-
-  
-    <link rel="shortcut icon" href="/favicon.ico">
-  
-
-  
-
-  
-
-  
-
-  
-<link rel="stylesheet" href="/css/style.css">
-
-</head>
 <body>
-  <div class="root-container">
+  
+
+  <header>
     
-<!-- header container -->
-<header class="header-container post">
-  
-  
-  
-    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png)"></div>
-  
 
-  <!-- navbar -->
-<nav class="navbar">
-  <div class="navbar-content">
-    <!-- logo -->
-    <div class="navbar-logo">
-      <a href="/">
-        
-          Mian的笔记
-        
-      </a>
-    </div>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Mian的笔记</strong>
+    </a>
 
-    <!-- link -->
-    <div class="navbar-link">
-      <div class="navbar-btn">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-      <ul class="navbar-list">
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
           
-            <li class="navbar-list-item">
-              <a href="/">首页</a>
-            </li>
           
-        
           
-            <li class="navbar-list-item dropdown">
-              <a href="#" class="dropdown-toggle" aria-expanded="false">
-                文档 <span class="arrow">&#9662;</span>
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
               </a>
-
-              <ul class="dropdown-menu">
-                
-                  <li>
-                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-                      无人机实验
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-                      无人机工程
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E6%9D%82%E8%AE%B0/">
-                      杂记
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-                      大模型
-                    </a>
-                  </li>
-                
-              </ul>
             </li>
           
         
           
-            <li class="navbar-list-item">
-              <a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a>
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
             </li>
           
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
         
       </ul>
-
-      <div class="navbar-search">
-        <button class="navbar-search-toggle" type="button" aria-label="Open search" aria-expanded="false">
-          <span class="navbar-search-icon" aria-hidden="true"></span>
-        </button>
-        <form class="navbar-search-form" role="search">
-          <input
-            class="navbar-search-input"
-            type="search"
-            name="q"
-            placeholder="搜索文章..."
-            autocomplete="off"
-          />
-        </form>
-        <div class="navbar-search-results" hidden>
-          <div class="navbar-search-state">&#36755;&#20837;&#20851;&#38190;&#35789;&#24320;&#22987;&#25628;&#32034;</div>
-          <div class="navbar-search-list"></div>
-        </div>
-      </div>
     </div>
   </div>
 </nav>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const dropdown = document.querySelector(".dropdown");
-  const search = document.querySelector(".navbar-search");
-
-  if (dropdown) {
-    const menu = dropdown.querySelector(".dropdown-menu");
-    const toggle = dropdown.querySelector(".dropdown-toggle");
-
-    function closeMenu() {
-      dropdown.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-    }
-
-    function openMenu() {
-      dropdown.classList.add("is-open");
-      toggle.setAttribute("aria-expanded", "true");
-    }
-
-    toggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const opened = dropdown.classList.contains("is-open");
-      if (opened) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-
-    document.addEventListener("click", function(e) {
-      if (!dropdown.contains(e.target)) {
-        closeMenu();
-      }
-    });
-
-    menu.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        closeMenu();
-      }
-    });
-  }
-
-  if (search) {
-    const searchToggle = search.querySelector(".navbar-search-toggle");
-    const searchForm = search.querySelector(".navbar-search-form");
-    const searchInput = search.querySelector(".navbar-search-input");
-    const searchResults = search.querySelector(".navbar-search-results");
-    const searchState = search.querySelector(".navbar-search-state");
-    const searchList = search.querySelector(".navbar-search-list");
-    const searchIndexPath = "/search.json";
-    const searchBasePath = "/";
-    const searchPagePath = "/search/";
-    let searchIndex = null;
-    let searchIndexPromise = null;
-
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, function(char) {
-        const entityMap = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          "\"": "&quot;",
-          "'": "&#39;"
-        };
-        return entityMap[char];
-      });
-    }
-
-    function escapeRegExp(value) {
-      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }
-
-    function buildSnippet(item, keyword) {
-      const source = item.excerpt || item.content || "";
-      if (!source) return "";
-
-      const normalizedKeyword = keyword.trim().toLowerCase();
-      const sourceLower = source.toLowerCase();
-      const matchIndex = normalizedKeyword ? sourceLower.indexOf(normalizedKeyword) : -1;
-      const start = matchIndex >= 0 ? Math.max(0, matchIndex - 24) : 0;
-      const snippet = source.slice(start, start + 88).trim();
-
-      return start > 0 ? "..." + snippet : snippet;
-    }
-
-    function highlightText(text, keyword) {
-      if (!keyword) return escapeHTML(text);
-      const safeKeyword = escapeRegExp(keyword.trim());
-      if (!safeKeyword) return escapeHTML(text);
-
-      return escapeHTML(text).replace(new RegExp("(" + safeKeyword + ")", "ig"), "<mark>$1</mark>");
-    }
-
-    function setSearchState(message, type) {
-      searchState.textContent = message;
-      searchState.dataset.state = type || "idle";
-      searchState.hidden = false;
-    }
-
-    function clearSearchResults() {
-      searchList.innerHTML = "";
-    }
-
-    function showResultsPanel() {
-      searchResults.hidden = false;
-      search.classList.add("show-results");
-    }
-
-    function hideResultsPanel() {
-      searchResults.hidden = true;
-      search.classList.remove("show-results");
-    }
-
-    function ensureSearchIndex() {
-      if (searchIndex) return Promise.resolve(searchIndex);
-      if (searchIndexPromise) return searchIndexPromise;
-
-      setSearchState("\u6b63\u5728\u52a0\u8f7d\u641c\u7d22\u7d22\u5f15...", "loading");
-      showResultsPanel();
-
-      searchIndexPromise = fetch(searchIndexPath)
-        .then(function(response) {
-            if (!response.ok) throw new Error("Failed to load search index");
-            return response.json();
-          })
-        .then(function(data) {
-          searchIndex = Array.isArray(data) ? data : [];
-          return searchIndex;
-        })
-        .catch(function() {
-          setSearchState("\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25", "error");
-          return [];
-        });
-
-      return searchIndexPromise;
-    }
-
-    function renderSearchResults(items, keyword) {
-      clearSearchResults();
-      showResultsPanel();
-
-      if (!keyword.trim()) {
-        setSearchState("\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22", "idle");
-        return;
-      }
-
-      if (!items.length) {
-        setSearchState("\u672a\u627e\u5230\u76f8\u5173\u6587\u7ae0", "empty");
-        return;
-      }
-
-      searchState.hidden = true;
-      const html = items.map(function(item) {
-        const snippet = buildSnippet(item, keyword);
-        const metaParts = []
-          .concat(item.categories || [])
-          .concat(item.tags || []);
-
-        return [
-          '<a class="navbar-search-result-item" href="' + searchBasePath + escapeHTML(item.path) + '">',
-          '<span class="navbar-search-result-title">' + highlightText(item.title || "Untitled", keyword) + "</span>",
-          snippet ? '<span class="navbar-search-result-snippet">' + highlightText(snippet, keyword) + "</span>" : "",
-          metaParts.length ? '<span class="navbar-search-result-meta">' + escapeHTML(metaParts.slice(0, 3).join(" / ")) + "</span>" : "",
-          "</a>"
-        ].join("");
-      }).join("");
-
-      searchList.innerHTML = html;
-    }
-
-    function performSearch(keyword) {
-      ensureSearchIndex().then(function(index) {
-        const trimmedKeyword = keyword.trim();
-        if (!trimmedKeyword) {
-          renderSearchResults([], "");
-          return;
-        }
-
-        const normalizedKeyword = trimmedKeyword.toLowerCase();
-        const matchedItems = index.filter(function(item) {
-          const haystack = [
-            item.title,
-            item.excerpt,
-            item.content,
-            (item.tags || []).join(" "),
-            (item.categories || []).join(" ")
-          ].join(" ").toLowerCase();
-
-          return haystack.includes(normalizedKeyword);
-        }).sort(function(a, b) {
-          const aTitle = (a.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
-          const bTitle = (b.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
-          return bTitle - aTitle;
-        }).slice(0, 6);
-
-        renderSearchResults(matchedItems, trimmedKeyword);
-      });
-    }
-
-    function navigateToSearchPage(keyword) {
-      const trimmedKeyword = keyword.trim();
-      const target = trimmedKeyword ? searchPagePath + "?q=" + encodeURIComponent(trimmedKeyword) : searchPagePath;
-      window.location.href = target;
-    }
-
-    function closeSearch() {
-      search.classList.remove("is-open");
-      searchToggle.setAttribute("aria-expanded", "false");
-      hideResultsPanel();
-    }
-
-    function openSearch() {
-      search.classList.add("is-open");
-      searchToggle.setAttribute("aria-expanded", "true");
-      window.requestAnimationFrame(function() {
-        searchInput.focus();
-      });
-    }
-
-    searchToggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (search.classList.contains("is-open")) {
-        closeSearch();
-      } else {
-        openSearch();
-        if (searchInput.value.trim()) {
-          performSearch(searchInput.value);
-        }
-      }
-    });
-
-    searchForm.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-
-    searchForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      navigateToSearchPage(searchInput.value);
-    });
-
-    searchInput.addEventListener("input", function() {
-      if (!search.classList.contains("is-open")) {
-        openSearch();
-      }
-      performSearch(searchInput.value);
-    });
-
-    document.addEventListener("click", function(e) {
-      if (!search.contains(e.target)) {
-        closeSearch();
-      }
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        closeSearch();
-      }
-    });
-
-    searchResults.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-  }
-});
-</script>
-
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-    <div class="header-content">
-      <div class="post-text layout-block">
-        <div class="layout-margin">
-          <h1 class="title-wrap">LoRA理论学习</h1>
-          <h2 class="title-sub-wrap">
-            <strong>Mian</strong>
-            <span>发布于</span>
-            <time  class="article-date" datetime="2026-08-03T16:00:00.000Z" itemprop="datePublished">2026-08-04</time>
-          </h2>
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
           
           
-          <ul class="wrap-list dark">
-  
-    <li><a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">📒 大模型</a></li>
-    
-</ul>
-          <ul class="wrap-list dark">
-  
-    <li><a href="/tags/LoRA/">🏷️ LoRA</a></li>
-  
-    <li><a href="/tags/%E5%BE%AE%E8%B0%83/">🏷️ 微调</a></li>
-  
-    <li><a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">🏷️ 大模型</a></li>
-  
-</ul>
-        </div>
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
       </div>
     </div>
-  
+  </div>
+</div>
 
   
-  
-  
-</header>
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="LoRA理论学习"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-08-04 00:00" pubdate>
+          2026年8月4日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          102 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
 
 
-    <!-- 文章 -->
+        
+      </div>
 
-<!-- 文章内容 -->
-<div class="body-container">
-  <article class="content-container layout-block post-container">
-    <div class="article-info">
       
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
       
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
       
-      
-      <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。</p>
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">LoRA理论学习</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。</p>
 <p>它试图解决一个问题：</p>
 <blockquote>
 <p>一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？</p>
@@ -710,7 +584,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <h1 id="M-mathbf-x-1"><a href="#M-mathbf-x-1" class="headerlink" title="$$M\mathbf x"></a>$$<br>M\mathbf x</h1><p>U\Sigma V^\mathsf T\mathbf x<br>$$</p>
 <p>矩阵作用在向量上时从右向左计算。</p>
 <p>整个线性变换可以拆成三步：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">输入 x</span><br><span class="line">  ↓</span><br><span class="line">Vᵀ：把输入转到一组特殊的正交方向</span><br><span class="line">  ↓</span><br><span class="line">Σ：沿不同方向分别放大或缩小</span><br><span class="line">  ↓</span><br><span class="line">U：把结果转到最终输出方向</span><br><span class="line">  ↓</span><br><span class="line">输出</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">输入 x<br>  ↓<br>Vᵀ：把输入转到一组特殊的正交方向<br>  ↓<br>Σ：沿不同方向分别放大或缩小<br>  ↓<br>U：把结果转到最终输出方向<br>  ↓<br>输出<br></code></pre></td></tr></table></figure>
 
 <p>因此 SVD 可以理解为：</p>
 <blockquote>
@@ -888,7 +762,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>$$<br>\Delta W:&#x3D;BA<br>$$</p>
 <p>然后直接训练 $A$ 和 $B$。</p>
 <p>可以类比为：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">先完整微调再 SVD：</span><br><span class="line"></span><br><span class="line">先写 10000 字</span><br><span class="line">      ↓</span><br><span class="line">找出最重要内容</span><br><span class="line">      ↓</span><br><span class="line">压缩成 1000 字</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">LoRA：</span><br><span class="line"></span><br><span class="line">一开始就规定只能写 1000 字</span><br><span class="line">      ↓</span><br><span class="line">直接寻找这 1000 字中的最佳答案</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs text">先完整微调再 SVD：<br><br>先写 10000 字<br>      ↓<br>找出最重要内容<br>      ↓<br>压缩成 1000 字<br><br><br>LoRA：<br><br>一开始就规定只能写 1000 字<br>      ↓<br>直接寻找这 1000 字中的最佳答案<br></code></pre></td></tr></table></figure>
 
 <p>因此：</p>
 <blockquote>
@@ -906,7 +780,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>利用分配律：</p>
 <p>$$<br>y&#x3D;Wx+BAx<br>$$</p>
 <p>于是可以理解成两条并行路径：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">                    ┌──── W ────→ Wx ────┐</span><br><span class="line">x ──────────────────┤                     ├──→ 相加 → y</span><br><span class="line">                    └── A → B ─→ BAx ────┘</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">                    ┌──── W ────→ Wx ────┐<br>x ──────────────────┤                     ├──→ 相加 → y<br>                    └── A → B ─→ BAx ────┘<br></code></pre></td></tr></table></figure>
 
 <p>其中：</p>
 <ul>
@@ -1037,17 +911,17 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>Attention 中常见：</p>
 <p>$$<br>W_Q,\quad W_K,\quad W_V,\quad W_O<br>$$</p>
 <p>代码中通常对应：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">q_proj</span><br><span class="line">k_proj</span><br><span class="line">v_proj</span><br><span class="line">o_proj</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs text">q_proj<br>k_proj<br>v_proj<br>o_proj<br></code></pre></td></tr></table></figure>
 
 <p>MLP 中还常见：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gate_proj</span><br><span class="line">up_proj</span><br><span class="line">down_proj</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">gate_proj<br>up_proj<br>down_proj<br></code></pre></td></tr></table></figure>
 
 <p>LoRA 通常不是整个模型只使用一组 $A,B$，而是给选中的多个权重矩阵分别增加自己的 LoRA。</p>
 <p>例如：</p>
 <h1 id="W-Q’"><a href="#W-Q’" class="headerlink" title="$$W_Q’"></a>$$<br>W_Q’</h1><p>W_Q+B_QA_Q<br>$$</p>
 <h1 id="W-V’"><a href="#W-V’" class="headerlink" title="$$W_V’"></a>$$<br>W_V’</h1><p>W_V+B_VA_V<br>$$</p>
 <p>一个多层 Transformer 可能类似：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">Layer 1</span><br><span class="line">├── q_proj</span><br><span class="line">│   └── A₁, B₁</span><br><span class="line">└── v_proj</span><br><span class="line">    └── A₂, B₂</span><br><span class="line"></span><br><span class="line">Layer 2</span><br><span class="line">├── q_proj</span><br><span class="line">│   └── A₃, B₃</span><br><span class="line">└── v_proj</span><br><span class="line">    └── A₄, B₄</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">Layer N</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs text">Layer 1<br>├── q_proj<br>│   └── A₁, B₁<br>└── v_proj<br>    └── A₂, B₂<br><br>Layer 2<br>├── q_proj<br>│   └── A₃, B₃<br>└── v_proj<br>    └── A₄, B₄<br><br>...<br><br>Layer N<br></code></pre></td></tr></table></figure>
 
 <p>每一个目标权重矩阵都有自己的低秩更新。</p>
 <h3 id="为什么很多小更新能够明显改变模型"><a href="#为什么很多小更新能够明显改变模型" class="headerlink" title="为什么很多小更新能够明显改变模型"></a>为什么很多小更新能够明显改变模型</h3><p>Transformer 中，一层的输出会成为下一层的输入。</p>
@@ -1082,10 +956,10 @@ document.addEventListener("DOMContentLoaded", function() {
 <li>其他少量配置</li>
 </ul>
 <p>例如：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">基础模型       14 GB</span><br><span class="line"></span><br><span class="line">客服 LoRA      50 MB</span><br><span class="line">法律 LoRA      70 MB</span><br><span class="line">SQL LoRA       40 MB</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs text">基础模型       14 GB<br><br>客服 LoRA      50 MB<br>法律 LoRA      70 MB<br>SQL LoRA       40 MB<br></code></pre></td></tr></table></figure>
 
 <p>不同任务可以共享同一个基础模型：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Base Model + 客服 LoRA</span><br><span class="line"></span><br><span class="line">Base Model + 法律 LoRA</span><br><span class="line"></span><br><span class="line">Base Model + SQL LoRA</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs text">Base Model + 客服 LoRA<br><br>Base Model + 法律 LoRA<br><br>Base Model + SQL LoRA<br></code></pre></td></tr></table></figure>
 
 <h3 id="推理时如何使用"><a href="#推理时如何使用" class="headerlink" title="推理时如何使用"></a>推理时如何使用</h3><p>推理时，对于安装了 LoRA 的线性层：</p>
 <h1 id="y-1"><a href="#y-1" class="headerlink" title="$$y"></a>$$<br>y</h1><p>Wx+<br>\frac{\alpha}{r}BAx<br>$$</p>
@@ -1114,7 +988,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>部署更加简单，但失去了快速切换和关闭 LoRA 的灵活性。</p>
 <hr>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整个 LoRA 的思维链路可以概括为：</p>
-<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">一个权重矩阵 W 可能包含非常多参数</span><br><span class="line">                ↓</span><br><span class="line">微调实际上是在寻找权重变化 ΔW</span><br><span class="line">                ↓</span><br><span class="line">参数很多，不意味着存在同样多的独立变化方向</span><br><span class="line">                ↓</span><br><span class="line">矩阵的秩描述真正独立的方向数量</span><br><span class="line">                ↓</span><br><span class="line">如果 rank(M) = r</span><br><span class="line">则 M 可以精确写成：</span><br><span class="line"></span><br><span class="line">        M = BA</span><br><span class="line"></span><br><span class="line">其中：</span><br><span class="line"></span><br><span class="line">        B: m × r</span><br><span class="line">        A: r × n</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">因为所有信息都必须经过 r 维中间空间</span><br><span class="line"></span><br><span class="line">        rank(BA) ≤ r</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">一般矩阵虽然不一定严格低秩，</span><br><span class="line">但可能存在很好的低秩近似</span><br><span class="line">                ↓</span><br><span class="line">SVD 将矩阵拆成多个</span><br><span class="line">“输入方向 × 缩放强度 × 输出方向”</span><br><span class="line">                ↓</span><br><span class="line">较大的奇异值对应更重要的变化方向</span><br><span class="line">                ↓</span><br><span class="line">保留前 r 个方向可以得到：</span><br><span class="line"></span><br><span class="line">        M ≈ M_r = BA</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">因此猜测：</span><br><span class="line">模型微调真正有用的 ΔW</span><br><span class="line">也可能主要集中在少数方向</span><br><span class="line">                ↓</span><br><span class="line">LoRA 不先求完整 ΔW，</span><br><span class="line">而是从一开始直接规定：</span><br><span class="line"></span><br><span class="line">        ΔW = BA</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">冻结巨大的基础权重 W</span><br><span class="line">只训练小矩阵 A 和 B</span><br><span class="line">                ↓</span><br><span class="line">实际前向计算：</span><br><span class="line"></span><br><span class="line">        y = Wx + (α/r)BAx</span><br><span class="line"></span><br><span class="line">                ↓</span><br><span class="line">最终相当于：</span><br><span class="line"></span><br><span class="line">        W&#x27; = W + (α/r)BA</span><br></pre></td></tr></table></figure>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs text">一个权重矩阵 W 可能包含非常多参数<br>                ↓<br>微调实际上是在寻找权重变化 ΔW<br>                ↓<br>参数很多，不意味着存在同样多的独立变化方向<br>                ↓<br>矩阵的秩描述真正独立的方向数量<br>                ↓<br>如果 rank(M) = r<br>则 M 可以精确写成：<br><br>        M = BA<br><br>其中：<br><br>        B: m × r<br>        A: r × n<br><br>                ↓<br>因为所有信息都必须经过 r 维中间空间<br><br>        rank(BA) ≤ r<br><br>                ↓<br>一般矩阵虽然不一定严格低秩，<br>但可能存在很好的低秩近似<br>                ↓<br>SVD 将矩阵拆成多个<br>“输入方向 × 缩放强度 × 输出方向”<br>                ↓<br>较大的奇异值对应更重要的变化方向<br>                ↓<br>保留前 r 个方向可以得到：<br><br>        M ≈ M_r = BA<br><br>                ↓<br>因此猜测：<br>模型微调真正有用的 ΔW<br>也可能主要集中在少数方向<br>                ↓<br>LoRA 不先求完整 ΔW，<br>而是从一开始直接规定：<br><br>        ΔW = BA<br><br>                ↓<br>冻结巨大的基础权重 W<br>只训练小矩阵 A 和 B<br>                ↓<br>实际前向计算：<br><br>        y = Wx + (α/r)BAx<br><br>                ↓<br>最终相当于：<br><br>        W&#x27; = W + (α/r)BA<br></code></pre></td></tr></table></figure>
 
 <p>LoRA 最核心的思想并不是简单地：</p>
 <blockquote>
@@ -1126,353 +1000,439 @@ document.addEventListener("DOMContentLoaded", function() {
 </blockquote>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">LoRA: Low-Rank Adaptation of Large Language Models</a></p>
 
-      </section>
-
-      
-      
-        <nav class="article-nav">
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2026/08/07/10_Jetson-Orin-NX%E5%88%B7%E6%9C%BAUbuntu-20.04/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">10_Jetson Orin  NX刷机Ubuntu 20.04</h2>
-        </a>
-      
-      <div class="card-text--row">下一篇</div>
-    </div>
-  </article>
-</div>
-
-          
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2026/06/09/zotero%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5%E4%BF%AE%E5%A4%8D/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">zotero文件同步修复</h2>
-        </a>
-      
-      <div class="card-text--row">上一篇</div>
-    </div>
-  </article>
-</div>
-
-          
-        </nav>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
       
 
-      <section class="page-message-container layout-padding">
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
         
-
-
+  <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="category-chain-item">大模型</a>
   
   
 
+      </span>
+    
   
-  
+</span>
 
-
-      </section>
     </div>
-    <div class="widget-info">
-      <section class="widget-author widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-body">
-    
-      <img src="https://github.com/astringent-orange.png" class="soft-size--round soft-style--box" alt="Mian">
-    
-    
-      <h2>Mian</h2>
-    
-    
-      <p>每天成长一点</p>
-    
-
-    <div class="count-box">
-      <div class="count-box--item">
-        <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
-</svg>
-        <span>28</span>
-      </div>
-      <div class="count-box--item">
-        <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
-</svg>
-        4
-      </div>
-      <div class="count-box--item">
-        <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
-</svg>
-        37
-      </div>
-    </div>
-  </div>
-</section>
-
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
       
-<section class="widget-toc widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-toc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M134.50666666 767.46666668H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.23999999v50.13333333c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H134.50666666c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.13333333c0.10666668-27.73333333 22.50666668-50.24000001 50.24000001-50.24000001zM84.37333332 541.65333333h326.18666669c27.73333333 0 50.24000001 22.39999999 50.23999999 50.13333334v50.24000001c0 27.73333333-22.50666668 50.24000001-50.24000002 50.23999999H84.37333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.23999999v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333334zM134.50666666 315.83999999H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.24000001v50.24000001c0 27.73333333-22.50666668 50.13333334-50.24000001 50.13333333H134.50666666c-27.73333333 0-50.24000001-22.39999999-50.23999999-50.13333333v-50.24000001c0.10666668-27.84000001 22.50666668-50.24000001 50.24000001-50.23999999zM209.81333332 89.91999999h326.18666671c27.73333333 0 50.24000001 22.39999999 50.23999997 50.13333335v50.23999999c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H209.81333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333333zM692.05333333 623.36l274.66666669 176.00000002c23.36000001 14.93333333 30.08 45.97333334 15.14666666 69.33333332L954.77333334 910.93333333c-14.93333333 23.25333334-45.97333334 30.08-69.33333335 15.14666667l-274.66666666-176c-23.36000001-14.93333333-30.08-45.97333334-15.14666667-69.33333333l27.09333334-42.24000001c14.93333333-23.36000001 46.08000001-30.08 69.33333333-15.14666666z" fill="currentColor"></path>
-</svg>
+        <a href="/tags/LoRA/" class="print-no-link">#LoRA</a>
+      
+        <a href="/tags/%E5%BE%AE%E8%B0%83/" class="print-no-link">#微调</a>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>LoRA理论学习</div>
+      <div>https://astringent-orange.github.io/2026/08/04/LoRA理论学习/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年8月4日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/08/07/10_Jetson-Orin-NX%E5%88%B7%E6%9C%BAUbuntu-20.04/" title="10_Jetson Orin  NX刷机Ubuntu 20.04">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">10_Jetson Orin  NX刷机Ubuntu 20.04</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/06/09/zotero%E6%96%87%E4%BB%B6%E5%90%8C%E6%AD%A5%E4%BF%AE%E5%A4%8D/" title="zotero文件同步修复">
+                        <span class="hidden-mobile">zotero文件同步修复</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
     <span>目录</span>
-  </div>
-  <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%95%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">引言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%A9%E4%B8%8E%E4%BD%8E%E7%A7%A9%E5%88%86%E8%A7%A3"><span class="toc-number">2.</span> <span class="toc-text">秩与低秩分解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%9F%A9%E9%98%B5%E7%9A%84%E7%A7%A9"><span class="toc-number">2.1.</span> <span class="toc-text">什么是矩阵的秩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E7%BA%BF%E6%80%A7%E5%8F%98%E6%8D%A2%E8%A7%92%E5%BA%A6%E7%90%86%E8%A7%A3%E7%A7%A9"><span class="toc-number">2.2.</span> <span class="toc-text">从线性变换角度理解秩</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%8E%E7%A7%A9%E7%9F%A9%E9%98%B5%E5%8F%AF%E4%BB%A5%E6%8B%86%E6%88%90%E4%B8%A4%E4%B8%AA%E5%B0%8F%E7%9F%A9%E9%98%B5"><span class="toc-number">2.3.</span> <span class="toc-text">为什么低秩矩阵可以拆成两个小矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%85%B7%E4%BD%93%E7%9A%84%E7%A7%A9%E5%88%86%E8%A7%A3%E4%BE%8B%E5%AD%90"><span class="toc-number">2.4.</span> <span class="toc-text">一个具体的秩分解例子</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A7%A9%E4%B8%BA-1-%E7%9A%84%E7%89%B9%E6%AE%8A%E6%83%85%E5%86%B5"><span class="toc-number">2.5.</span> <span class="toc-text">秩为 1 的特殊情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%A4%E4%B8%AA%E5%B0%8F%E7%9F%A9%E9%98%B5%E7%9A%84%E4%B9%98%E7%A7%AF%E4%B8%80%E5%AE%9A%E6%98%AF%E4%BD%8E%E7%A7%A9%E7%9A%84"><span class="toc-number">2.6.</span> <span class="toc-text">为什么两个小矩阵的乘积一定是低秩的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E6%A0%B7%E5%8F%AF%E4%BB%A5%E5%87%8F%E5%B0%91%E5%8F%82%E6%95%B0"><span class="toc-number">2.7.</span> <span class="toc-text">为什么这样可以减少参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%8E%E7%A7%A9%E5%88%86%E8%A7%A3%E7%9A%84%E9%99%90%E5%88%B6"><span class="toc-number">2.8.</span> <span class="toc-text">低秩分解的限制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SVD-%E4%B8%8E%E4%BD%8E%E7%A7%A9%E8%BF%91%E4%BC%BC"><span class="toc-number">3.</span> <span class="toc-text">SVD 与低秩近似</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-SVD"><span class="toc-number">3.1.</span> <span class="toc-text">什么是 SVD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SVD-%E7%9A%84%E5%87%A0%E4%BD%95%E6%84%8F%E4%B9%89"><span class="toc-number">3.2.</span> <span class="toc-text">SVD 的几何意义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A5%87%E5%BC%82%E5%80%BC%E5%92%8C%E5%A5%87%E5%BC%82%E5%90%91%E9%87%8F"><span class="toc-number">3.3.</span> <span class="toc-text">奇异值和奇异向量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A5%87%E5%BC%82%E5%80%BC%E6%98%AF%E6%80%8E%E4%B9%88%E5%BE%97%E5%88%B0%E7%9A%84"><span class="toc-number">3.4.</span> <span class="toc-text">奇异值是怎么得到的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SVD-%E4%B8%8E%E7%A7%A9%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.5.</span> <span class="toc-text">SVD 与秩的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%88%AA%E6%96%AD-SVD"><span class="toc-number">3.6.</span> <span class="toc-text">截断 SVD</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E6%8A%8A%E6%88%AA%E6%96%AD-SVD-%E5%86%99%E6%88%90%E4%B8%A4%E4%B8%AA%E7%9F%A9%E9%98%B5"><span class="toc-number">3.7.</span> <span class="toc-text">如何把截断 SVD 写成两个矩阵</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%AA%E6%96%AD-SVD-%E6%98%AF%E5%A5%BD%E7%9A%84%E4%BD%8E%E7%A7%A9%E8%BF%91%E4%BC%BC"><span class="toc-number">3.8.</span> <span class="toc-text">为什么截断 SVD 是好的低秩近似</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E4%BD%8E%E7%A7%A9%E8%BF%91%E4%BC%BC%E5%88%B0-LoRA"><span class="toc-number">4.</span> <span class="toc-text">从低秩近似到 LoRA</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E5%BE%AE%E8%B0%83%E5%9C%A8%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">4.1.</span> <span class="toc-text">完整微调在做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LoRA-%E7%9A%84%E6%A0%B8%E5%BF%83%E5%81%87%E8%AE%BE"><span class="toc-number">4.2.</span> <span class="toc-text">LoRA 的核心假设</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SVD-%E5%92%8C-LoRA-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">4.3.</span> <span class="toc-text">SVD 和 LoRA 的区别</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LoRA-%E7%9A%84%E8%AE%AD%E7%BB%83%E4%B8%8E%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B"><span class="toc-number">5.</span> <span class="toc-text">LoRA 的训练与计算过程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#LoRA-%E5%A6%82%E4%BD%95%E5%8A%A0%E5%85%A5%E7%BA%BF%E6%80%A7%E5%B1%82"><span class="toc-number">5.1.</span> <span class="toc-text">LoRA 如何加入线性层</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#A-%E5%92%8C-B-%E5%88%86%E5%88%AB%E5%81%9A%E4%BB%80%E4%B9%88"><span class="toc-number">5.2.</span> <span class="toc-text">$A$ 和 $B$ 分别做什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LoRA-%E5%AE%9E%E9%99%85%E8%AE%AD%E7%BB%83%E4%BB%80%E4%B9%88"><span class="toc-number">5.3.</span> <span class="toc-text">LoRA 实际训练什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%88%9D%E5%A7%8B%E5%8C%96%E6%97%B6%E4%B8%8D%E5%BD%B1%E5%93%8D%E5%8E%9F%E6%A8%A1%E5%9E%8B"><span class="toc-number">5.4.</span> <span class="toc-text">为什么初始化时不影响原模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Rank"><span class="toc-number">5.5.</span> <span class="toc-text">Rank</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Alpha"><span class="toc-number">5.6.</span> <span class="toc-text">Alpha</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LoRA-%E5%9C%A8-Transformer-%E4%B8%AD%E7%9A%84%E5%AE%9E%E9%99%85%E4%BD%BF%E7%94%A8"><span class="toc-number">6.</span> <span class="toc-text">LoRA 在 Transformer 中的实际使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BE%88%E5%A4%9A%E5%B0%8F%E6%9B%B4%E6%96%B0%E8%83%BD%E5%A4%9F%E6%98%8E%E6%98%BE%E6%94%B9%E5%8F%98%E6%A8%A1%E5%9E%8B"><span class="toc-number">6.1.</span> <span class="toc-text">为什么很多小更新能够明显改变模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#LoRA-%E7%9A%84%E4%BF%9D%E5%AD%98%E3%80%81%E6%8E%A8%E7%90%86%E4%B8%8E%E5%90%88%E5%B9%B6"><span class="toc-number">7.</span> <span class="toc-text">LoRA 的保存、推理与合并</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%AD%E7%BB%83%E5%AE%8C%E6%88%90%E5%90%8E%E4%BF%9D%E5%AD%98%E4%BB%80%E4%B9%88"><span class="toc-number">7.1.</span> <span class="toc-text">训练完成后保存什么</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E6%97%B6%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8"><span class="toc-number">7.2.</span> <span class="toc-text">推理时如何使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LoRA-Merge"><span class="toc-number">7.3.</span> <span class="toc-text">LoRA Merge</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">9.</span> <span class="toc-text">参考文献</span></a></li></ol>
-  </div>
-</section>
-
-
-
-      
-
-      <section class="widget-categories widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
-</svg>
-      <span>CATEGORIES</span>
-  </div>
-  <div class="widget-body">
-    <ul class="categories-list">
-      
-        <li class="categories-list-item">
-          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-            无人机实验 (18)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-            无人机工程 (8)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E6%9D%82%E8%AE%B0/">
-            杂记 (1)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-            大模型 (1)
-          </a>
-        </li>
-        
-    </ul>
-  </div>
-</section>
-
-      <section class="widget-tags widget-item  layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
-</svg>
-    <span>TAGS</span>
-  </div>
-  <div class="widget-body">
-    <div class="tags-cloud">
-      <a href="/tags/AprilTag/" style="font-size: 10px;" class="tags-cloud-0">AprilTag</a> <a href="/tags/CPP/" style="font-size: 14.44px;" class="tags-cloud-4">CPP</a> <a href="/tags/FlightMare/" style="font-size: 17.78px;" class="tags-cloud-8">FlightMare</a> <a href="/tags/Gazebo/" style="font-size: 14.44px;" class="tags-cloud-4">Gazebo</a> <a href="/tags/IntelRealsenseD435/" style="font-size: 13.33px;" class="tags-cloud-3">IntelRealsenseD435</a> <a href="/tags/LoRA/" style="font-size: 10px;" class="tags-cloud-0">LoRA</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 12.22px;" class="tags-cloud-2">NUC13</a> <a href="/tags/Python/" style="font-size: 10px;" class="tags-cloud-0">Python</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12.22px;" class="tags-cloud-2">Ubuntu20-04</a> <a href="/tags/Unity/" style="font-size: 16.67px;" class="tags-cloud-7">Unity</a> <a href="/tags/astar/" style="font-size: 11.11px;" class="tags-cloud-1">astar</a> <a href="/tags/catkin/" style="font-size: 11.11px;" class="tags-cloud-1">catkin</a> <a href="/tags/cmake/" style="font-size: 11.11px;" class="tags-cloud-1">cmake</a> <a href="/tags/docker/" style="font-size: 11.11px;" class="tags-cloud-1">docker</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/jetson/" style="font-size: 10px;" class="tags-cloud-0">jetson</a> <a href="/tags/octomap/" style="font-size: 13.33px;" class="tags-cloud-3">octomap</a> <a href="/tags/px4/" style="font-size: 15.56px;" class="tags-cloud-6">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/vins/" style="font-size: 11.11px;" class="tags-cloud-1">vins</a> <a href="/tags/vitfly/" style="font-size: 11.11px;" class="tags-cloud-1">vitfly</a> <a href="/tags/zotero/" style="font-size: 10px;" class="tags-cloud-0">zotero</a> <a href="/tags/%E4%BB%BF%E7%9C%9F/" style="font-size: 18.89px;" class="tags-cloud-9">仿真</a> <a href="/tags/%E4%BF%AE%E5%A4%8D/" style="font-size: 10px;" class="tags-cloud-0">修复</a> <a href="/tags/%E5%8A%A8%E5%8A%9B%E5%AD%A6/" style="font-size: 11.11px;" class="tags-cloud-1">动力学</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%9D%9A%E6%9E%9C%E4%BA%91/" style="font-size: 10px;" class="tags-cloud-0">坚果云</a> <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" style="font-size: 10px;" class="tags-cloud-0">大模型</a> <a href="/tags/%E5%AE%9E%E6%9C%BA/" style="font-size: 13.33px;" class="tags-cloud-3">实机</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E5%BE%AE%E8%B0%83/" style="font-size: 10px;" class="tags-cloud-0">微调</a> <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" style="font-size: 10px;" class="tags-cloud-0">模块化</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 10px;" class="tags-cloud-0">视觉定位</a> <a href="/tags/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/" style="font-size: 11.11px;" class="tags-cloud-1">路径规划</a> <a href="/tags/%E9%A3%9E%E6%8E%A7/" style="font-size: 11.11px;" class="tags-cloud-1">飞控</a>
-    </div>
-  </div>
-</section>
-    </div>
-  </article>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
 
-<div class="comments" style="max-width:1200px;margin:40px auto;">
-<script src="https://giscus.app/client.js"
-        data-repo="astringent-orange/astringent-orange.github.io"
-        data-repo-id="R_kgDORiSglw"
-        data-category="General"
-        data-category-id="DIC_kwDORiSgl84C4XZB"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
-</script>
-</div> 
 
-    <!-- footer container -->
-<footer id="footer" class="footer">
-  <div class="footer-container">
-    
-    <div class="social-icons">
-      
-        
-      
-        
-      
-        
-      
-        
-          <a href="https://github.com/astrigent-orange/astrigent-orange" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
-            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
-</svg>
-          </a>
-        
-      
-        
-      
+
+  </aside>
+
+
     </div>
-     
-    <p>&copy; 2026 <a href="/" target="_blank">Mian</a></p>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
 
     
 
-    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
 
-    <p>
-      <a href="javascript:;" id="theme-light">🌞 浅色</a>
-      <a href="javascript:;" id="theme-dark">🌛 深色</a>
-      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
-    </p>
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
   </div>
-</footer>
-  </div>
+</div>
 
-  <div class="back-to-top-fixed soft-size--round soft-style--box">
-    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
-      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
-      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
-    </svg>
-  </div>
+    
 
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
   
   
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
- 
-<!-- mathjax -->
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
 
 
+
+
+  
 <script>
-MathJax = {
-  tex: {
-    inlineMath: [
-      ['$', '$']
-    ],
-    displayMath: [
-      ['$$', '$$']
-    ],
-    processEscapes: true
-  }
-};
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
 </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
 
 
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
 
-
-
-
-<!-- copy button  -->
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
-
-<!-- https://clipboardjs.com/ -->
-
-
-<script type="text/javascript">
-	(function () {
-		function setCopiedState(button) {
-			if (!button) return;
-			button.classList.add("copied");
-			setTimeout(() => {
-				button.classList.remove("copied");
-			}, 3000);
-		}
-
-		window.addEventListener("DOMContentLoaded", () => {
-			const copyBtnClass = "copy-btn";
-			document.querySelectorAll('figure.highlight').forEach((elem) => {
-				const codeContent = elem.querySelector("td.code");
-				if (!codeContent) return;
-				const copyButton = document.createElement('button');
-				const codeText = codeContent.innerText;
-				copyButton.setAttribute("class", copyBtnClass);
-				copyButton.setAttribute("title", "复制代码");
-				copyButton.setAttribute("aria-label", "复制代码");
-				copyButton.setAttribute("type", "button");
-				copyButton.setAttribute("data-clipboard-text", codeText);
-				copyButton.addEventListener("click", async () => {
-					try {
-						if (navigator.clipboard && window.isSecureContext) {
-							await navigator.clipboard.writeText(codeText);
-						} else {
-							const textArea = document.createElement("textarea");
-							textArea.value = codeText;
-							textArea.setAttribute("readonly", "");
-							textArea.style.position = "absolute";
-							textArea.style.left = "-9999px";
-							document.body.appendChild(textArea);
-							textArea.select();
-							document.execCommand("copy");
-							document.body.removeChild(textArea);
-						}
-						setCopiedState(copyButton);
-					} catch (error) {
-						console.error("Copy failed:", error);
-					}
-				});
-				elem.insertBefore(copyButton, elem.children[0]);
-			});
-
-			if (window.ClipboardJS) {
-				const clipboard = new ClipboardJS('.' + copyBtnClass);
-				clipboard.on('success', function (e) {
-					setCopiedState(e.trigger);
-					e.clearSelection();
-				});
-				clipboard.on('error', function (e) {
-					console.error('ClipboardJS error:', e.trigger);
-				});
-			}
-		})
-	})();
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
 </script>
 
 
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
 
 
 
 
 
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
 
 
   
 
-
-  
-
-
-  
-
-
-
-
-<script src="/js/script.js"></script>
-
-
-  
-  <!-- 尾部用户自定义相关内容 -->
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
 </body>
 </html>

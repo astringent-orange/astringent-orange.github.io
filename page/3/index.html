@@ -1,878 +1,1101 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="theme-color" content="#3367D6"/>
-  <link rel="apple-touch-icon" href="/icons-192.png">
-  <link rel="manifest" href="/manifest.json">
-  
-  <meta name="generator" content="Hexo 7.3.0">
 
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mian">
+  <meta name="keywords" content="">
   
     <meta name="description" content="Mian的个人博客">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mian的笔记">
+<meta property="og:url" content="https://astringent-orange.github.io/page/3/index.html">
+<meta property="og:site_name" content="Mian的笔记">
+<meta property="og:description" content="Mian的个人博客">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Mian">
+<meta name="twitter:card" content="summary_large_image">
   
-
   
-
   
-    <meta name="author" content="Mian">
-  
-
-  
-
-  
-
   <title>Mian的笔记</title>
 
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
-  
-    <link rel="shortcut icon" href="/favicon.ico">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
   
 
-  
 
   
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-  
 
-  
-<link rel="stylesheet" href="/css/style.css">
-
-</head>
 <body>
-  <div class="root-container">
+  
+
+  <header>
     
-<!-- header container -->
-<header class="header-container">
-  
-  
-  
-    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png)"></div>
-  
 
-  <!-- navbar -->
-<nav class="navbar">
-  <div class="navbar-content">
-    <!-- logo -->
-    <div class="navbar-logo">
-      <a href="/">
-        
-          Mian的笔记
-        
-      </a>
-    </div>
+<div class="header-inner" style="height: 100vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Mian的笔记</strong>
+    </a>
 
-    <!-- link -->
-    <div class="navbar-link">
-      <div class="navbar-btn">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-      <ul class="navbar-list">
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
           
-            <li class="navbar-list-item">
-              <a href="/">首页</a>
-            </li>
           
-        
           
-            <li class="navbar-list-item dropdown">
-              <a href="#" class="dropdown-toggle" aria-expanded="false">
-                文档 <span class="arrow">&#9662;</span>
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
               </a>
-
-              <ul class="dropdown-menu">
-                
-                  <li>
-                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-                      无人机实验
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-                      无人机工程
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E6%9D%82%E8%AE%B0/">
-                      杂记
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-                      大模型
-                    </a>
-                  </li>
-                
-              </ul>
             </li>
           
         
           
-            <li class="navbar-list-item">
-              <a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a>
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
             </li>
           
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
         
       </ul>
-
-      <div class="navbar-search">
-        <button class="navbar-search-toggle" type="button" aria-label="Open search" aria-expanded="false">
-          <span class="navbar-search-icon" aria-hidden="true"></span>
-        </button>
-        <form class="navbar-search-form" role="search">
-          <input
-            class="navbar-search-input"
-            type="search"
-            name="q"
-            placeholder="搜索文章..."
-            autocomplete="off"
-          />
-        </form>
-        <div class="navbar-search-results" hidden>
-          <div class="navbar-search-state">&#36755;&#20837;&#20851;&#38190;&#35789;&#24320;&#22987;&#25628;&#32034;</div>
-          <div class="navbar-search-list"></div>
-        </div>
-      </div>
     </div>
   </div>
 </nav>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const dropdown = document.querySelector(".dropdown");
-  const search = document.querySelector(".navbar-search");
-
-  if (dropdown) {
-    const menu = dropdown.querySelector(".dropdown-menu");
-    const toggle = dropdown.querySelector(".dropdown-toggle");
-
-    function closeMenu() {
-      dropdown.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-    }
-
-    function openMenu() {
-      dropdown.classList.add("is-open");
-      toggle.setAttribute("aria-expanded", "true");
-    }
-
-    toggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const opened = dropdown.classList.contains("is-open");
-      if (opened) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-
-    document.addEventListener("click", function(e) {
-      if (!dropdown.contains(e.target)) {
-        closeMenu();
-      }
-    });
-
-    menu.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        closeMenu();
-      }
-    });
-  }
-
-  if (search) {
-    const searchToggle = search.querySelector(".navbar-search-toggle");
-    const searchForm = search.querySelector(".navbar-search-form");
-    const searchInput = search.querySelector(".navbar-search-input");
-    const searchResults = search.querySelector(".navbar-search-results");
-    const searchState = search.querySelector(".navbar-search-state");
-    const searchList = search.querySelector(".navbar-search-list");
-    const searchIndexPath = "/search.json";
-    const searchBasePath = "/";
-    const searchPagePath = "/search/";
-    let searchIndex = null;
-    let searchIndexPromise = null;
-
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, function(char) {
-        const entityMap = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          "\"": "&quot;",
-          "'": "&#39;"
-        };
-        return entityMap[char];
-      });
-    }
-
-    function escapeRegExp(value) {
-      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }
-
-    function buildSnippet(item, keyword) {
-      const source = item.excerpt || item.content || "";
-      if (!source) return "";
-
-      const normalizedKeyword = keyword.trim().toLowerCase();
-      const sourceLower = source.toLowerCase();
-      const matchIndex = normalizedKeyword ? sourceLower.indexOf(normalizedKeyword) : -1;
-      const start = matchIndex >= 0 ? Math.max(0, matchIndex - 24) : 0;
-      const snippet = source.slice(start, start + 88).trim();
-
-      return start > 0 ? "..." + snippet : snippet;
-    }
-
-    function highlightText(text, keyword) {
-      if (!keyword) return escapeHTML(text);
-      const safeKeyword = escapeRegExp(keyword.trim());
-      if (!safeKeyword) return escapeHTML(text);
-
-      return escapeHTML(text).replace(new RegExp("(" + safeKeyword + ")", "ig"), "<mark>$1</mark>");
-    }
-
-    function setSearchState(message, type) {
-      searchState.textContent = message;
-      searchState.dataset.state = type || "idle";
-      searchState.hidden = false;
-    }
-
-    function clearSearchResults() {
-      searchList.innerHTML = "";
-    }
-
-    function showResultsPanel() {
-      searchResults.hidden = false;
-      search.classList.add("show-results");
-    }
-
-    function hideResultsPanel() {
-      searchResults.hidden = true;
-      search.classList.remove("show-results");
-    }
-
-    function ensureSearchIndex() {
-      if (searchIndex) return Promise.resolve(searchIndex);
-      if (searchIndexPromise) return searchIndexPromise;
-
-      setSearchState("\u6b63\u5728\u52a0\u8f7d\u641c\u7d22\u7d22\u5f15...", "loading");
-      showResultsPanel();
-
-      searchIndexPromise = fetch(searchIndexPath)
-        .then(function(response) {
-            if (!response.ok) throw new Error("Failed to load search index");
-            return response.json();
-          })
-        .then(function(data) {
-          searchIndex = Array.isArray(data) ? data : [];
-          return searchIndex;
-        })
-        .catch(function() {
-          setSearchState("\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25", "error");
-          return [];
-        });
-
-      return searchIndexPromise;
-    }
-
-    function renderSearchResults(items, keyword) {
-      clearSearchResults();
-      showResultsPanel();
-
-      if (!keyword.trim()) {
-        setSearchState("\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22", "idle");
-        return;
-      }
-
-      if (!items.length) {
-        setSearchState("\u672a\u627e\u5230\u76f8\u5173\u6587\u7ae0", "empty");
-        return;
-      }
-
-      searchState.hidden = true;
-      const html = items.map(function(item) {
-        const snippet = buildSnippet(item, keyword);
-        const metaParts = []
-          .concat(item.categories || [])
-          .concat(item.tags || []);
-
-        return [
-          '<a class="navbar-search-result-item" href="' + searchBasePath + escapeHTML(item.path) + '">',
-          '<span class="navbar-search-result-title">' + highlightText(item.title || "Untitled", keyword) + "</span>",
-          snippet ? '<span class="navbar-search-result-snippet">' + highlightText(snippet, keyword) + "</span>" : "",
-          metaParts.length ? '<span class="navbar-search-result-meta">' + escapeHTML(metaParts.slice(0, 3).join(" / ")) + "</span>" : "",
-          "</a>"
-        ].join("");
-      }).join("");
-
-      searchList.innerHTML = html;
-    }
-
-    function performSearch(keyword) {
-      ensureSearchIndex().then(function(index) {
-        const trimmedKeyword = keyword.trim();
-        if (!trimmedKeyword) {
-          renderSearchResults([], "");
-          return;
-        }
-
-        const normalizedKeyword = trimmedKeyword.toLowerCase();
-        const matchedItems = index.filter(function(item) {
-          const haystack = [
-            item.title,
-            item.excerpt,
-            item.content,
-            (item.tags || []).join(" "),
-            (item.categories || []).join(" ")
-          ].join(" ").toLowerCase();
-
-          return haystack.includes(normalizedKeyword);
-        }).sort(function(a, b) {
-          const aTitle = (a.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
-          const bTitle = (b.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
-          return bTitle - aTitle;
-        }).slice(0, 6);
-
-        renderSearchResults(matchedItems, trimmedKeyword);
-      });
-    }
-
-    function navigateToSearchPage(keyword) {
-      const trimmedKeyword = keyword.trim();
-      const target = trimmedKeyword ? searchPagePath + "?q=" + encodeURIComponent(trimmedKeyword) : searchPagePath;
-      window.location.href = target;
-    }
-
-    function closeSearch() {
-      search.classList.remove("is-open");
-      searchToggle.setAttribute("aria-expanded", "false");
-      hideResultsPanel();
-    }
-
-    function openSearch() {
-      search.classList.add("is-open");
-      searchToggle.setAttribute("aria-expanded", "true");
-      window.requestAnimationFrame(function() {
-        searchInput.focus();
-      });
-    }
-
-    searchToggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (search.classList.contains("is-open")) {
-        closeSearch();
-      } else {
-        openSearch();
-        if (searchInput.value.trim()) {
-          performSearch(searchInput.value);
-        }
-      }
-    });
-
-    searchForm.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-
-    searchForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      navigateToSearchPage(searchInput.value);
-    });
-
-    searchInput.addEventListener("input", function() {
-      if (!search.classList.contains("is-open")) {
-        openSearch();
-      }
-      performSearch(searchInput.value);
-    });
-
-    document.addEventListener("click", function(e) {
-      if (!search.contains(e.target)) {
-        closeSearch();
-      }
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        closeSearch();
-      }
-    });
-
-    searchResults.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-  }
-});
-</script>
-
-
-  
-  
-    <div class="header-content">
-      <div class="post-text layout-block layout-padding">
-        <h1 class="title-wrap">Mian的笔记</h1>
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
         
-          <h2 class="title-sub-wrap">记录我的折腾</h2>
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
         
       </div>
     </div>
-  
+  </div>
+</div>
 
   
-  
 
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-  
-</header>
-
-
-    <!-- 首页 -->
-
-<!-- post list container -->
-<div class="body-container">
-  <div class="content-container layout-block article-list">
-    
-      
-      
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box article-card--no-cover"
-          data-url="/2026/01/27/cmake-catkin-make-build/"
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
           
-        >
+            <span id="subtitle" data-typed-text="记录我的折腾"></span>
           
+        </div>
 
-          <div class="card-text">
-            
-              <a href="/2026/01/27/cmake-catkin-make-build/" itemprop="url">
-                <h2 class="card-text--title">cmake-catkin make-build</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2026-01-26T16:00:00.000Z" itemprop="datePublished">2026-01-27</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/cmake/">🏷️ cmake</a></li>
-  
-    <li><a href="/tags/catkin/">🏷️ catkin</a></li>
-  
-</ul>
-          </div>
-        </article>
+        
       </div>
-    
-      
-      
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box article-card--no-cover"
-          data-url="/2026/01/20/4_%E6%90%AD%E8%BD%BDNUC%E5%AE%9E%E6%9C%BA%E8%B5%B7%E9%A3%9E%E6%B5%8B%E8%AF%95/"
-          
-        >
-          
 
-          <div class="card-text">
-            
-              <a href="/2026/01/20/4_%E6%90%AD%E8%BD%BDNUC%E5%AE%9E%E6%9C%BA%E8%B5%B7%E9%A3%9E%E6%B5%8B%E8%AF%95/" itemprop="url">
-                <h2 class="card-text--title">4_搭载NUC实机起飞测试</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2026-01-19T16:00:00.000Z" itemprop="datePublished">2026-01-20</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/px4/">🏷️ px4</a></li>
-  
-    <li><a href="/tags/%E5%AE%9E%E6%9C%BA/">🏷️ 实机</a></li>
-  
-    <li><a href="/tags/drone/">🏷️ drone</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
       
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
       
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box article-card--no-cover"
-          data-url="/2026/01/09/%E5%8D%A0%E6%8D%AE%E6%A0%85%E6%A0%BC%E5%9B%BE-Octomap/"
-          
-        >
-          
-
-          <div class="card-text">
-            
-              <a href="/2026/01/09/%E5%8D%A0%E6%8D%AE%E6%A0%85%E6%A0%BC%E5%9B%BE-Octomap/" itemprop="url">
-                <h2 class="card-text--title">占据栅格图 Octomap</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2026-01-08T16:00:00.000Z" itemprop="datePublished">2026-01-09</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/IntelRealsenseD435/">🏷️ IntelRealsenseD435</a></li>
-  
-    <li><a href="/tags/octomap/">🏷️ octomap</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      
-      
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box article-card--no-cover"
-          data-url="/2026/01/05/ROS%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/"
-          
-        >
-          
-
-          <div class="card-text">
-            
-              <a href="/2026/01/05/ROS%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" itemprop="url">
-                <h2 class="card-text--title">ROS参数服务器</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2026-01-04T16:00:00.000Z" itemprop="datePublished">2026-01-05</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/">🏷️ 参数服务器</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      
-      
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box article-card--no-cover"
-          data-url="/2025/12/25/3_%E5%AE%8C%E6%95%B4%E5%9B%9E%E8%B7%AF%E6%B5%8B%E8%AF%95-NUC-D435-Pixhawk/"
-          
-        >
-          
-
-          <div class="card-text">
-            
-              <a href="/2025/12/25/3_%E5%AE%8C%E6%95%B4%E5%9B%9E%E8%B7%AF%E6%B5%8B%E8%AF%95-NUC-D435-Pixhawk/" itemprop="url">
-                <h2 class="card-text--title">3_完整回路测试 NUC-D435-Pixhawk</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2025-12-24T16:00:00.000Z" itemprop="datePublished">2025-12-25</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/vins/">🏷️ vins</a></li>
-  
-    <li><a href="/tags/px4/">🏷️ px4</a></li>
-  
-    <li><a href="/tags/%E5%AE%9E%E6%9C%BA/">🏷️ 实机</a></li>
-  
-    <li><a href="/tags/MAVROS/">🏷️ MAVROS</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      
-      
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box article-card--no-cover"
-          data-url="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/"
-          
-        >
-          
-
-          <div class="card-text">
-            
-              <a href="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" itemprop="url">
-                <h2 class="card-text--title">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2025-12-22T16:00:00.000Z" itemprop="datePublished">2025-12-23</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/vins/">🏷️ vins</a></li>
-  
-    <li><a href="/tags/IntelRealsenseD435/">🏷️ IntelRealsenseD435</a></li>
-  
-    <li><a href="/tags/px4/">🏷️ px4</a></li>
-  
-    <li><a href="/tags/%E5%AE%9E%E6%9C%BA/">🏷️ 实机</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      
-      
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box article-card--no-cover"
-          data-url="/2025/12/22/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/"
-          
-        >
-          
-
-          <div class="card-text">
-            
-              <a href="/2025/12/22/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/" itemprop="url">
-                <h2 class="card-text--title">1_Intel NUC13ANKi7-1360P 调试</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2025-12-21T16:00:00.000Z" itemprop="datePublished">2025-12-22</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/Ubuntu20-04/">🏷️ Ubuntu20-04</a></li>
-  
-    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
-      
-      
-      <div class="article-item layout-padding">
-        <article
-          class="card-container article-card content-padding--large soft-size--large soft-style--box article-card--no-cover"
-          data-url="/2025/12/22/%E7%9B%B8%E6%9C%BA%E4%BD%BF%E7%94%A8-rosbag/"
-          
-        >
-          
-
-          <div class="card-text">
-            
-              <a href="/2025/12/22/%E7%9B%B8%E6%9C%BA%E4%BD%BF%E7%94%A8-rosbag/" itemprop="url">
-                <h2 class="card-text--title">相机使用-rosbag</h2>
-              </a>
-            
-            <div class="card-text--row">
-              <span>发布于</span>
-              <time  class="article-date" datetime="2025-12-21T16:00:00.000Z" itemprop="datePublished">2025-12-22</time>
-            </div>
-            
-            <ul class="wrap-list light">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">📒 无人机工程</a></li>
-    
-</ul>
-            <ul class="wrap-list light">
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/IntelRealsenseD435/">🏷️ IntelRealsenseD435</a></li>
-  
-    <li><a href="/tags/rosbag/">🏷️ rosbag</a></li>
-  
-</ul>
-          </div>
-        </article>
-      </div>
-    
+    </div>
   </div>
 </div>
 
 
-<!-- page container -->
 
-  <nav class="page-container">
+</div>
+
+  </header>
+
+  <main>
     
-    <a class="extend prev" rel="prev" href="/page/2/">ʚ</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
+      <div class="container nopadding-x-md">
+        <div id="board"
+          style="margin-top: 0">
+          
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-md-10 m-auto">
+                
+
+<h1 style="display: none">Mian的笔记</h1>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/02/04/5_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95-%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" target="_self">
+          5_实机绕圈测试-场地搭建
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/02/04/5_%E5%AE%9E%E6%9C%BA%E7%BB%95%E5%9C%88%E6%B5%8B%E8%AF%95-%E5%9C%BA%E5%9C%B0%E6%90%AD%E5%BB%BA/" target="_self">
+        <div>
+          前言在完成了起飞与降落实验后想要让无人机在场地内绕行一圈，但是在进行实验之前对于安全保障与场地搭建有一些问题 首先是安全保障。目前的实验都是将无人机栓在重物上以避免无人机突然飞走，如果要完成绕行则需要新的安全保障措施。其次是关于场地，目前的场地中有两面是白色的墙壁，另外两面是窗户，这对于vins十分不友好，需要更新场地。 综合上述需求，在进行下一步的实机实验之前，最好搭建一个更安全更对于vins友
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-02-04 00:00" pubdate>
+              2026-02-04
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" class="category-chain-item">无人机实验</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/px4/">#px4</a>
+            
+              <a href="/tags/%E5%AE%9E%E6%9C%BA/">#实机</a>
+            
+              <a href="/tags/%E4%BB%BF%E7%9C%9F/">#仿真</a>
+            
+              <a href="/tags/Gazebo/">#Gazebo</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/02/02/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BA%93%E6%96%87%E4%BB%B6-%E6%A8%A1%E5%9D%97%E5%8C%96%E8%AE%BE%E8%AE%A1/" target="_self">
+          自定义库文件 模块化设计
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/02/02/%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BA%93%E6%96%87%E4%BB%B6-%E6%A8%A1%E5%9D%97%E5%8C%96%E8%AE%BE%E8%AE%A1/" target="_self">
+        <div>
+          前言为了实现便于替换、复用与合作使用，在完成大型的项目时通常会使用模块化设计，即将不同功能的实现分别封装在单独的文件中，而不是在一个文件中实现所有功能，而这通常也伴随着自定义头文件的使用 CPP除了上述理由，在cpp中使用cmake编译时，如果使用自定义头文件.h提前将类的结构，成员，函数入口等信息声明出来，则可以减轻编译的压力，而不必在更冗长.cpp文件中去寻找。 具体而言，在ROS1的项目构成
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-02-02 00:00" pubdate>
+              2026-02-02
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" class="category-chain-item">无人机工程</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/CPP/">#CPP</a>
+            
+              <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/">#模块化</a>
+            
+              <a href="/tags/Python/">#Python</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/01/27/cmake-catkin-make-build/" target="_self">
+          cmake-catkin make-build
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/01/27/cmake-catkin-make-build/" target="_self">
+        <div>
+          简单来说，三者都是cpp的编译工具。首先，因为ros项目非常依赖本地环境且要进行自主修改，所以基本都需要在本地对源码进行编译。（拓展：对于一个cpp的应用程序，其是否需要上述内容？并不需要，一个应用程序可以以编译后的二进制形式发布。一种方式是静态连接，将依赖抄进exe文件；第二种方式是动态链接，例如使用win的dll，在运行时编译，这样只需要一个安装程序，在安装时将这些文件放到指定文件夹中） cm
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-01-27 00:00" pubdate>
+              2026-01-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" class="category-chain-item">无人机工程</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/cmake/">#cmake</a>
+            
+              <a href="/tags/catkin/">#catkin</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/01/20/4_%E6%90%AD%E8%BD%BDNUC%E5%AE%9E%E6%9C%BA%E8%B5%B7%E9%A3%9E%E6%B5%8B%E8%AF%95/" target="_self">
+          4_搭载NUC实机起飞测试
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/01/20/4_%E6%90%AD%E8%BD%BDNUC%E5%AE%9E%E6%9C%BA%E8%B5%B7%E9%A3%9E%E6%B5%8B%E8%AF%95/" target="_self">
+        <div>
+          延续之前的完整回路测试实验，将NUC与摄像头粘贴到无人机上，并安装桨叶尝试运行offb文件 查漏补缺首先对于里程计配置进行补充和修改，在相机外参中可以设置output文件夹，其中可以导出vins自动修正过的外参。即一开始相机的外参只需要大致正确，然后启动里程计，拿着无人机在无人机场地中缓慢地绕圈最后放回原处，然后将vins自动修正的外参粘贴至相机设置中。如此反复，直至当无人机放回原处时里程计的偏差
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-01-20 00:00" pubdate>
+              2026-01-20
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" class="category-chain-item">无人机实验</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/NUC13/">#NUC13</a>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/px4/">#px4</a>
+            
+              <a href="/tags/%E5%AE%9E%E6%9C%BA/">#实机</a>
+            
+              <a href="/tags/drone/">#drone</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/01/09/%E5%8D%A0%E6%8D%AE%E6%A0%85%E6%A0%BC%E5%9B%BE-Octomap/" target="_self">
+          占据栅格图 Octomap
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/01/09/%E5%8D%A0%E6%8D%AE%E6%A0%85%E6%A0%BC%E5%9B%BE-Octomap/" target="_self">
+        <div>
+          占据栅格图octomap在传统分阶段（感知-建图-规划-优化）任务中，环境建图是非常重要的一环。octomap是一个开源的三维环境建模库，其基于八叉树octree实现，可以将三维点云数据转换为三维地图 以Ubuntu 20.04 + ROS noetic为例，安装过程如下 123456sudo apt-get updatesudo apt-get install ros-noetic-octoma
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-01-09 00:00" pubdate>
+              2026-01-09
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" class="category-chain-item">无人机工程</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/IntelRealsenseD435/">#IntelRealsenseD435</a>
+            
+              <a href="/tags/octomap/">#octomap</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2026/01/05/ROS%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" target="_self">
+          ROS参数服务器
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2026/01/05/ROS%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" target="_self">
+        <div>
+          参数服务器通信 是ROS通信中一种比较特殊又比较简单的通信方式。参数服务器在ROS Master内部运行。一方向服务器设置参数，另一方则可以向服务器请求参数。而参数服务器与topic与service不同，更加得静态，且参数服务器维护着一个数据字典，存储了参数与配置。 而与参数服务器沟通一般共有三种方式  launch文件中设置 在代码中操作 在命令行调试   在launch文件中设置写在&lt;n
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2026-01-05 00:00" pubdate>
+              2026-01-05
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" class="category-chain-item">无人机工程</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/">#参数服务器</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/12/25/3_%E5%AE%8C%E6%95%B4%E5%9B%9E%E8%B7%AF%E6%B5%8B%E8%AF%95-NUC-D435-Pixhawk/" target="_self">
+          3_完整回路测试 NUC-D435-Pixhawk
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/12/25/3_%E5%AE%8C%E6%95%B4%E5%9B%9E%E8%B7%AF%E6%B5%8B%E8%AF%95-NUC-D435-Pixhawk/" target="_self">
+        <div>
+          实验设计在由Intel NUC13ANKi7-1360P + Intel Realsense D435 + Pixhawk（固件版本1.11.0） 组成的完整真机环境中，运行VINS_Fusion（使用相机信息与飞控IMU），且通过里程计设定无人机位置，运行基本测试节点（包含飞控切换模式，解锁，设定目标点等功能），预计观察到无人机（卸下桨叶）电机旋转。 基本节点offb_node 实现飞控切换模式
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-12-25 00:00" pubdate>
+              2025-12-25
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" class="category-chain-item">无人机实验</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/NUC13/">#NUC13</a>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/vins/">#vins</a>
+            
+              <a href="/tags/px4/">#px4</a>
+            
+              <a href="/tags/%E5%AE%9E%E6%9C%BA/">#实机</a>
+            
+              <a href="/tags/MAVROS/">#MAVROS</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" target="_self">
+          2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" target="_self">
+        <div>
+          注意事项vins适配版本首先要注意原项目只支持ubuntu 16.04与18.04，在20.04 及以上版本因为默认的opencv库从opencv3升级为4，导致许多库文件不再适配（部分变量名称改变），强行使用编译时会报错，需要自己修改库文件https://github.com/HKUST-Aerial-Robotics/VINS-Fusion Ubuntu 20.04支持版https://git
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-12-23 00:00" pubdate>
+              2025-12-23
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" class="category-chain-item">无人机实验</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Ubuntu20-04/">#Ubuntu20-04</a>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/vins/">#vins</a>
+            
+              <a href="/tags/IntelRealsenseD435/">#IntelRealsenseD435</a>
+            
+              <a href="/tags/px4/">#px4</a>
+            
+              <a href="/tags/%E5%AE%9E%E6%9C%BA/">#实机</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/12/22/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/" target="_self">
+          1_Intel NUC13ANKi7-1360P 调试
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/12/22/1_Intel-NUC13ANKi7-1360P-%E8%B0%83%E8%AF%95/" target="_self">
+        <div>
+          无人机机载电脑 Intel NUC13ANKi7-1360P安装系统过程记录 安装Ubuntu 20.04(1) 烧录镜像安装盘，ubuntu 20.04 amd64 桌面版(2) 安装镜像：连接显示器，键盘，鼠标以及无线网卡存在问题：&lt;1&gt;显卡驱动未安装导致分辨率异常，无法看到完整的安装界面，从而不能点击进行下一步：① 尝试直接拖动窗口顶部；② 或alt+f7+鼠标左键直接拖动窗口本
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-12-22 00:00" pubdate>
+              2025-12-22
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" class="category-chain-item">无人机实验</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/Ubuntu20-04/">#Ubuntu20-04</a>
+            
+              <a href="/tags/NUC13/">#NUC13</a>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2025/12/22/%E7%9B%B8%E6%9C%BA%E4%BD%BF%E7%94%A8-rosbag/" target="_self">
+          相机使用-rosbag
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2025/12/22/%E7%9B%B8%E6%9C%BA%E4%BD%BF%E7%94%A8-rosbag/" target="_self">
+        <div>
+          ROS1使用IntelRealsense D435相机方法 SDK启动通过realsense自带的工具启动相机。下载教程https://blog.csdn.net/weixin_51612528/article/details/140945640启动GUI界面realsense-viewer可以进行录制与查看录制结果。 录制视频注意相机录制的文件格式是.bag，包含了除相机图像以外其他传感器数据，
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2025-12-22 00:00" pubdate>
+              2025-12-22
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" class="category-chain-item">无人机工程</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/ROS1/">#ROS1</a>
+            
+              <a href="/tags/IntelRealsenseD435/">#IntelRealsenseD435</a>
+            
+              <a href="/tags/rosbag/">#rosbag</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
+
+
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/page/2/#board"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/#board">2</a><span class="page-number current">3</span>
+    </span>
   </nav>
 
 
 
-    <!-- footer container -->
-<footer id="footer" class="footer">
-  <div class="footer-container">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     
-    <div class="social-icons">
-      
-        
-      
-        
-      
-        
-      
-        
-          <a href="https://github.com/astrigent-orange/astrigent-orange" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
-            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
-</svg>
-          </a>
-        
-      
-        
-      
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
     </div>
-     
-    <p>&copy; 2026 <a href="/" target="_blank">Mian</a></p>
+  </div>
+</div>
 
     
 
-    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+    
+  </main>
 
-    <p>
-      <a href="javascript:;" id="theme-light">🌞 浅色</a>
-      <a href="javascript:;" id="theme-dark">🌛 深色</a>
-      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
-    </p>
-  </div>
-</footer>
-  </div>
-
-  <div class="back-to-top-fixed soft-size--round soft-style--box">
-    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
-      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
-      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
-    </svg>
-  </div>
-
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
   
   
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
 
 
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
 
 
-
-
-
-
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
 
   
-
-
-  
-
-
+    <script  src="/js/img-lazyload.js" ></script>
   
 
 
 
 
-<script src="/js/script.js"></script>
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
 
 
   
-  <!-- 尾部用户自定义相关内容 -->
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
 </body>
 </html>

@@ -1,511 +1,382 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="theme-color" content="#3367D6"/>
-  <link rel="apple-touch-icon" href="/icons-192.png">
-  <link rel="manifest" href="/manifest.json">
-  
-  <meta name="generator" content="Hexo 7.3.0">
 
-  
-    <meta name="description" content="Mian的个人博客">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
   
 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="实验设计在由Intel NUC13ANKi7-1360P + Intel Realsense D435 + Pixhawk（固件版本1.11.0） 组成的完整真机环境中，运行VINS_Fusion（使用相机信息与飞控IMU），且通过里程计设定无人机位置，运行基本测试节点（包含飞控切换模式，解锁，设定目标点等功能），预计观察到无人机（卸下桨叶）电机旋转。 基本节点offb_node 实现飞控切换模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="3_完整回路测试 NUC-D435-Pixhawk">
+<meta property="og:url" content="https://astringent-orange.github.io/2025/12/25/3_%E5%AE%8C%E6%95%B4%E5%9B%9E%E8%B7%AF%E6%B5%8B%E8%AF%95-NUC-D435-Pixhawk/index.html">
+<meta property="og:site_name" content="Mian的笔记">
+<meta property="og:description" content="实验设计在由Intel NUC13ANKi7-1360P + Intel Realsense D435 + Pixhawk（固件版本1.11.0） 组成的完整真机环境中，运行VINS_Fusion（使用相机信息与飞控IMU），且通过里程计设定无人机位置，运行基本测试节点（包含飞控切换模式，解锁，设定目标点等功能），预计观察到无人机（卸下桨叶）电机旋转。 基本节点offb_node 实现飞控切换模式">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-12-24T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-12-24T16:00:00.000Z">
+<meta property="article:author" content="Mian">
+<meta property="article:tag" content="NUC13">
+<meta property="article:tag" content="ROS1">
+<meta property="article:tag" content="vins">
+<meta property="article:tag" content="px4">
+<meta property="article:tag" content="实机">
+<meta property="article:tag" content="MAVROS">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>3_完整回路测试 NUC-D435-Pixhawk - Mian的笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
-  
-    <meta name="author" content="Mian">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
   
 
-  
 
   
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-  <title>3_完整回路测试 NUC-D435-Pixhawk | Mian的笔记</title>
 
-  
-
-  
-    <link rel="shortcut icon" href="/favicon.ico">
-  
-
-  
-
-  
-
-  
-
-  
-<link rel="stylesheet" href="/css/style.css">
-
-</head>
 <body>
-  <div class="root-container">
+  
+
+  <header>
     
-<!-- header container -->
-<header class="header-container post">
-  
-  
-  
-    <div class="post-image" style="background-image: url(https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png)"></div>
-  
 
-  <!-- navbar -->
-<nav class="navbar">
-  <div class="navbar-content">
-    <!-- logo -->
-    <div class="navbar-logo">
-      <a href="/">
-        
-          Mian的笔记
-        
-      </a>
-    </div>
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Mian的笔记</strong>
+    </a>
 
-    <!-- link -->
-    <div class="navbar-link">
-      <div class="navbar-btn">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
 
-      <ul class="navbar-list">
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
         
           
-            <li class="navbar-list-item">
-              <a href="/">首页</a>
-            </li>
           
-        
           
-            <li class="navbar-list-item dropdown">
-              <a href="#" class="dropdown-toggle" aria-expanded="false">
-                文档 <span class="arrow">&#9662;</span>
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
               </a>
-
-              <ul class="dropdown-menu">
-                
-                  <li>
-                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-                      无人机实验
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-                      无人机工程
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E6%9D%82%E8%AE%B0/">
-                      杂记
-                    </a>
-                  </li>
-                
-                  <li>
-                    <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-                      大模型
-                    </a>
-                  </li>
-                
-              </ul>
             </li>
           
         
           
-            <li class="navbar-list-item">
-              <a target="_blank" rel="noopener" href="https://github.com/astringent-orange">关于</a>
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
             </li>
           
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
         
       </ul>
-
-      <div class="navbar-search">
-        <button class="navbar-search-toggle" type="button" aria-label="Open search" aria-expanded="false">
-          <span class="navbar-search-icon" aria-hidden="true"></span>
-        </button>
-        <form class="navbar-search-form" role="search">
-          <input
-            class="navbar-search-input"
-            type="search"
-            name="q"
-            placeholder="搜索文章..."
-            autocomplete="off"
-          />
-        </form>
-        <div class="navbar-search-results" hidden>
-          <div class="navbar-search-state">&#36755;&#20837;&#20851;&#38190;&#35789;&#24320;&#22987;&#25628;&#32034;</div>
-          <div class="navbar-search-list"></div>
-        </div>
-      </div>
     </div>
   </div>
 </nav>
 
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const dropdown = document.querySelector(".dropdown");
-  const search = document.querySelector(".navbar-search");
-
-  if (dropdown) {
-    const menu = dropdown.querySelector(".dropdown-menu");
-    const toggle = dropdown.querySelector(".dropdown-toggle");
-
-    function closeMenu() {
-      dropdown.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-    }
-
-    function openMenu() {
-      dropdown.classList.add("is-open");
-      toggle.setAttribute("aria-expanded", "true");
-    }
-
-    toggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      const opened = dropdown.classList.contains("is-open");
-      if (opened) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-
-    document.addEventListener("click", function(e) {
-      if (!dropdown.contains(e.target)) {
-        closeMenu();
-      }
-    });
-
-    menu.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        closeMenu();
-      }
-    });
-  }
-
-  if (search) {
-    const searchToggle = search.querySelector(".navbar-search-toggle");
-    const searchForm = search.querySelector(".navbar-search-form");
-    const searchInput = search.querySelector(".navbar-search-input");
-    const searchResults = search.querySelector(".navbar-search-results");
-    const searchState = search.querySelector(".navbar-search-state");
-    const searchList = search.querySelector(".navbar-search-list");
-    const searchIndexPath = "/search.json";
-    const searchBasePath = "/";
-    const searchPagePath = "/search/";
-    let searchIndex = null;
-    let searchIndexPromise = null;
-
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, function(char) {
-        const entityMap = {
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          "\"": "&quot;",
-          "'": "&#39;"
-        };
-        return entityMap[char];
-      });
-    }
-
-    function escapeRegExp(value) {
-      return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    }
-
-    function buildSnippet(item, keyword) {
-      const source = item.excerpt || item.content || "";
-      if (!source) return "";
-
-      const normalizedKeyword = keyword.trim().toLowerCase();
-      const sourceLower = source.toLowerCase();
-      const matchIndex = normalizedKeyword ? sourceLower.indexOf(normalizedKeyword) : -1;
-      const start = matchIndex >= 0 ? Math.max(0, matchIndex - 24) : 0;
-      const snippet = source.slice(start, start + 88).trim();
-
-      return start > 0 ? "..." + snippet : snippet;
-    }
-
-    function highlightText(text, keyword) {
-      if (!keyword) return escapeHTML(text);
-      const safeKeyword = escapeRegExp(keyword.trim());
-      if (!safeKeyword) return escapeHTML(text);
-
-      return escapeHTML(text).replace(new RegExp("(" + safeKeyword + ")", "ig"), "<mark>$1</mark>");
-    }
-
-    function setSearchState(message, type) {
-      searchState.textContent = message;
-      searchState.dataset.state = type || "idle";
-      searchState.hidden = false;
-    }
-
-    function clearSearchResults() {
-      searchList.innerHTML = "";
-    }
-
-    function showResultsPanel() {
-      searchResults.hidden = false;
-      search.classList.add("show-results");
-    }
-
-    function hideResultsPanel() {
-      searchResults.hidden = true;
-      search.classList.remove("show-results");
-    }
-
-    function ensureSearchIndex() {
-      if (searchIndex) return Promise.resolve(searchIndex);
-      if (searchIndexPromise) return searchIndexPromise;
-
-      setSearchState("\u6b63\u5728\u52a0\u8f7d\u641c\u7d22\u7d22\u5f15...", "loading");
-      showResultsPanel();
-
-      searchIndexPromise = fetch(searchIndexPath)
-        .then(function(response) {
-            if (!response.ok) throw new Error("Failed to load search index");
-            return response.json();
-          })
-        .then(function(data) {
-          searchIndex = Array.isArray(data) ? data : [];
-          return searchIndex;
-        })
-        .catch(function() {
-          setSearchState("\u641c\u7d22\u7d22\u5f15\u52a0\u8f7d\u5931\u8d25", "error");
-          return [];
-        });
-
-      return searchIndexPromise;
-    }
-
-    function renderSearchResults(items, keyword) {
-      clearSearchResults();
-      showResultsPanel();
-
-      if (!keyword.trim()) {
-        setSearchState("\u8f93\u5165\u5173\u952e\u8bcd\u5f00\u59cb\u641c\u7d22", "idle");
-        return;
-      }
-
-      if (!items.length) {
-        setSearchState("\u672a\u627e\u5230\u76f8\u5173\u6587\u7ae0", "empty");
-        return;
-      }
-
-      searchState.hidden = true;
-      const html = items.map(function(item) {
-        const snippet = buildSnippet(item, keyword);
-        const metaParts = []
-          .concat(item.categories || [])
-          .concat(item.tags || []);
-
-        return [
-          '<a class="navbar-search-result-item" href="' + searchBasePath + escapeHTML(item.path) + '">',
-          '<span class="navbar-search-result-title">' + highlightText(item.title || "Untitled", keyword) + "</span>",
-          snippet ? '<span class="navbar-search-result-snippet">' + highlightText(snippet, keyword) + "</span>" : "",
-          metaParts.length ? '<span class="navbar-search-result-meta">' + escapeHTML(metaParts.slice(0, 3).join(" / ")) + "</span>" : "",
-          "</a>"
-        ].join("");
-      }).join("");
-
-      searchList.innerHTML = html;
-    }
-
-    function performSearch(keyword) {
-      ensureSearchIndex().then(function(index) {
-        const trimmedKeyword = keyword.trim();
-        if (!trimmedKeyword) {
-          renderSearchResults([], "");
-          return;
-        }
-
-        const normalizedKeyword = trimmedKeyword.toLowerCase();
-        const matchedItems = index.filter(function(item) {
-          const haystack = [
-            item.title,
-            item.excerpt,
-            item.content,
-            (item.tags || []).join(" "),
-            (item.categories || []).join(" ")
-          ].join(" ").toLowerCase();
-
-          return haystack.includes(normalizedKeyword);
-        }).sort(function(a, b) {
-          const aTitle = (a.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
-          const bTitle = (b.title || "").toLowerCase().includes(normalizedKeyword) ? 1 : 0;
-          return bTitle - aTitle;
-        }).slice(0, 6);
-
-        renderSearchResults(matchedItems, trimmedKeyword);
-      });
-    }
-
-    function navigateToSearchPage(keyword) {
-      const trimmedKeyword = keyword.trim();
-      const target = trimmedKeyword ? searchPagePath + "?q=" + encodeURIComponent(trimmedKeyword) : searchPagePath;
-      window.location.href = target;
-    }
-
-    function closeSearch() {
-      search.classList.remove("is-open");
-      searchToggle.setAttribute("aria-expanded", "false");
-      hideResultsPanel();
-    }
-
-    function openSearch() {
-      search.classList.add("is-open");
-      searchToggle.setAttribute("aria-expanded", "true");
-      window.requestAnimationFrame(function() {
-        searchInput.focus();
-      });
-    }
-
-    searchToggle.addEventListener("click", function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (search.classList.contains("is-open")) {
-        closeSearch();
-      } else {
-        openSearch();
-        if (searchInput.value.trim()) {
-          performSearch(searchInput.value);
-        }
-      }
-    });
-
-    searchForm.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-
-    searchForm.addEventListener("submit", function(e) {
-      e.preventDefault();
-      navigateToSearchPage(searchInput.value);
-    });
-
-    searchInput.addEventListener("input", function() {
-      if (!search.classList.contains("is-open")) {
-        openSearch();
-      }
-      performSearch(searchInput.value);
-    });
-
-    document.addEventListener("click", function(e) {
-      if (!search.contains(e.target)) {
-        closeSearch();
-      }
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        closeSearch();
-      }
-    });
-
-    searchResults.addEventListener("click", function(e) {
-      e.stopPropagation();
-    });
-  }
-});
-</script>
-
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-    <div class="header-content">
-      <div class="post-text layout-block">
-        <div class="layout-margin">
-          <h1 class="title-wrap">3_完整回路测试 NUC-D435-Pixhawk</h1>
-          <h2 class="title-sub-wrap">
-            <strong>Mian</strong>
-            <span>发布于</span>
-            <time  class="article-date" datetime="2025-12-24T16:00:00.000Z" itemprop="datePublished">2025-12-25</time>
-          </h2>
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
           
           
-          <ul class="wrap-list dark">
-  
-    <li><a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">📒 无人机实验</a></li>
-    
-</ul>
-          <ul class="wrap-list dark">
-  
-    <li><a href="/tags/NUC13/">🏷️ NUC13</a></li>
-  
-    <li><a href="/tags/ROS1/">🏷️ ROS1</a></li>
-  
-    <li><a href="/tags/vins/">🏷️ vins</a></li>
-  
-    <li><a href="/tags/px4/">🏷️ px4</a></li>
-  
-    <li><a href="/tags/%E5%AE%9E%E6%9C%BA/">🏷️ 实机</a></li>
-  
-    <li><a href="/tags/MAVROS/">🏷️ MAVROS</a></li>
-  
-</ul>
-        </div>
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
       </div>
     </div>
-  
+  </div>
+</div>
 
   
-  
-  
-</header>
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="3_完整回路测试 NUC-D435-Pixhawk"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-12-25 00:00" pubdate>
+          2025年12月25日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          79 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
 
 
-    <!-- 文章 -->
+        
+      </div>
 
-<!-- 文章内容 -->
-<div class="body-container">
-  <article class="content-container layout-block post-container">
-    <div class="article-info">
       
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
       
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
       
-      
-      <section class="article-entry markdown-body layout-margin content-padding--large soft-size--large soft-style--box">
-        <h2 id="实验设计"><a href="#实验设计" class="headerlink" title="实验设计"></a>实验设计</h2><p>在由Intel NUC13ANKi7-1360P + Intel Realsense D435 + Pixhawk（固件版本1.11.0） 组成的完整真机环境中，运行VINS_Fusion（使用相机信息与飞控IMU），且通过里程计设定无人机位置，运行基本测试节点（包含飞控切换模式，解锁，设定目标点等功能），预计观察到无人机（卸下桨叶）电机旋转。</p>
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">3_完整回路测试 NUC-D435-Pixhawk</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="实验设计"><a href="#实验设计" class="headerlink" title="实验设计"></a>实验设计</h2><p>在由Intel NUC13ANKi7-1360P + Intel Realsense D435 + Pixhawk（固件版本1.11.0） 组成的完整真机环境中，运行VINS_Fusion（使用相机信息与飞控IMU），且通过里程计设定无人机位置，运行基本测试节点（包含飞控切换模式，解锁，设定目标点等功能），预计观察到无人机（卸下桨叶）电机旋转。</p>
 <p>基本节点offb_node 实现飞控切换模式，解锁然后设定预期高度</p>
 <hr>
-<h2 id="构建项目空间"><a href="#构建项目空间" class="headerlink" title="构建项目空间"></a>构建项目空间</h2><h3 id="构建工作空间"><a href="#构建工作空间" class="headerlink" title="构建工作空间"></a>构建工作空间</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p offb_ws/src</span><br><span class="line"><span class="built_in">cd</span> offb_ws/src</span><br><span class="line">catkin_make</span><br></pre></td></tr></table></figure>
+<h2 id="构建项目空间"><a href="#构建项目空间" class="headerlink" title="构建项目空间"></a>构建项目空间</h2><h3 id="构建工作空间"><a href="#构建工作空间" class="headerlink" title="构建工作空间"></a>构建工作空间</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">mkdir</span> -p offb_ws/src<br><span class="hljs-built_in">cd</span> offb_ws/src<br>catkin_make<br></code></pre></td></tr></table></figure>
 
 <h3 id="创建里程计节点"><a href="#创建里程计节点" class="headerlink" title="创建里程计节点"></a>创建里程计节点</h3><p>(1) 下载里程计文件<br>因为此处测试不需要完整的里程计文件，且为了减少文件包的嵌套，单独将其中的vins包与camera包拿出使用</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/Geneta2580/Geneta_vins_fusion ./temp</span><br><span class="line"><span class="built_in">mv</span> ./temp/vins_estimator ./vins_estimator</span><br><span class="line"><span class="built_in">mv</span> ./temp/camera_models ./camera_models</span><br><span class="line"><span class="built_in">rm</span> -rf ./temp</span><br><span class="line"><span class="comment"># 检查当前文件夹/offb_ws/src</span></span><br><span class="line"><span class="comment"># 应该显示camera_models vins_estimator CMakeList.txt</span></span><br><span class="line"><span class="built_in">ls</span></span><br><span class="line"><span class="comment"># 成功后先编译里程计文件</span></span><br><span class="line"><span class="built_in">cd</span> ~/offb_ws/src/</span><br><span class="line">catkin_make</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs bash">git <span class="hljs-built_in">clone</span> https://github.com/Geneta2580/Geneta_vins_fusion ./temp<br><span class="hljs-built_in">mv</span> ./temp/vins_estimator ./vins_estimator<br><span class="hljs-built_in">mv</span> ./temp/camera_models ./camera_models<br><span class="hljs-built_in">rm</span> -rf ./temp<br><span class="hljs-comment"># 检查当前文件夹/offb_ws/src</span><br><span class="hljs-comment"># 应该显示camera_models vins_estimator CMakeList.txt</span><br><span class="hljs-built_in">ls</span><br><span class="hljs-comment"># 成功后先编译里程计文件</span><br><span class="hljs-built_in">cd</span> ~/offb_ws/src/<br>catkin_make<br></code></pre></td></tr></table></figure>
 
 <p>(2) 创建vins配置文件<br>(3) 创建相机launch文件<br>(4) 创建里程计launch文件</p>
 <h3 id="创建运动节点"><a href="#创建运动节点" class="headerlink" title="创建运动节点"></a>创建运动节点</h3><p>单独放在另外一个功能包中</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/offb_ws/src</span><br><span class="line">catkin_create_pkg offb roscpp rospy geometry_msgs mavros_msgs</span><br><span class="line"><span class="built_in">cd</span> offb/src</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/offb_ws/src<br>catkin_create_pkg offb roscpp rospy geometry_msgs mavros_msgs<br><span class="hljs-built_in">cd</span> offb/src<br></code></pre></td></tr></table></figure>
 <p>添加如下测试节点文件<code>offb_node.cpp</code></p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @file offb_node.cpp</span></span><br><span class="line"><span class="comment"> * @brief Offboard control example node, written with MAVROS version 0.19.x, PX4 Pro Flight</span></span><br><span class="line"><span class="comment"> * Stack and tested in Gazebo Classic SITL</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;ros/ros.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;geometry_msgs/PoseStamped.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mavros_msgs/CommandBool.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mavros_msgs/SetMode.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;mavros_msgs/State.h&gt;</span></span></span><br><span class="line"></span><br><span class="line">mavros_msgs::State current_state;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">state_cb</span><span class="params">(<span class="type">const</span> mavros_msgs::State::ConstPtr&amp; msg)</span></span>&#123;</span><br><span class="line">    current_state = *msg;   <span class="comment">// 无人机当前状态</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">int</span> argc, <span class="type">char</span> **argv)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ros::<span class="built_in">init</span>(argc, argv, <span class="string">&quot;offb_node&quot;</span>);</span><br><span class="line">    ros::NodeHandle nh;</span><br><span class="line">  </span><br><span class="line">    ros::Subscriber state_sub = nh.<span class="built_in">subscribe</span>&lt;mavros_msgs::State&gt;</span><br><span class="line">            (<span class="string">&quot;mavros/state&quot;</span>, <span class="number">10</span>, state_cb);</span><br><span class="line">    ros::Publisher local_pos_pub = nh.<span class="built_in">advertise</span>&lt;geometry_msgs::PoseStamped&gt;</span><br><span class="line">            (<span class="string">&quot;mavros/setpoint_position/local&quot;</span>, <span class="number">10</span>);</span><br><span class="line">    ros::ServiceClient arming_client = nh.<span class="built_in">serviceClient</span>&lt;mavros_msgs::CommandBool&gt;</span><br><span class="line">            (<span class="string">&quot;mavros/cmd/arming&quot;</span>);</span><br><span class="line">    ros::ServiceClient set_mode_client = nh.<span class="built_in">serviceClient</span>&lt;mavros_msgs::SetMode&gt;</span><br><span class="line">            (<span class="string">&quot;mavros/set_mode&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//the setpoint publishing rate MUST be faster than 2Hz</span></span><br><span class="line">    <span class="function">ros::Rate <span class="title">rate</span><span class="params">(<span class="number">20.0</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// wait for FCU connection</span></span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Connecting FCU&quot;</span>);</span><br><span class="line">    <span class="keyword">while</span>(ros::<span class="built_in">ok</span>() &amp;&amp; !current_state.connected)&#123;</span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">        rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;FCU Connected&quot;</span>);</span><br><span class="line"></span><br><span class="line">    geometry_msgs::PoseStamped pose;</span><br><span class="line">    pose.pose.position.x = <span class="number">0</span>;</span><br><span class="line">    pose.pose.position.y = <span class="number">0</span>;</span><br><span class="line">    pose.pose.position.z = <span class="number">2</span>;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">//send a few setpoints before starting</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> i = <span class="number">100</span>; ros::<span class="built_in">ok</span>() &amp;&amp; i &gt; <span class="number">0</span>; --i)&#123;</span><br><span class="line">        local_pos_pub.<span class="built_in">publish</span>(pose);</span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">        rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mavros_msgs::SetMode offb_set_mode;</span><br><span class="line">    offb_set_mode.request.custom_mode = <span class="string">&quot;OFFBOARD&quot;</span>;</span><br><span class="line"></span><br><span class="line">    mavros_msgs::CommandBool arm_cmd;</span><br><span class="line">    arm_cmd.request.value = <span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line">    ros::Time last_request = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">  </span><br><span class="line">    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Starting Main Loop&quot;</span>);</span><br><span class="line">    <span class="keyword">while</span>(ros::<span class="built_in">ok</span>())&#123;</span><br><span class="line">    <span class="comment">// 每隔1秒打印一次无人机状态</span></span><br><span class="line">    <span class="type">static</span> ros::Time last_print = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">    <span class="keyword">if</span> (ros::Time::<span class="built_in">now</span>() - last_print &gt; ros::<span class="built_in">Duration</span>(<span class="number">1.0</span>)) &#123;  </span><br><span class="line">	    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Current Mode: %s, Armed: %d&quot;</span>,  current_state.mode.<span class="built_in">c_str</span>(), current_state.armed); </span><br><span class="line">	    last_print = ros::Time::<span class="built_in">now</span>(); </span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">if</span>( current_state.mode != <span class="string">&quot;OFFBOARD&quot;</span> &amp;&amp;</span><br><span class="line">            (ros::Time::<span class="built_in">now</span>() - last_request &gt; ros::<span class="built_in">Duration</span>(<span class="number">5.0</span>)))&#123;</span><br><span class="line">            <span class="comment">// 切换 Offboard 模式</span></span><br><span class="line">            <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Attempting to switch to OFFBOARD mode...&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span>( set_mode_client.<span class="built_in">call</span>(offb_set_mode) &amp;&amp;</span><br><span class="line">                offb_set_mode.response.mode_sent)&#123;</span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Offboard enabled&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">	            <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;Failed to set OFFBOARD mode!&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            last_request = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">if</span>( !current_state.armed &amp;&amp;</span><br><span class="line">                (ros::Time::<span class="built_in">now</span>() - last_request &gt; ros::<span class="built_in">Duration</span>(<span class="number">5.0</span>)))&#123;</span><br><span class="line">                <span class="comment">//无人机解锁</span></span><br><span class="line">                <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Attempting to ARM...&quot;</span>);</span><br><span class="line">                <span class="keyword">if</span>( arming_client.<span class="built_in">call</span>(arm_cmd) &amp;&amp;</span><br><span class="line">                    arm_cmd.response.success)&#123;</span><br><span class="line">                    <span class="built_in">ROS_INFO</span>(<span class="string">&quot;Vehicle armed&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span>&#123;</span><br><span class="line">	                <span class="built_in">ROS_ERROR</span>(<span class="string">&quot;Failed to ARM!&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                last_request = ros::Time::<span class="built_in">now</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        local_pos_pub.<span class="built_in">publish</span>(pose); <span class="comment">// 发送目标点位置</span></span><br><span class="line">  </span><br><span class="line">        ros::<span class="built_in">spinOnce</span>();</span><br><span class="line">        rate.<span class="built_in">sleep</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * @file offb_node.cpp</span><br><span class="hljs-comment"> * @brief Offboard control example node, written with MAVROS version 0.19.x, PX4 Pro Flight</span><br><span class="hljs-comment"> * Stack and tested in Gazebo Classic SITL</span><br><span class="hljs-comment"> */</span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;ros/ros.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;geometry_msgs/PoseStamped.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mavros_msgs/CommandBool.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mavros_msgs/SetMode.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;mavros_msgs/State.h&gt;</span></span><br><br>mavros_msgs::State current_state;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">state_cb</span><span class="hljs-params">(<span class="hljs-type">const</span> mavros_msgs::State::ConstPtr&amp; msg)</span></span>&#123;<br>    current_state = *msg;   <span class="hljs-comment">// 无人机当前状态</span><br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span> **argv)</span></span><br><span class="hljs-function"></span>&#123;<br>    ros::<span class="hljs-built_in">init</span>(argc, argv, <span class="hljs-string">&quot;offb_node&quot;</span>);<br>    ros::NodeHandle nh;<br>  <br>    ros::Subscriber state_sub = nh.<span class="hljs-built_in">subscribe</span>&lt;mavros_msgs::State&gt;<br>            (<span class="hljs-string">&quot;mavros/state&quot;</span>, <span class="hljs-number">10</span>, state_cb);<br>    ros::Publisher local_pos_pub = nh.<span class="hljs-built_in">advertise</span>&lt;geometry_msgs::PoseStamped&gt;<br>            (<span class="hljs-string">&quot;mavros/setpoint_position/local&quot;</span>, <span class="hljs-number">10</span>);<br>    ros::ServiceClient arming_client = nh.<span class="hljs-built_in">serviceClient</span>&lt;mavros_msgs::CommandBool&gt;<br>            (<span class="hljs-string">&quot;mavros/cmd/arming&quot;</span>);<br>    ros::ServiceClient set_mode_client = nh.<span class="hljs-built_in">serviceClient</span>&lt;mavros_msgs::SetMode&gt;<br>            (<span class="hljs-string">&quot;mavros/set_mode&quot;</span>);<br><br>    <span class="hljs-comment">//the setpoint publishing rate MUST be faster than 2Hz</span><br>    <span class="hljs-function">ros::Rate <span class="hljs-title">rate</span><span class="hljs-params">(<span class="hljs-number">20.0</span>)</span></span>;<br><br>    <span class="hljs-comment">// wait for FCU connection</span><br>    <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;Connecting FCU&quot;</span>);<br>    <span class="hljs-keyword">while</span>(ros::<span class="hljs-built_in">ok</span>() &amp;&amp; !current_state.connected)&#123;<br>        ros::<span class="hljs-built_in">spinOnce</span>();<br>        rate.<span class="hljs-built_in">sleep</span>();<br>    &#125;<br>    <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;FCU Connected&quot;</span>);<br><br>    geometry_msgs::PoseStamped pose;<br>    pose.pose.position.x = <span class="hljs-number">0</span>;<br>    pose.pose.position.y = <span class="hljs-number">0</span>;<br>    pose.pose.position.z = <span class="hljs-number">2</span>;<br>  <br>    <span class="hljs-comment">//send a few setpoints before starting</span><br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">100</span>; ros::<span class="hljs-built_in">ok</span>() &amp;&amp; i &gt; <span class="hljs-number">0</span>; --i)&#123;<br>        local_pos_pub.<span class="hljs-built_in">publish</span>(pose);<br>        ros::<span class="hljs-built_in">spinOnce</span>();<br>        rate.<span class="hljs-built_in">sleep</span>();<br>    &#125;<br><br>    mavros_msgs::SetMode offb_set_mode;<br>    offb_set_mode.request.custom_mode = <span class="hljs-string">&quot;OFFBOARD&quot;</span>;<br><br>    mavros_msgs::CommandBool arm_cmd;<br>    arm_cmd.request.value = <span class="hljs-literal">true</span>;<br><br>    ros::Time last_request = ros::Time::<span class="hljs-built_in">now</span>();<br>  <br>    <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;Starting Main Loop&quot;</span>);<br>    <span class="hljs-keyword">while</span>(ros::<span class="hljs-built_in">ok</span>())&#123;<br>    <span class="hljs-comment">// 每隔1秒打印一次无人机状态</span><br>    <span class="hljs-type">static</span> ros::Time last_print = ros::Time::<span class="hljs-built_in">now</span>();<br>    <span class="hljs-keyword">if</span> (ros::Time::<span class="hljs-built_in">now</span>() - last_print &gt; ros::<span class="hljs-built_in">Duration</span>(<span class="hljs-number">1.0</span>)) &#123;  <br>	    <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;Current Mode: %s, Armed: %d&quot;</span>,  current_state.mode.<span class="hljs-built_in">c_str</span>(), current_state.armed); <br>	    last_print = ros::Time::<span class="hljs-built_in">now</span>(); <br>	&#125;<br>    <br>        <span class="hljs-keyword">if</span>( current_state.mode != <span class="hljs-string">&quot;OFFBOARD&quot;</span> &amp;&amp;<br>            (ros::Time::<span class="hljs-built_in">now</span>() - last_request &gt; ros::<span class="hljs-built_in">Duration</span>(<span class="hljs-number">5.0</span>)))&#123;<br>            <span class="hljs-comment">// 切换 Offboard 模式</span><br>            <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;Attempting to switch to OFFBOARD mode...&quot;</span>);<br>            <span class="hljs-keyword">if</span>( set_mode_client.<span class="hljs-built_in">call</span>(offb_set_mode) &amp;&amp;<br>                offb_set_mode.response.mode_sent)&#123;<br>                <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;Offboard enabled&quot;</span>);<br>            &#125;<br>            <span class="hljs-keyword">else</span>&#123;<br>	            <span class="hljs-built_in">ROS_ERROR</span>(<span class="hljs-string">&quot;Failed to set OFFBOARD mode!&quot;</span>);<br>            &#125;<br><br>            last_request = ros::Time::<span class="hljs-built_in">now</span>();<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">if</span>( !current_state.armed &amp;&amp;<br>                (ros::Time::<span class="hljs-built_in">now</span>() - last_request &gt; ros::<span class="hljs-built_in">Duration</span>(<span class="hljs-number">5.0</span>)))&#123;<br>                <span class="hljs-comment">//无人机解锁</span><br>                <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;Attempting to ARM...&quot;</span>);<br>                <span class="hljs-keyword">if</span>( arming_client.<span class="hljs-built_in">call</span>(arm_cmd) &amp;&amp;<br>                    arm_cmd.response.success)&#123;<br>                    <span class="hljs-built_in">ROS_INFO</span>(<span class="hljs-string">&quot;Vehicle armed&quot;</span>);<br>                &#125;<br>                <span class="hljs-keyword">else</span>&#123;<br>	                <span class="hljs-built_in">ROS_ERROR</span>(<span class="hljs-string">&quot;Failed to ARM!&quot;</span>);<br>                &#125;<br>                last_request = ros::Time::<span class="hljs-built_in">now</span>();<br>            &#125;<br>        &#125;<br>        local_pos_pub.<span class="hljs-built_in">publish</span>(pose); <span class="hljs-comment">// 发送目标点位置</span><br>  <br>        ros::<span class="hljs-built_in">spinOnce</span>();<br>        rate.<span class="hljs-built_in">sleep</span>();<br>    &#125;<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>修改<code>CMakeList.txt</code> <code>vim ~/offb_ws/src/offb/CMakeList.txt</code>在末尾添加以下内容</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">add_executable(offb_node src/offb_node.cpp)</span><br><span class="line">target_link_libraries(offb_node <span class="variable">$&#123;catkin_LIBRARIES&#125;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash">add_executable(offb_node src/offb_node.cpp)<br>target_link_libraries(offb_node <span class="hljs-variable">$&#123;catkin_LIBRARIES&#125;</span>)<br></code></pre></td></tr></table></figure>
 
-<h3 id="编译文件"><a href="#编译文件" class="headerlink" title="编译文件"></a>编译文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/offb_ws/src</span><br><span class="line">catkin_make</span><br></pre></td></tr></table></figure>
+<h3 id="编译文件"><a href="#编译文件" class="headerlink" title="编译文件"></a>编译文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/offb_ws/src<br>catkin_make<br></code></pre></td></tr></table></figure>
 
 <hr>
 <h2 id="里程计配置"><a href="#里程计配置" class="headerlink" title="里程计配置"></a>里程计配置</h2><h3 id="准备IMU数据"><a href="#准备IMU数据" class="headerlink" title="准备IMU数据"></a>准备IMU数据</h3><p>连接飞控启动mavros，运行<code>rostopic hz /mavros/imu/data_raw</code>查看imu频率，要求在200hz左右，如果在50hz左右，则参考以下方法。<br>(1) 启动mavros时不去设置后续参数，例如使用<br><code>roslaunch mavros px4.launch fcu_url:=/dev/ttyACM0</code> 去掉后续的<code>:57600</code></p>
@@ -514,16 +385,16 @@ document.addEventListener("DOMContentLoaded", function() {
 <p>然后左上角图标-&gt;vehicle setup-&gt;parameters；在搜索框搜索MAV_，确保MAV_0_CONFIG为TELEM 1 或 Auto；修改MAV_0_MODE，从normal改为onboard（也可能是MAV_1或者MAV_2）；点击右上角tools，重启飞行器。</p>
 <p>ps：onboard和offboard并不是相反的作用。其中onboard代表mavlink模式设置，代表了数据传输速率，有normal与onboard，前者为窄带宽的无线传输模式，后者为高带宽的有线模式。而offboard代表了飞行模式，代表谁在控制飞机，通常有manual代表人使用遥控器操控，mission代表飞控按照预设航点操控，offboard代表nuc操控。</p>
 <p>(3) 如果前两种方法不管用，则可以修改飞控SD卡，使用脚本强行修改频率。使用读卡器将飞控sd卡连接电脑，在根目录下创建<code>etc</code>文件夹，然后建立一个文本文件<code>extras.txt</code>，在其中写入如下内容</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mavlink start -d /dev/ttyACM0 -b 921600</span><br><span class="line">mavlink stream -d /dev/ttyACM0 -s ATTITUDE_QUATERNION -r 200</span><br><span class="line">mavlink stream -d /dev/ttyACM0 -s HIGHRES_IMU -r 200</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash">mavlink start -d /dev/ttyACM0 -b 921600<br>mavlink stream -d /dev/ttyACM0 -s ATTITUDE_QUATERNION -r 200<br>mavlink stream -d /dev/ttyACM0 -s HIGHRES_IMU -r 200<br></code></pre></td></tr></table></figure>
 <p>保存后插回即可。</p>
 <p>可能的问题：<br>(1) 文档格式不正确。首先确认文件名称为<code>extras.txt</code>而不是<code>extras.txt.txt</code>，如果是在win上可以点击“查看”显示文件扩展名来确认。其次，如果是在win上配置的该文件，可能存在换行符问题，即win与unix的换行符不同导致飞控无法识别。需要使用vscode打开文件，确认右下角是LF而不是CRLF。<br>(2) 文档内容不正确。如果在其中写了<code>mavlink stop-all -d /dev/ttyACM0</code>可能导致启动mavros时一直卡住。<br>(3) sd卡问题。px4飞控对于sd卡的设置有着严格要求，要求sd卡格式化为FAT32格式，且簇大小为32K，分区表使用MBR。如果使用win对sd卡进行格式化，win会默认使用GPT分区表。其次，win默认无法对于超过32G的sd卡格式化为FAT32（可以用命令行实现，但是非常慢，且可能出错），建议使用diskgenius <a target="_blank" rel="noopener" href="https://www.diskgenius.com/download.php">DiskGenius Download Center | Free Download DiskGenius</a>。</p>
 <h3 id="修改VINS配置文件"><a href="#修改VINS配置文件" class="headerlink" title="修改VINS配置文件"></a>修改VINS配置文件</h3><p>参考vins_fusion测试一节，但是其中需要修改一部分内容，让vins使用飞控的imu数据（之前没有使用imu）。<br>(1) 开启使用imu数据<br>(2) 设置imu话题<br>(3) imu参数设置<br>(4) 相机与imu相对参数设置</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 仅列出部分需要修改的地方</span></span><br><span class="line"><span class="comment"># 首先是打开imu的使用并配置话题</span></span><br><span class="line"><span class="attr">imu:</span> <span class="number">1</span></span><br><span class="line"><span class="attr">imu_topic:</span> <span class="string">&quot;/mavros/imu/data_raw&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 其次是设定相机与imu（假设是飞控的中心）的相对位置</span></span><br><span class="line"><span class="comment"># 如果相机没有进行旋转，面向飞行方向，则只需要修改前三行最后一个数字</span></span><br><span class="line"><span class="comment"># 分别代表相机在xyz（前左上）相对于imu的偏移，单位为米</span></span><br><span class="line"><span class="attr">body_T_cam0:</span> <span class="type">!!opencv</span><span class="string">-matrix</span></span><br><span class="line">   <span class="attr">rows:</span> <span class="number">4</span></span><br><span class="line">   <span class="attr">cols:</span> <span class="number">4</span></span><br><span class="line">   <span class="attr">dt:</span> <span class="string">d</span></span><br><span class="line">   <span class="attr">data:</span> [  <span class="number">0</span>,  <span class="number">0</span>,  <span class="number">1.0</span>,  <span class="number">0.04</span>,</span><br><span class="line">           <span class="number">-1.0</span>,  <span class="number">0</span>,  <span class="number">0</span>,  <span class="number">0.01</span>,</span><br><span class="line">            <span class="number">0</span>,  <span class="number">-1.0</span>, <span class="number">0</span>,  <span class="number">0.04</span>,</span><br><span class="line">            <span class="number">0</span>,  <span class="number">0</span>,  <span class="number">0</span>,  <span class="number">1.0</span>]</span><br><span class="line"></span><br><span class="line"><span class="attr">body_T_cam1:</span> <span class="type">!!opencv</span><span class="string">-matrix</span></span><br><span class="line">   <span class="attr">rows:</span> <span class="number">4</span></span><br><span class="line">   <span class="attr">cols:</span> <span class="number">4</span></span><br><span class="line">   <span class="attr">dt:</span> <span class="string">d</span></span><br><span class="line">   <span class="attr">data:</span> [  <span class="number">0</span>,  <span class="number">0</span>,  <span class="number">1.0</span>,  <span class="number">0.04</span>,</span><br><span class="line">           <span class="number">-1.0</span>,  <span class="number">0</span>,  <span class="number">0</span>,  <span class="number">-0.02</span>,</span><br><span class="line">            <span class="number">0</span>,  <span class="number">-1.0</span>,  <span class="number">0</span>,  <span class="number">0.04</span>,</span><br><span class="line">            <span class="number">0</span>,  <span class="number">0</span>,  <span class="number">0</span>,  <span class="number">1.0</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启在线优化</span></span><br><span class="line"><span class="attr">estimate_extrinsic:</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># imu参数设置。因为使用飞控的imu，其噪声较大，所以需要修改默认值</span></span><br><span class="line"><span class="attr">acc_n:</span> <span class="number">0.2</span>          <span class="comment"># accelerometer measurement noise standard deviation. #0.2   0.04</span></span><br><span class="line"><span class="attr">gyr_n:</span> <span class="number">0.05</span>         <span class="comment"># gyroscope measurement noise standard deviation.     #0.05  0.004</span></span><br><span class="line"><span class="attr">acc_w:</span> <span class="number">0.002</span>         <span class="comment"># accelerometer bias random work noise standard deviation.  #0.002</span></span><br><span class="line"><span class="attr">gyr_w:</span> <span class="number">0.0003</span>       <span class="comment"># gyroscope bias random work noise standard deviation.     #4.0e-5</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># 仅列出部分需要修改的地方</span><br><span class="hljs-comment"># 首先是打开imu的使用并配置话题</span><br><span class="hljs-attr">imu:</span> <span class="hljs-number">1</span><br><span class="hljs-attr">imu_topic:</span> <span class="hljs-string">&quot;/mavros/imu/data_raw&quot;</span><br><br><span class="hljs-comment"># 其次是设定相机与imu（假设是飞控的中心）的相对位置</span><br><span class="hljs-comment"># 如果相机没有进行旋转，面向飞行方向，则只需要修改前三行最后一个数字</span><br><span class="hljs-comment"># 分别代表相机在xyz（前左上）相对于imu的偏移，单位为米</span><br><span class="hljs-attr">body_T_cam0:</span> <span class="hljs-type">!!opencv</span><span class="hljs-string">-matrix</span><br>   <span class="hljs-attr">rows:</span> <span class="hljs-number">4</span><br>   <span class="hljs-attr">cols:</span> <span class="hljs-number">4</span><br>   <span class="hljs-attr">dt:</span> <span class="hljs-string">d</span><br>   <span class="hljs-attr">data:</span> [  <span class="hljs-number">0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">1.0</span>,  <span class="hljs-number">0.04</span>,<br>           <span class="hljs-number">-1.0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">0.01</span>,<br>            <span class="hljs-number">0</span>,  <span class="hljs-number">-1.0</span>, <span class="hljs-number">0</span>,  <span class="hljs-number">0.04</span>,<br>            <span class="hljs-number">0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">1.0</span>]<br><br><span class="hljs-attr">body_T_cam1:</span> <span class="hljs-type">!!opencv</span><span class="hljs-string">-matrix</span><br>   <span class="hljs-attr">rows:</span> <span class="hljs-number">4</span><br>   <span class="hljs-attr">cols:</span> <span class="hljs-number">4</span><br>   <span class="hljs-attr">dt:</span> <span class="hljs-string">d</span><br>   <span class="hljs-attr">data:</span> [  <span class="hljs-number">0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">1.0</span>,  <span class="hljs-number">0.04</span>,<br>           <span class="hljs-number">-1.0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">-0.02</span>,<br>            <span class="hljs-number">0</span>,  <span class="hljs-number">-1.0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">0.04</span>,<br>            <span class="hljs-number">0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">0</span>,  <span class="hljs-number">1.0</span>]<br><br><span class="hljs-comment"># 开启在线优化</span><br><span class="hljs-attr">estimate_extrinsic:</span> <span class="hljs-number">1</span><br><br><span class="hljs-comment"># imu参数设置。因为使用飞控的imu，其噪声较大，所以需要修改默认值</span><br><span class="hljs-attr">acc_n:</span> <span class="hljs-number">0.2</span>          <span class="hljs-comment"># accelerometer measurement noise standard deviation. #0.2   0.04</span><br><span class="hljs-attr">gyr_n:</span> <span class="hljs-number">0.05</span>         <span class="hljs-comment"># gyroscope measurement noise standard deviation.     #0.05  0.004</span><br><span class="hljs-attr">acc_w:</span> <span class="hljs-number">0.002</span>         <span class="hljs-comment"># accelerometer bias random work noise standard deviation.  #0.002</span><br><span class="hljs-attr">gyr_w:</span> <span class="hljs-number">0.0003</span>       <span class="hljs-comment"># gyroscope bias random work noise standard deviation.     #4.0e-5</span><br></code></pre></td></tr></table></figure>
 
 
 <hr>
 <h2 id="位姿回传"><a href="#位姿回传" class="headerlink" title="位姿回传"></a>位姿回传</h2><p>vins输出的消息话题以及内容与px4飞控要求的不一致，所以需要一个转换节点。具体而言vins输出的是<code>/vins_node/odometry</code>，而px4要求<code>/mavros/vision_pose/pose</code>。使用python在offb功能包中完成，<code>vim offb_ws/src/offb/scripts/vins2mavros.py</code>（python节点不用编辑cmake文件）</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="keyword">import</span> rospy</span><br><span class="line"><span class="keyword">from</span> nav_msgs.msg <span class="keyword">import</span> Odometry</span><br><span class="line"><span class="keyword">from</span> geometry_msgs.msg <span class="keyword">import</span> PoseStamped</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">callback</span>(<span class="params">msg</span>):</span><br><span class="line">    <span class="comment"># 将 VINS 的 Odometry 转换为 PX4 需要的 PoseStamped</span></span><br><span class="line">    p = PoseStamped()</span><br><span class="line">    p.header.stamp = rospy.Time.now()</span><br><span class="line">    p.header.frame_id = <span class="string">&quot;map&quot;</span> <span class="comment"># 或 odom</span></span><br><span class="line">    p.pose = msg.pose.pose</span><br><span class="line">    <span class="comment"># 注意：这里省略了坐标系旋转（ENU vs NED），如果只是原地测试电机，通常没问题。</span></span><br><span class="line">    <span class="comment"># 如果实飞，必须使用坐标转换库（如 tf）进行严格对齐。</span></span><br><span class="line">    pub.publish(p)</span><br><span class="line"></span><br><span class="line">rospy.init_node(<span class="string">&#x27;vins_to_mavros_transfer&#x27;</span>)</span><br><span class="line">pub = rospy.Publisher(<span class="string">&#x27;/mavros/vision_pose/pose&#x27;</span>, PoseStamped, queue_size=<span class="number">10</span>)</span><br><span class="line">sub = rospy.Subscriber(<span class="string">&#x27;/vins_estimator/odometry&#x27;</span>, Odometry, callback)</span><br><span class="line">rospy.spin()</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python3</span><br><span class="hljs-keyword">import</span> rospy<br><span class="hljs-keyword">from</span> nav_msgs.msg <span class="hljs-keyword">import</span> Odometry<br><span class="hljs-keyword">from</span> geometry_msgs.msg <span class="hljs-keyword">import</span> PoseStamped<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">callback</span>(<span class="hljs-params">msg</span>):<br>    <span class="hljs-comment"># 将 VINS 的 Odometry 转换为 PX4 需要的 PoseStamped</span><br>    p = PoseStamped()<br>    p.header.stamp = rospy.Time.now()<br>    p.header.frame_id = <span class="hljs-string">&quot;map&quot;</span> <span class="hljs-comment"># 或 odom</span><br>    p.pose = msg.pose.pose<br>    <span class="hljs-comment"># 注意：这里省略了坐标系旋转（ENU vs NED），如果只是原地测试电机，通常没问题。</span><br>    <span class="hljs-comment"># 如果实飞，必须使用坐标转换库（如 tf）进行严格对齐。</span><br>    pub.publish(p)<br><br>rospy.init_node(<span class="hljs-string">&#x27;vins_to_mavros_transfer&#x27;</span>)<br>pub = rospy.Publisher(<span class="hljs-string">&#x27;/mavros/vision_pose/pose&#x27;</span>, PoseStamped, queue_size=<span class="hljs-number">10</span>)<br>sub = rospy.Subscriber(<span class="hljs-string">&#x27;/vins_estimator/odometry&#x27;</span>, Odometry, callback)<br>rospy.spin()<br></code></pre></td></tr></table></figure>
 
 
 <hr>
@@ -537,359 +408,451 @@ document.addEventListener("DOMContentLoaded", function() {
 <h3 id="启动节点"><a href="#启动节点" class="headerlink" title="启动节点"></a>启动节点</h3><p>将无人机连接QGC，在执行完上述launch文件之后，正常来说正上方应该显示绿色的ready to fly</p>
 <p>存在问题：<br>(1) 报错：PositionTargetGlobal failed because no origin。说明飞控没有接受到<code>/mavros/global_position/gp_origin</code>话题的内容来初始化位置<br>解决方法：<br>&lt;1&gt; 连接QGC修改参数<br>①遥控信号丢失保护 (COM_RCL_ACT 或 NAV_RCL_ACT)<br>默认值：Return (返航) —— 这就是报错的元凶。<br>修改为：Hold mode (悬停&#x2F;1) 或 Land mode (降落&#x2F;0)。<br>说明：室内没有 GPS，绝对不能选 Return。<br>②Offboard 控制丢失保护 (COM_OBL_ACT)<br>默认值：Land 或 Return。<br>修改为：Land mode (降落) 或 Hold mode (悬停)。<br>说明：当你的 offb_node 挂了或数据发慢了，飞控该怎么办。<br>③数据链丢失保护 (NAV_DLL_ACT)<br>默认值：Hold 或 Return。<br>修改为：Hold mode (悬停) 或 Disabled。<br>④无 GPS 解锁限制 (COM_ARM_WO_GPS)<br>在 v1.11 版本中，通常默认允许无 GPS 解锁，但最好检查一下。<br>确保设置为 1 (Allow)。</p>
 <p>&lt;2&gt; 设置一个欺骗节点，手动发布初始化位置</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> ~/offb_ws/src/offb/scripts</span><br><span class="line">vim set_origin.py</span><br><span class="line"><span class="built_in">sudo</span> <span class="built_in">chmod</span> +x set_origin.py</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/offb_ws/src/offb/scripts<br>vim set_origin.py<br><span class="hljs-built_in">sudo</span> <span class="hljs-built_in">chmod</span> +x set_origin.py<br></code></pre></td></tr></table></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="keyword">import</span> rospy</span><br><span class="line"><span class="keyword">from</span> geographic_msgs.msg <span class="keyword">import</span> GeoPointStamped</span><br><span class="line"></span><br><span class="line"><span class="comment"># 这是一个欺骗节点的脚本</span></span><br><span class="line"><span class="comment"># 它告诉飞控：我们当前的全球坐标原点在哪里</span></span><br><span class="line"><span class="comment"># 这样飞控就不会报 &quot;No global origin&quot; 的错误了</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">set_fake_origin</span>():</span><br><span class="line">    rospy.init_node(<span class="string">&#x27;set_fake_origin_node&#x27;</span>, anonymous=<span class="literal">True</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 发布到 MAVROS 的设置原点话题</span></span><br><span class="line">    pub = rospy.Publisher(<span class="string">&#x27;/mavros/global_position/set_gp_origin&#x27;</span>, GeoPointStamped, queue_size=<span class="number">10</span>)</span><br><span class="line">    </span><br><span class="line">    rospy.loginfo(<span class="string">&quot;Setting fake global origin...&quot;</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 等待发布者建立连接</span></span><br><span class="line">    rospy.sleep(<span class="number">2</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 构建一个假的 GPS 点</span></span><br><span class="line">    <span class="comment"># 室内飞行只看相对位置</span></span><br><span class="line">    p = GeoPointStamped()</span><br><span class="line">    p.header.stamp = rospy.Time.now()</span><br><span class="line">    p.header.frame_id = <span class="string">&quot;map&quot;</span></span><br><span class="line">    p.position.latitude = <span class="number">0.0</span>      <span class="comment"># 随便填</span></span><br><span class="line">    p.position.longitude = <span class="number">0.0</span>    <span class="comment"># 随便填</span></span><br><span class="line">    p.position.altitude = <span class="number">0.0</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 持续发送几次，确保飞控收到</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">5</span>):</span><br><span class="line">        pub.publish(p)</span><br><span class="line">        rospy.sleep(<span class="number">1</span>)</span><br><span class="line">        </span><br><span class="line">    rospy.loginfo(<span class="string">&quot;Fake origin set commands sent.&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        set_fake_origin()</span><br><span class="line">    <span class="keyword">except</span> rospy.ROSInterruptException:</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#!/usr/bin/env python3</span><br><span class="hljs-keyword">import</span> rospy<br><span class="hljs-keyword">from</span> geographic_msgs.msg <span class="hljs-keyword">import</span> GeoPointStamped<br><br><span class="hljs-comment"># 这是一个欺骗节点的脚本</span><br><span class="hljs-comment"># 它告诉飞控：我们当前的全球坐标原点在哪里</span><br><span class="hljs-comment"># 这样飞控就不会报 &quot;No global origin&quot; 的错误了</span><br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">set_fake_origin</span>():<br>    rospy.init_node(<span class="hljs-string">&#x27;set_fake_origin_node&#x27;</span>, anonymous=<span class="hljs-literal">True</span>)<br>    <br>    <span class="hljs-comment"># 发布到 MAVROS 的设置原点话题</span><br>    pub = rospy.Publisher(<span class="hljs-string">&#x27;/mavros/global_position/set_gp_origin&#x27;</span>, GeoPointStamped, queue_size=<span class="hljs-number">10</span>)<br>    <br>    rospy.loginfo(<span class="hljs-string">&quot;Setting fake global origin...&quot;</span>)<br>    <br>    <span class="hljs-comment"># 等待发布者建立连接</span><br>    rospy.sleep(<span class="hljs-number">2</span>)<br>    <br>    <span class="hljs-comment"># 构建一个假的 GPS 点</span><br>    <span class="hljs-comment"># 室内飞行只看相对位置</span><br>    p = GeoPointStamped()<br>    p.header.stamp = rospy.Time.now()<br>    p.header.frame_id = <span class="hljs-string">&quot;map&quot;</span><br>    p.position.latitude = <span class="hljs-number">0.0</span>      <span class="hljs-comment"># 随便填</span><br>    p.position.longitude = <span class="hljs-number">0.0</span>    <span class="hljs-comment"># 随便填</span><br>    p.position.altitude = <span class="hljs-number">0.0</span><br>    <br>    <span class="hljs-comment"># 持续发送几次，确保飞控收到</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">5</span>):<br>        pub.publish(p)<br>        rospy.sleep(<span class="hljs-number">1</span>)<br>        <br>    rospy.loginfo(<span class="hljs-string">&quot;Fake origin set commands sent.&quot;</span>)<br><br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&#x27;__main__&#x27;</span>:<br>    <span class="hljs-keyword">try</span>:<br>        set_fake_origin()<br>    <span class="hljs-keyword">except</span> rospy.ROSInterruptException:<br>        <span class="hljs-keyword">pass</span><br></code></pre></td></tr></table></figure>
 
 <p>(2) 报错：FCU: Primary compass not found<br>室内环境与机载电脑会对磁力计产生巨大影响，需要通过QGC关闭磁力计的使用，修改无人机参数<br>设置<code>EKF2_MAG_TYPE</code>为0；设置<code>SYS_HAS_MAG</code>为0</p>
 
-      </section>
-
-      
-      
-        <nav class="article-nav">
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2026/01/05/ROS%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">ROS参数服务器</h2>
-        </a>
-      
-      <div class="card-text--row">下一篇</div>
-    </div>
-  </article>
-</div>
-
-          
-          
-            <div class="article-nav-item layout-padding">
-  <article class="card-container article-nav-card content-padding--primary soft-size--large soft-style--box">
-    
-    
-    <div class="card-text">
-      
-        <a href="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" itemprop="url">
-          <h2 class="card-text--title text-ellipsis">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</h2>
-        </a>
-      
-      <div class="card-text--row">上一篇</div>
-    </div>
-  </article>
-</div>
-
-          
-        </nav>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
       
 
-      <section class="page-message-container layout-padding">
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
         
-
-
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" class="category-chain-item">无人机实验</a>
   
   
 
+      </span>
+    
   
-  
+</span>
 
-
-      </section>
     </div>
-    <div class="widget-info">
-      <section class="widget-author widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-body">
-    
-      <img src="https://github.com/astringent-orange.png" class="soft-size--round soft-style--box" alt="Mian">
-    
-    
-      <h2>Mian</h2>
-    
-    
-      <p>每天成长一点</p>
-    
-
-    <div class="count-box">
-      <div class="count-box--item">
-        <svg class="icon icon-article" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M240.51564747 647.74217627h196.07203239c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806V165.10332731c0-33.18142087-30.16492806-60.32985613-60.32985612-60.32985611H245.04038668C225.43318342 104.7734712 210.35071939 119.85593522 210.35071939 139.46313845V617.57724821c0 16.59071043 13.57421762 30.16492806 30.16492808 30.16492806z m663.62841731-452.47392089v482.63884894c0 33.18142087-27.14843525 60.32985613-60.32985612 60.32985613H180.18579134c-33.18142087 0-60.32985613-27.14843525-60.32985612-60.32985613V195.26825538c-49.77213131 0-90.49478418 40.72265287-90.49478417 90.49478417v452.4739209c0 49.77213131 40.72265287 90.49478418 90.49478417 90.49478417h286.56681657c16.59071043 0 30.16492806 13.57421762 30.16492807 30.16492807s13.57421762 30.16492806 30.16492805 30.16492806h90.49478418c16.59071043 0 30.16492806-13.57421762 30.16492805-30.16492806s13.57421762-30.16492806 30.16492807-30.16492807h286.56681657c49.77213131 0 90.49478418-40.72265287 90.49478417-90.49478417V285.76303955c0-49.77213131-40.72265287-90.49478418-90.49478417-90.49478417zM587.41232014 647.74217627h191.54729318c19.60720323 0 34.68966726-15.08246403 34.68966729-34.68966727V134.93839925c0-16.59071043-13.57421762-30.16492806-30.16492808-30.16492805H617.57724821c-30.16492806 0-60.32985613 27.14843525-60.32985612 60.32985611v452.4739209c0 16.59071043 13.57421762 30.16492806 30.16492805 30.16492806z" fill="currentColor"></path>
-</svg>
-        <span>28</span>
-      </div>
-      <div class="count-box--item">
-        <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
-</svg>
-        4
-      </div>
-      <div class="count-box--item">
-        <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
-</svg>
-        37
-      </div>
-    </div>
-  </div>
-</section>
-
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
       
-<section class="widget-toc widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-toc" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M134.50666666 767.46666668H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.23999999v50.13333333c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H134.50666666c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.13333333c0.10666668-27.73333333 22.50666668-50.24000001 50.24000001-50.24000001zM84.37333332 541.65333333h326.18666669c27.73333333 0 50.24000001 22.39999999 50.23999999 50.13333334v50.24000001c0 27.73333333-22.50666668 50.24000001-50.24000002 50.23999999H84.37333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.23999999v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333334zM134.50666666 315.83999999H460.8c27.73333333 0 50.24000001 22.50666668 50.24000001 50.24000001v50.24000001c0 27.73333333-22.50666668 50.13333334-50.24000001 50.13333333H134.50666666c-27.73333333 0-50.24000001-22.39999999-50.23999999-50.13333333v-50.24000001c0.10666668-27.84000001 22.50666668-50.24000001 50.24000001-50.23999999zM209.81333332 89.91999999h326.18666671c27.73333333 0 50.24000001 22.39999999 50.23999997 50.13333335v50.23999999c0 27.73333333-22.50666668 50.24000001-50.24000001 50.24000001H209.81333332c-27.73333333 0-50.24000001-22.50666668-50.23999999-50.24000001v-50.24000001c0-27.73333333 22.50666668-50.13333334 50.24000001-50.13333333zM692.05333333 623.36l274.66666669 176.00000002c23.36000001 14.93333333 30.08 45.97333334 15.14666666 69.33333332L954.77333334 910.93333333c-14.93333333 23.25333334-45.97333334 30.08-69.33333335 15.14666667l-274.66666666-176c-23.36000001-14.93333333-30.08-45.97333334-15.14666667-69.33333333l27.09333334-42.24000001c14.93333333-23.36000001 46.08000001-30.08 69.33333333-15.14666666z" fill="currentColor"></path>
-</svg>
+        <a href="/tags/NUC13/" class="print-no-link">#NUC13</a>
+      
+        <a href="/tags/ROS1/" class="print-no-link">#ROS1</a>
+      
+        <a href="/tags/vins/" class="print-no-link">#vins</a>
+      
+        <a href="/tags/px4/" class="print-no-link">#px4</a>
+      
+        <a href="/tags/%E5%AE%9E%E6%9C%BA/" class="print-no-link">#实机</a>
+      
+        <a href="/tags/MAVROS/" class="print-no-link">#MAVROS</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>3_完整回路测试 NUC-D435-Pixhawk</div>
+      <div>https://astringent-orange.github.io/2025/12/25/3_完整回路测试-NUC-D435-Pixhawk/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年12月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/01/05/ROS%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="ROS参数服务器">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ROS参数服务器</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/" title="2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试">
+                        <span class="hidden-mobile">2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
     <span>目录</span>
-  </div>
-  <div class="widget-body">
-    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.</span> <span class="toc-text">实验设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E9%A1%B9%E7%9B%AE%E7%A9%BA%E9%97%B4"><span class="toc-number">2.</span> <span class="toc-text">构建项目空间</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E5%BB%BA%E5%B7%A5%E4%BD%9C%E7%A9%BA%E9%97%B4"><span class="toc-number">2.1.</span> <span class="toc-text">构建工作空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E9%87%8C%E7%A8%8B%E8%AE%A1%E8%8A%82%E7%82%B9"><span class="toc-number">2.2.</span> <span class="toc-text">创建里程计节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%BF%90%E5%8A%A8%E8%8A%82%E7%82%B9"><span class="toc-number">2.3.</span> <span class="toc-text">创建运动节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BC%96%E8%AF%91%E6%96%87%E4%BB%B6"><span class="toc-number">2.4.</span> <span class="toc-text">编译文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8C%E7%A8%8B%E8%AE%A1%E9%85%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">里程计配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%86%E5%A4%87IMU%E6%95%B0%E6%8D%AE"><span class="toc-number">3.1.</span> <span class="toc-text">准备IMU数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9VINS%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">3.2.</span> <span class="toc-text">修改VINS配置文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BD%8D%E5%A7%BF%E5%9B%9E%E4%BC%A0"><span class="toc-number">4.</span> <span class="toc-text">位姿回传</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PX4%E5%8F%82%E6%95%B0%E8%AE%BE%E7%BD%AE"><span class="toc-number">5.</span> <span class="toc-text">PX4参数设置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#QGC%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="toc-number">5.1.</span> <span class="toc-text">QGC配置参数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%98%B6%E6%AE%B5%E6%80%A7%E5%AE%9E%E9%AA%8C"><span class="toc-number">5.2.</span> <span class="toc-text">阶段性实验</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%89%A7%E8%A1%8C%E5%AE%9E%E9%AA%8C"><span class="toc-number">6.</span> <span class="toc-text">执行实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%87%E6%80%BBlaunch%E6%96%87%E4%BB%B6"><span class="toc-number">6.1.</span> <span class="toc-text">汇总launch文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E8%8A%82%E7%82%B9"><span class="toc-number">6.2.</span> <span class="toc-text">启动节点</span></a></li></ol></li></ol>
-  </div>
-</section>
-
-
-
-      
-
-      <section class="widget-categories widget-item layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-categories" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M900.3614811 257.09082106h-339.81629553l-67.96326003-101.9448889c-19.41807444-29.12711113-48.54518557-43.69066667-82.52681443-43.69066667H123.6385189c-53.39970333 0-97.09036999 43.69066667-97.09037113 97.09036999v582.54222222c0 53.39970333 43.69066667 97.09036999 97.09037113 97.09037002h776.7229622c53.39970333 0 97.09036999-43.69066667 97.09037113-97.09037002V354.18119104c0-53.39970333-43.69066667-97.09036999-97.09037113-97.09036998z m-97.09036999 242.72592554H220.72888889c-24.27259221 0-48.54518557-24.27259221-48.54518556-48.54518556s24.27259221-48.54518557 48.54518556-48.54518444h582.54222222c24.27259221 0 48.54518557 24.27259221 48.54518556 48.54518444s-24.27259221 48.54518557-48.54518556 48.54518556z" fill="currentColor"></path>
-</svg>
-      <span>CATEGORIES</span>
-  </div>
-  <div class="widget-body">
-    <ul class="categories-list">
-      
-        <li class="categories-list-item">
-          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/">
-            无人机实验 (18)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/">
-            无人机工程 (8)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E6%9D%82%E8%AE%B0/">
-            杂记 (1)
-          </a>
-        </li>
-        
-        <li class="categories-list-item">
-          <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/">
-            大模型 (1)
-          </a>
-        </li>
-        
-    </ul>
-  </div>
-</section>
-
-      <section class="widget-tags widget-item  layout-margin content-padding--primary soft-size--large soft-style--box">
-  <div class="widget-title">
-    <svg class="icon icon-tags" viewBox="0 0 1098 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M283.42180005 272q0-28.38857157-20.09142843-48.48000001t-48.47999998-20.09142842-48.48000002 20.09142842-20.09142846 48.48000001 20.09142846 48.48 48.48000002 20.09142843 48.47999998-20.09142843 20.09142843-48.48zM855.0332285 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.03999997 263.58857157q-20.9142853 19.81714313-48.75428534 19.81714312-28.38857157 0-48.20571468-19.81714312l-383.04-383.58857157q-20.36571468-19.81714313-34.55999999-54.10285688t-14.19428534-62.6742853l0-222.85714313q0-27.84000002 20.36571469-48.20571469t48.2057147-20.36571466l222.85714313 0q28.38857157 0 62.6742853 14.19428529t54.65142842 34.55999999l383.04000001 382.49142843q19.81714313 20.9142853 19.81714314 48.75428532zM1060.74751475 580.57142843q0 28.38857157-19.81714313 48.2057147l-263.04 263.58857157q-20.9142853 19.81714313-48.75428531 19.81714312-19.26857155 0-31.61142843-7.47428531t-28.38857159-24.13714314l251.79428534-251.7942853q19.81714313-19.81714313 19.81714308-48.20571469 0-27.84000002-19.81714308-48.75428531l-383.04000001-382.49142845q-20.36571468-20.36571468-54.65142842-34.55999999t-62.67428532-14.19428534l120 0q28.38857157 0 62.67428532 14.19428534t54.65142842 34.55999999l383.03999998 382.49142845q19.81714313 20.9142853 19.81714314 48.75428531z" fill="currentColor"></path>
-</svg>
-    <span>TAGS</span>
-  </div>
-  <div class="widget-body">
-    <div class="tags-cloud">
-      <a href="/tags/AprilTag/" style="font-size: 10px;" class="tags-cloud-0">AprilTag</a> <a href="/tags/CPP/" style="font-size: 14.44px;" class="tags-cloud-4">CPP</a> <a href="/tags/FlightMare/" style="font-size: 17.78px;" class="tags-cloud-8">FlightMare</a> <a href="/tags/Gazebo/" style="font-size: 14.44px;" class="tags-cloud-4">Gazebo</a> <a href="/tags/IntelRealsenseD435/" style="font-size: 13.33px;" class="tags-cloud-3">IntelRealsenseD435</a> <a href="/tags/LoRA/" style="font-size: 10px;" class="tags-cloud-0">LoRA</a> <a href="/tags/MAVROS/" style="font-size: 10px;" class="tags-cloud-0">MAVROS</a> <a href="/tags/NUC13/" style="font-size: 12.22px;" class="tags-cloud-2">NUC13</a> <a href="/tags/Python/" style="font-size: 10px;" class="tags-cloud-0">Python</a> <a href="/tags/ROS1/" style="font-size: 20px;" class="tags-cloud-10">ROS1</a> <a href="/tags/Ubuntu20-04/" style="font-size: 12.22px;" class="tags-cloud-2">Ubuntu20-04</a> <a href="/tags/Unity/" style="font-size: 16.67px;" class="tags-cloud-7">Unity</a> <a href="/tags/astar/" style="font-size: 11.11px;" class="tags-cloud-1">astar</a> <a href="/tags/catkin/" style="font-size: 11.11px;" class="tags-cloud-1">catkin</a> <a href="/tags/cmake/" style="font-size: 11.11px;" class="tags-cloud-1">cmake</a> <a href="/tags/docker/" style="font-size: 11.11px;" class="tags-cloud-1">docker</a> <a href="/tags/drone/" style="font-size: 10px;" class="tags-cloud-0">drone</a> <a href="/tags/jetson/" style="font-size: 10px;" class="tags-cloud-0">jetson</a> <a href="/tags/octomap/" style="font-size: 13.33px;" class="tags-cloud-3">octomap</a> <a href="/tags/px4/" style="font-size: 15.56px;" class="tags-cloud-6">px4</a> <a href="/tags/rosbag/" style="font-size: 10px;" class="tags-cloud-0">rosbag</a> <a href="/tags/vins/" style="font-size: 11.11px;" class="tags-cloud-1">vins</a> <a href="/tags/vitfly/" style="font-size: 11.11px;" class="tags-cloud-1">vitfly</a> <a href="/tags/zotero/" style="font-size: 10px;" class="tags-cloud-0">zotero</a> <a href="/tags/%E4%BB%BF%E7%9C%9F/" style="font-size: 18.89px;" class="tags-cloud-9">仿真</a> <a href="/tags/%E4%BF%AE%E5%A4%8D/" style="font-size: 10px;" class="tags-cloud-0">修复</a> <a href="/tags/%E5%8A%A8%E5%8A%9B%E5%AD%A6/" style="font-size: 11.11px;" class="tags-cloud-1">动力学</a> <a href="/tags/%E5%8F%82%E6%95%B0%E6%9C%8D%E5%8A%A1%E5%99%A8/" style="font-size: 10px;" class="tags-cloud-0">参数服务器</a> <a href="/tags/%E5%9D%9A%E6%9E%9C%E4%BA%91/" style="font-size: 10px;" class="tags-cloud-0">坚果云</a> <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" style="font-size: 10px;" class="tags-cloud-0">大模型</a> <a href="/tags/%E5%AE%9E%E6%9C%BA/" style="font-size: 13.33px;" class="tags-cloud-3">实机</a> <a href="/tags/%E5%BB%BA%E5%9B%BE/" style="font-size: 10px;" class="tags-cloud-0">建图</a> <a href="/tags/%E5%BE%AE%E8%B0%83/" style="font-size: 10px;" class="tags-cloud-0">微调</a> <a href="/tags/%E6%A8%A1%E5%9D%97%E5%8C%96/" style="font-size: 10px;" class="tags-cloud-0">模块化</a> <a href="/tags/%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/" style="font-size: 10px;" class="tags-cloud-0">视觉定位</a> <a href="/tags/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/" style="font-size: 11.11px;" class="tags-cloud-1">路径规划</a> <a href="/tags/%E9%A3%9E%E6%8E%A7/" style="font-size: 11.11px;" class="tags-cloud-1">飞控</a>
-    </div>
-  </div>
-</section>
-    </div>
-  </article>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
 </div>
 
-<div class="comments" style="max-width:1200px;margin:40px auto;">
-<script src="https://giscus.app/client.js"
-        data-repo="astringent-orange/astringent-orange.github.io"
-        data-repo-id="R_kgDORiSglw"
-        data-category="General"
-        data-category-id="DIC_kwDORiSgl84C4XZB"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="bottom"
-        data-theme="preferred_color_scheme"
-        data-lang="zh-CN"
-        crossorigin="anonymous"
-        async>
-</script>
-</div> 
 
-    <!-- footer container -->
-<footer id="footer" class="footer">
-  <div class="footer-container">
-    
-    <div class="social-icons">
-      
-        
-      
-        
-      
-        
-      
-        
-          <a href="https://github.com/astrigent-orange/astrigent-orange" class="soft-size--primary soft-style--box" target="_blank" rel="noopener noreferrer">
-            <svg class="icon icon-github" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <path d="M64.6 512c0 195.6 125.4 361.9 300.1 422.9 23.5 5.9 19.9-10.8 19.9-22.2v-77.6c-135.8 15.9-141.3-74-150.5-89-18.5-31.5-61.9-39.5-49-54.5 31-15.9 62.5 4 98.9 58 26.4 39.1 77.9 32.5 104.1 26 5.7-23.5 17.9-44.5 34.7-60.9-140.7-25.2-199.4-111.1-199.4-213.3 0-49.5 16.4-95.1 48.4-131.8-20.4-60.6 1.9-112.4 4.9-120.1 58.2-5.2 118.5 41.6 123.3 45.3 33.1-8.9 70.8-13.7 112.9-13.7 42.4 0 80.3 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.4-43.9 2.9 7.7 24.7 58.3 5.5 118.1 32.5 36.8 49 82.8 49 132.4 0 102.3-59 188.3-200.2 213.2 23.5 23.3 38.1 55.5 38.1 91.1v112.7c0.8 9 0 17.9 15.1 17.9C832.7 877 960.4 709.4 960.4 512.1c0-247.5-200.6-447.9-447.9-447.9C265 64.1 64.6 264.5 64.6 512z"></path>
-</svg>
-          </a>
-        
-      
-        
-      
+
+  </aside>
+
+
     </div>
-     
-    <p>&copy; 2026 <a href="/" target="_blank">Mian</a></p>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
 
     
 
-    <p>Powered by <a href="https://hexo.io" target="_blank" rel="noopener noreferrer">Hexo</a> Theme - <a href="https://github.com/miiiku/flex-block" target="_blank" rel="noopener noreferrer author">flex-block</a></p>
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
 
-    <p>
-      <a href="javascript:;" id="theme-light">🌞 浅色</a>
-      <a href="javascript:;" id="theme-dark">🌛 深色</a>
-      <a href="javascript:;" id="theme-auto">🤖️ 自动</a>
-    </p>
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
   </div>
-</footer>
-  </div>
+</div>
 
-  <div class="back-to-top-fixed soft-size--round soft-style--box">
-    <svg class="icon icon-back-to-top" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-      <path d="M725.333333 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8l-213.333333-213.333333c-17.066667-17.066667-17.066667-42.666667 0-59.733333s42.666667-17.066667 59.733333 0l213.333333 213.333333c17.066667 17.066667 17.066667 42.666667 0 59.733333C746.666667 422.4 738.133333 426.666667 725.333333 426.666667z"></path>
-      <path d="M298.666667 426.666667c-12.8 0-21.333333-4.266667-29.866667-12.8-17.066667-17.066667-17.066667-42.666667 0-59.733333l213.333333-213.333333c17.066667-17.066667 42.666667-17.066667 59.733333 0s17.066667 42.666667 0 59.733333l-213.333333 213.333333C320 422.4 311.466667 426.666667 298.666667 426.666667z"></path>
-      <path d="M512 896c-25.6 0-42.666667-17.066667-42.666667-42.666667L469.333333 170.666667c0-25.6 17.066667-42.666667 42.666667-42.666667s42.666667 17.066667 42.666667 42.666667l0 682.666667C554.666667 878.933333 537.6 896 512 896z"></path>
-    </svg>
-  </div>
+    
 
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
   
   
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
- 
-<!-- mathjax -->
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
 
 
+
+
+  
 <script>
-MathJax = {
-  tex: {
-    inlineMath: [
-      ['$', '$']
-    ],
-    displayMath: [
-      ['$$', '$$']
-    ],
-    processEscapes: true
-  }
-};
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
 </script>
-<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
 
 
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
 
-
-
-
-<!-- copy button  -->
-<script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
-
-<!-- https://clipboardjs.com/ -->
-
-
-<script type="text/javascript">
-	(function () {
-		function setCopiedState(button) {
-			if (!button) return;
-			button.classList.add("copied");
-			setTimeout(() => {
-				button.classList.remove("copied");
-			}, 3000);
-		}
-
-		window.addEventListener("DOMContentLoaded", () => {
-			const copyBtnClass = "copy-btn";
-			document.querySelectorAll('figure.highlight').forEach((elem) => {
-				const codeContent = elem.querySelector("td.code");
-				if (!codeContent) return;
-				const copyButton = document.createElement('button');
-				const codeText = codeContent.innerText;
-				copyButton.setAttribute("class", copyBtnClass);
-				copyButton.setAttribute("title", "复制代码");
-				copyButton.setAttribute("aria-label", "复制代码");
-				copyButton.setAttribute("type", "button");
-				copyButton.setAttribute("data-clipboard-text", codeText);
-				copyButton.addEventListener("click", async () => {
-					try {
-						if (navigator.clipboard && window.isSecureContext) {
-							await navigator.clipboard.writeText(codeText);
-						} else {
-							const textArea = document.createElement("textarea");
-							textArea.value = codeText;
-							textArea.setAttribute("readonly", "");
-							textArea.style.position = "absolute";
-							textArea.style.left = "-9999px";
-							document.body.appendChild(textArea);
-							textArea.select();
-							document.execCommand("copy");
-							document.body.removeChild(textArea);
-						}
-						setCopiedState(copyButton);
-					} catch (error) {
-						console.error("Copy failed:", error);
-					}
-				});
-				elem.insertBefore(copyButton, elem.children[0]);
-			});
-
-			if (window.ClipboardJS) {
-				const clipboard = new ClipboardJS('.' + copyBtnClass);
-				clipboard.on('success', function (e) {
-					setCopiedState(e.trigger);
-					e.clearSelection();
-				});
-				clipboard.on('error', function (e) {
-					console.error('ClipboardJS error:', e.trigger);
-				});
-			}
-		})
-	})();
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
 </script>
 
 
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
 
 
 
 
 
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
 
 
   
 
-
-  
-
-
-  
-
-
-
-
-<script src="/js/script.js"></script>
-
-
-  
-  <!-- 尾部用户自定义相关内容 -->
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
 </body>
 </html>
