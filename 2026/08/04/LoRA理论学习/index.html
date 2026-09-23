@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -19,19 +19,19 @@
   <meta name="author" content="Mian">
   <meta name="keywords" content="">
   
-    <meta name="description" content="引言LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。 它试图解决一个问题：  一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？  普通微调会把原来的权重 $W$ 修改为： $$W’ &#x3D; W + \Delta W$$ 其中 $\Delta W$ 表示为了适应新任务而产生的权重变化。 LoRA 的核心思想是：">
+    <meta name="description" content="引言LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。 它试图解决一个问题：  一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？  普通微调会把原来的权重 $W$ 修改为： $$ W&#39; &#x3D; W + \Delta W $$ 其中 $\Delta W$ 表示为了适应新任务而产生的权重变化。 LoRA 的核心思想是">
 <meta property="og:type" content="article">
 <meta property="og:title" content="LoRA理论学习">
 <meta property="og:url" content="https://astringent-orange.github.io/2026/08/04/LoRA%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Mian的笔记">
-<meta property="og:description" content="引言LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。 它试图解决一个问题：  一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？  普通微调会把原来的权重 $W$ 修改为： $$W’ &#x3D; W + \Delta W$$ 其中 $\Delta W$ 表示为了适应新任务而产生的权重变化。 LoRA 的核心思想是：">
+<meta property="og:description" content="引言LoRA（Low-Rank Adaptation，低秩适配）是一种参数高效微调方法。 它试图解决一个问题：  一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？  普通微调会把原来的权重 $W$ 修改为： $$ W&#39; &#x3D; W + \Delta W $$ 其中 $\Delta W$ 表示为了适应新任务而产生的权重变化。 LoRA 的核心思想是">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-08-03T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-08-03T16:00:00.000Z">
 <meta property="article:author" content="Mian">
+<meta property="article:tag" content="大模型">
 <meta property="article:tag" content="LoRA">
 <meta property="article:tag" content="微调">
-<meta property="article:tag" content="大模型">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -68,6 +68,12 @@
     <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
 
 
 
@@ -141,11 +147,55 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -157,6 +207,18 @@
               <a class="nav-link" href="/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
               </a>
             </li>
           
@@ -219,14 +281,72 @@
           
           
           
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
             </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
           
         
           
@@ -238,6 +358,20 @@
                 <div class="mobile-grid-item">
                   <i class="iconfont icon-tags-fill"></i>
                   <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
                 </div>
               </a>
             </div>
@@ -313,7 +447,7 @@
         
         
         
-          102 分钟
+          99 分钟
         
       </span>
     
@@ -363,12 +497,18 @@
 <p>一个大模型已经训练得很好，如果我们只想让它适应一个新任务，真的需要重新修改整个巨大的权重矩阵吗？</p>
 </blockquote>
 <p>普通微调会把原来的权重 $W$ 修改为：</p>
-<p>$$<br>W’ &#x3D; W + \Delta W<br>$$</p>
+<p>$$
+W&#39; = W + \Delta W
+$$</p>
 <p>其中 $\Delta W$ 表示为了适应新任务而产生的权重变化。</p>
 <p>LoRA 的核心思想是：<strong>不直接训练巨大的 $\Delta W$，而是限制它只能通过两个较小矩阵的乘积来表示：</strong></p>
-<p>$$<br>\Delta W &#x3D; BA<br>$$</p>
+<p>$$
+\Delta W = BA
+$$</p>
 <p>于是：</p>
-<p>$$<br>W’ &#x3D; W + BA<br>$$</p>
+<p>$$
+W&#39; = W + BA
+$$</p>
 <p>其中：</p>
 <ul>
 <li>$W$：基础模型原来的权重，训练时冻结</li>
@@ -378,74 +518,194 @@
 <p>LoRA 为什么可以这样做，需要从矩阵的<strong>秩、低秩分解和 SVD</strong>开始理解。</p>
 <hr>
 <h2 id="秩与低秩分解"><a href="#秩与低秩分解" class="headerlink" title="秩与低秩分解"></a>秩与低秩分解</h2><h3 id="什么是矩阵的秩"><a href="#什么是矩阵的秩" class="headerlink" title="什么是矩阵的秩"></a>什么是矩阵的秩</h3><p>考虑矩阵：</p>
-<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 &amp; 3 \<br>0 &amp; 1 &amp; 1 \<br>1 &amp; 3 &amp; 4<br>\end{bmatrix}<br>$$</p>
+<p>$$
+M=
+\begin{bmatrix}
+1 &amp; 2 &amp; 3 \\
+0 &amp; 1 &amp; 1 \\
+1 &amp; 3 &amp; 4
+\end{bmatrix}
+$$</p>
 <p>它的三个列向量分别为：</p>
-<p>$$<br>\mathbf c_1&#x3D;<br>\begin{bmatrix}<br>1 \<br>0 \<br>1<br>\end{bmatrix}<br>$$</p>
-<p>$$<br>\mathbf c_2&#x3D;<br>\begin{bmatrix}<br>2 \<br>1 \<br>3<br>\end{bmatrix}<br>$$</p>
-<p>$$<br>\mathbf c_3&#x3D;<br>\begin{bmatrix}<br>3 \<br>1 \<br>4<br>\end{bmatrix}<br>$$</p>
+<p>$$
+\mathbf c_1=
+\begin{bmatrix}
+1 \\
+0 \\
+1
+\end{bmatrix}
+$$</p>
+<p>$$
+\mathbf c_2=
+\begin{bmatrix}
+2 \\
+1 \\
+3
+\end{bmatrix}
+$$</p>
+<p>$$
+\mathbf c_3=
+\begin{bmatrix}
+3 \\
+1 \\
+4
+\end{bmatrix}
+$$</p>
 <p>可以发现：</p>
-<p>$$<br>\mathbf c_3&#x3D;\mathbf c_1+\mathbf c_2<br>$$</p>
+<p>$$
+\mathbf c_3=\mathbf c_1+\mathbf c_2
+$$</p>
 <p>因此第三列并没有提供一个新的独立方向。</p>
 <p>真正独立的只有 $\mathbf c_1$ 和 $\mathbf c_2$ 两个方向，所以：</p>
-<p>$$<br>\operatorname{rank}(M)&#x3D;2<br>$$</p>
+<p>$$
+\operatorname{rank}(M)=2
+$$</p>
 <p>矩阵的秩可以直观理解为：</p>
 <blockquote>
 <p><strong>矩阵中真正独立的信息方向的数量。</strong></p>
 </blockquote>
 <p>严格来说：</p>
-<h1 id="operatorname-rank-M"><a href="#operatorname-rank-M" class="headerlink" title="$$\operatorname{rank}(M)"></a>$$<br>\operatorname{rank}(M)</h1><p>\dim(\operatorname{Col}(M))<br>$$</p>
+<p>$$
+\operatorname{rank}(M)
+=
+\dim(\operatorname{Col}(M))
+$$</p>
 <p>也就是矩阵列空间的维数。</p>
 <p>由于行秩等于列秩，也可以通过线性无关的行向量数量理解矩阵的秩。</p>
 <h3 id="从线性变换角度理解秩"><a href="#从线性变换角度理解秩" class="headerlink" title="从线性变换角度理解秩"></a>从线性变换角度理解秩</h3><p>一个矩阵：</p>
-<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>$$
+M\in\mathbb R^{m\times n}
+$$</p>
 <p>可以看成一个线性映射：</p>
-<p>$$<br>M:\mathbb R^n\rightarrow\mathbb R^m<br>$$</p>
+<p>$$
+M:\mathbb R^n\rightarrow\mathbb R^m
+$$</p>
 <p>输入：</p>
-<p>$$<br>\mathbf x\in\mathbb R^n<br>$$</p>
+<p>$$
+\mathbf x\in\mathbb R^n
+$$</p>
 <p>输出：</p>
-<p>$$<br>\mathbf y&#x3D;M\mathbf x<br>$$</p>
+<p>$$
+\mathbf y=M\mathbf x
+$$</p>
 <p>矩阵的秩表示所有可能的输出 $M\mathbf x$ 最终能够覆盖多少个独立方向。</p>
 <p>例如：</p>
-<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 0 \<br>2 &amp; 0 \<br>3 &amp; 0<br>\end{bmatrix}<br>$$</p>
+<p>$$
+M=
+\begin{bmatrix}
+1 &amp; 0 \\
+2 &amp; 0 \\
+3 &amp; 0
+\end{bmatrix}
+$$</p>
 <p>对于：</p>
-<p>$$<br>\mathbf x&#x3D;<br>\begin{bmatrix}<br>x_1 \<br>x_2<br>\end{bmatrix}<br>$$</p>
+<p>$$
+\mathbf x=
+\begin{bmatrix}
+x_1 \\
+x_2
+\end{bmatrix}
+$$</p>
 <p>有：</p>
-<h1 id="M-mathbf-x"><a href="#M-mathbf-x" class="headerlink" title="$$M\mathbf x"></a>$$<br>M\mathbf x</h1><h1 id="begin-bmatrix-x-1-2x-1-3x-1-end-bmatrix"><a href="#begin-bmatrix-x-1-2x-1-3x-1-end-bmatrix" class="headerlink" title="\begin{bmatrix}x_1 \2x_1 \3x_1\end{bmatrix}"></a>\begin{bmatrix}<br>x_1 \<br>2x_1 \<br>3x_1<br>\end{bmatrix}</h1><p>x_1<br>\begin{bmatrix}<br>1 \<br>2 \<br>3<br>\end{bmatrix}<br>$$</p>
+<p>$$
+M\mathbf x
+=
+\begin{bmatrix}
+x_1 \\
+2x_1 \\
+3x_1
+\end{bmatrix}
+=
+x_1
+\begin{bmatrix}
+1 \\
+2 \\
+3
+\end{bmatrix}
+$$</p>
 <p>虽然输出位于三维空间 $\mathbb R^3$，但所有可能的输出都只能位于同一条直线上，因此：</p>
-<p>$$<br>\operatorname{rank}(M)&#x3D;1<br>$$</p>
+<p>$$
+\operatorname{rank}(M)=1
+$$</p>
 <p>所以从线性变换的角度看：</p>
 <blockquote>
 <p><strong>秩就是一个线性变换最终真正能够产生多少个独立输出方向。</strong></p>
 </blockquote>
 <h3 id="为什么低秩矩阵可以拆成两个小矩阵"><a href="#为什么低秩矩阵可以拆成两个小矩阵" class="headerlink" title="为什么低秩矩阵可以拆成两个小矩阵"></a>为什么低秩矩阵可以拆成两个小矩阵</h3><p>假设：</p>
-<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>$$
+M\in\mathbb R^{m\times n}
+$$</p>
 <p>并且：</p>
-<p>$$<br>\operatorname{rank}(M)&#x3D;r<br>$$</p>
+<p>$$
+\operatorname{rank}(M)=r
+$$</p>
 <p>这意味着 $M$ 虽然可能有 $n$ 个列向量，但所有列实际上都位于某个 $r$ 维子空间中。</p>
 <p>因此，只需要找到 $r$ 个线性无关的基向量：</p>
-<p>$$<br>\mathbf b_1,\mathbf b_2,\dots,\mathbf b_r<br>$$</p>
+<p>$$
+\mathbf b_1,\mathbf b_2,\dots,\mathbf b_r
+$$</p>
 <p>就能够表示 $M$ 的所有列。</p>
 <p>把这些基向量组成矩阵：</p>
-<p>$$<br>B&#x3D;<br>\begin{bmatrix}<br>\mathbf b_1 &amp; \mathbf b_2 &amp; \cdots &amp; \mathbf b_r<br>\end{bmatrix}<br>$$</p>
+<p>$$
+B=
+\begin{bmatrix}
+\mathbf b_1 &amp; \mathbf b_2 &amp; \cdots &amp; \mathbf b_r
+\end{bmatrix}
+$$</p>
 <p>于是：</p>
-<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
+<p>$$
+B\in\mathbb R^{m\times r}
+$$</p>
 <p>对于 $M$ 的任意一列 $\mathbf m_j$，一定存在一组系数：</p>
-<p>$$<br>c_{1j},c_{2j},\dots,c_{rj}<br>$$</p>
+<p>$$
+c_{1j},c_{2j},\dots,c_{rj}
+$$</p>
 <p>使得：</p>
-<h1 id="mathbf-m-j"><a href="#mathbf-m-j" class="headerlink" title="$$\mathbf m_j"></a>$$<br>\mathbf m_j</h1><p>c_{1j}\mathbf b_1<br>+<br>c_{2j}\mathbf b_2<br>+\cdots+<br>c_{rj}\mathbf b_r<br>$$</p>
+<p>$$
+\mathbf m_j
+=
+c_{1j}\mathbf b_1
++
+c_{2j}\mathbf b_2
++\cdots+
+c_{rj}\mathbf b_r
+$$</p>
 <p>把这些系数写成向量：</p>
-<p>$$<br>\mathbf c_j&#x3D;<br>\begin{bmatrix}<br>c_{1j} \<br>c_{2j} \<br>\vdots \<br>c_{rj}<br>\end{bmatrix}<br>$$</p>
+<p>$$
+\mathbf c_j=
+\begin{bmatrix}
+c_{1j} \\
+c_{2j} \\
+\vdots \\
+c_{rj}
+\end{bmatrix}
+$$</p>
 <p>那么：</p>
-<p>$$<br>\mathbf m_j&#x3D;B\mathbf c_j<br>$$</p>
+<p>$$
+\mathbf m_j=B\mathbf c_j
+$$</p>
 <p>再把所有列对应的坐标向量放到一起：</p>
-<p>$$<br>C&#x3D;<br>\begin{bmatrix}<br>\mathbf c_1 &amp; \mathbf c_2 &amp; \cdots &amp; \mathbf c_n<br>\end{bmatrix}<br>$$</p>
+<p>$$
+C=
+\begin{bmatrix}
+\mathbf c_1 &amp; \mathbf c_2 &amp; \cdots &amp; \mathbf c_n
+\end{bmatrix}
+$$</p>
 <p>其中：</p>
-<p>$$<br>C\in\mathbb R^{r\times n}<br>$$</p>
+<p>$$
+C\in\mathbb R^{r\times n}
+$$</p>
 <p>于是整个矩阵可以写成：</p>
-<p>$$<br>M&#x3D;BC<br>$$</p>
+<p>$$
+M=BC
+$$</p>
 <p>其中：</p>
-<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
-<p>$$<br>C\in\mathbb R^{r\times n}<br>$$</p>
+<p>$$
+B\in\mathbb R^{m\times r}
+$$</p>
+<p>$$
+C\in\mathbb R^{r\times n}
+$$</p>
 <p>这叫作矩阵的<strong>秩分解</strong>。</p>
 <p>本质上：</p>
 <ul>
@@ -454,109 +714,269 @@
 </ul>
 <p>因此，一个矩阵即使包含很多元素，只要真正独立的方向很少，就可以通过两个更小的矩阵完整表示。</p>
 <h3 id="一个具体的秩分解例子"><a href="#一个具体的秩分解例子" class="headerlink" title="一个具体的秩分解例子"></a>一个具体的秩分解例子</h3><p>考虑：</p>
-<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 &amp; 3 \<br>2 &amp; 4 &amp; 6 \<br>1 &amp; 1 &amp; 2<br>\end{bmatrix}<br>$$</p>
+<p>$$
+M=
+\begin{bmatrix}
+1 &amp; 2 &amp; 3 \\
+2 &amp; 4 &amp; 6 \\
+1 &amp; 1 &amp; 2
+\end{bmatrix}
+$$</p>
 <p>三个列向量分别为：</p>
-<p>$$<br>\mathbf c_1&#x3D;<br>\begin{bmatrix}<br>1 \<br>2 \<br>1<br>\end{bmatrix}<br>$$</p>
-<p>$$<br>\mathbf c_2&#x3D;<br>\begin{bmatrix}<br>2 \<br>4 \<br>1<br>\end{bmatrix}<br>$$</p>
-<p>$$<br>\mathbf c_3&#x3D;<br>\begin{bmatrix}<br>3 \<br>6 \<br>2<br>\end{bmatrix}<br>$$</p>
+<p>$$
+\mathbf c_1=
+\begin{bmatrix}
+1 \\
+2 \\
+1
+\end{bmatrix}
+$$</p>
+<p>$$
+\mathbf c_2=
+\begin{bmatrix}
+2 \\
+4 \\
+1
+\end{bmatrix}
+$$</p>
+<p>$$
+\mathbf c_3=
+\begin{bmatrix}
+3 \\
+6 \\
+2
+\end{bmatrix}
+$$</p>
 <p>可以发现：</p>
-<p>$$<br>\mathbf c_3&#x3D;\mathbf c_1+\mathbf c_2<br>$$</p>
+<p>$$
+\mathbf c_3=\mathbf c_1+\mathbf c_2
+$$</p>
 <p>所以：</p>
-<p>$$<br>\operatorname{rank}(M)&#x3D;2<br>$$</p>
+<p>$$
+\operatorname{rank}(M)=2
+$$</p>
 <p>选择前两列作为列空间的一组基：</p>
-<p>$$<br>B&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 \<br>2 &amp; 4 \<br>1 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>$$
+B=
+\begin{bmatrix}
+1 &amp; 2 \\
+2 &amp; 4 \\
+1 &amp; 1
+\end{bmatrix}
+$$</p>
 <p>三列在这组基下的坐标分别是：</p>
-<h1 id="mathbf-c-1"><a href="#mathbf-c-1" class="headerlink" title="$$\mathbf c_1"></a>$$<br>\mathbf c_1</h1><p>1\mathbf c_1+0\mathbf c_2<br>$$</p>
-<h1 id="mathbf-c-2"><a href="#mathbf-c-2" class="headerlink" title="$$\mathbf c_2"></a>$$<br>\mathbf c_2</h1><p>0\mathbf c_1+1\mathbf c_2<br>$$</p>
-<h1 id="mathbf-c-3"><a href="#mathbf-c-3" class="headerlink" title="$$\mathbf c_3"></a>$$<br>\mathbf c_3</h1><p>1\mathbf c_1+1\mathbf c_2<br>$$</p>
+<p>$$
+\mathbf c_1
+=
+1\mathbf c_1+0\mathbf c_2
+$$</p>
+<p>$$
+\mathbf c_2
+=
+0\mathbf c_1+1\mathbf c_2
+$$</p>
+<p>$$
+\mathbf c_3
+=
+1\mathbf c_1+1\mathbf c_2
+$$</p>
 <p>所以系数矩阵为：</p>
-<p>$$<br>C&#x3D;<br>\begin{bmatrix}<br>1 &amp; 0 &amp; 1 \<br>0 &amp; 1 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>$$
+C=
+\begin{bmatrix}
+1 &amp; 0 &amp; 1 \\
+0 &amp; 1 &amp; 1
+\end{bmatrix}
+$$</p>
 <p>最终：</p>
-<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 \<br>2 &amp; 4 \<br>1 &amp; 1<br>\end{bmatrix}<br>\begin{bmatrix}<br>1 &amp; 0 &amp; 1 \<br>0 &amp; 1 &amp; 1<br>\end{bmatrix}<br>$$</p>
+<p>$$
+M=
+\begin{bmatrix}
+1 &amp; 2 \\
+2 &amp; 4 \\
+1 &amp; 1
+\end{bmatrix}
+\begin{bmatrix}
+1 &amp; 0 &amp; 1 \\
+0 &amp; 1 &amp; 1
+\end{bmatrix}
+$$</p>
 <p>也就是：</p>
-<p>$$<br>M&#x3D;BC<br>$$</p>
+<p>$$
+M=BC
+$$</p>
 <p>原矩阵大小为：</p>
-<p>$$<br>3\times3<br>$$</p>
+<p>$$
+3\times3
+$$</p>
 <p>分解后变成：</p>
-<p>$$<br>(3\times2)(2\times3)<br>$$</p>
+<p>$$
+(3\times2)(2\times3)
+$$</p>
 <p>中间维度 $2$ 正好就是矩阵的秩。</p>
 <h3 id="秩为-1-的特殊情况"><a href="#秩为-1-的特殊情况" class="headerlink" title="秩为 1 的特殊情况"></a>秩为 1 的特殊情况</h3><p>如果：</p>
-<p>$$<br>\operatorname{rank}(M)&#x3D;1<br>$$</p>
+<p>$$
+\operatorname{rank}(M)=1
+$$</p>
 <p>意味着所有列都位于同一个方向上。</p>
 <p>例如：</p>
-<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 &amp; 2 &amp; -1 &amp; 3 \<br>2 &amp; 4 &amp; -2 &amp; 6 \<br>3 &amp; 6 &amp; -3 &amp; 9<br>\end{bmatrix}<br>$$</p>
+<p>$$
+M=
+\begin{bmatrix}
+1 &amp; 2 &amp; -1 &amp; 3 \\
+2 &amp; 4 &amp; -2 &amp; 6 \\
+3 &amp; 6 &amp; -3 &amp; 9
+\end{bmatrix}
+$$</p>
 <p>所有列都可以由：</p>
-<p>$$<br>\mathbf u&#x3D;<br>\begin{bmatrix}<br>1 \<br>2 \<br>3<br>\end{bmatrix}<br>$$</p>
+<p>$$
+\mathbf u=
+\begin{bmatrix}
+1 \\
+2 \\
+3
+\end{bmatrix}
+$$</p>
 <p>生成，各列的系数分别是：</p>
-<p>$$<br>1,\quad2,\quad-1,\quad3<br>$$</p>
+<p>$$
+1,\quad2,\quad-1,\quad3
+$$</p>
 <p>所以：</p>
-<p>$$<br>M&#x3D;<br>\begin{bmatrix}<br>1 \<br>2 \<br>3<br>\end{bmatrix}<br>\begin{bmatrix}<br>1 &amp; 2 &amp; -1 &amp; 3<br>\end{bmatrix}<br>$$</p>
+<p>$$
+M=
+\begin{bmatrix}
+1 \\
+2 \\
+3
+\end{bmatrix}
+\begin{bmatrix}
+1 &amp; 2 &amp; -1 &amp; 3
+\end{bmatrix}
+$$</p>
 <p>也就是：</p>
-<p>$$<br>M&#x3D;\mathbf u\mathbf v^\mathsf T<br>$$</p>
+<p>$$
+M=\mathbf u\mathbf v^\mathsf T
+$$</p>
 <p>这种列向量乘行向量的形式称为<strong>外积</strong>。</p>
 <p>一个秩为 1 的矩阵，本质上只需要：</p>
 <blockquote>
 <p>一个基础方向 + 每一列在这个方向上的系数。</p>
 </blockquote>
 <h3 id="为什么两个小矩阵的乘积一定是低秩的"><a href="#为什么两个小矩阵的乘积一定是低秩的" class="headerlink" title="为什么两个小矩阵的乘积一定是低秩的"></a>为什么两个小矩阵的乘积一定是低秩的</h3><p>假设：</p>
-<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
-<p>$$<br>A\in\mathbb R^{r\times n}<br>$$</p>
+<p>$$
+B\in\mathbb R^{m\times r}
+$$</p>
+<p>$$
+A\in\mathbb R^{r\times n}
+$$</p>
 <p>那么：</p>
-<p>$$<br>BA\in\mathbb R^{m\times n}<br>$$</p>
+<p>$$
+BA\in\mathbb R^{m\times n}
+$$</p>
 <p>但一定满足：</p>
-<p>$$<br>\operatorname{rank}(BA)\le r<br>$$</p>
+<p>$$
+\operatorname{rank}(BA)\le r
+$$</p>
 <p>因为整个线性映射过程是：</p>
-<p>$$<br>\mathbb R^n<br>\xrightarrow{A}<br>\mathbb R^r<br>\xrightarrow{B}<br>\mathbb R^m<br>$$</p>
+<p>$$
+\mathbb R^n
+\xrightarrow{A}
+\mathbb R^r
+\xrightarrow{B}
+\mathbb R^m
+$$</p>
 <p>所有信息都必须先经过中间的 $r$ 维空间。</p>
 <p>因此最终不可能产生超过 $r$ 个独立方向。</p>
 <p>可以把 $\mathbb R^r$ 理解成一个<strong>低维瓶颈</strong>。</p>
 <h3 id="为什么这样可以减少参数"><a href="#为什么这样可以减少参数" class="headerlink" title="为什么这样可以减少参数"></a>为什么这样可以减少参数</h3><p>原矩阵：</p>
-<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>$$
+M\in\mathbb R^{m\times n}
+$$</p>
 <p>需要：</p>
-<p>$$<br>mn<br>$$</p>
+<p>$$
+mn
+$$</p>
 <p>个参数。</p>
 <p>如果写成：</p>
-<p>$$<br>M&#x3D;BA<br>$$</p>
+<p>$$
+M=BA
+$$</p>
 <p>其中：</p>
-<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
-<p>$$<br>A\in\mathbb R^{r\times n}<br>$$</p>
+<p>$$
+B\in\mathbb R^{m\times r}
+$$</p>
+<p>$$
+A\in\mathbb R^{r\times n}
+$$</p>
 <p>参数数量变为：</p>
-<p>$$<br>mr+rn<br>$$</p>
+<p>$$
+mr+rn
+$$</p>
 <p>即：</p>
-<p>$$<br>r(m+n)<br>$$</p>
+<p>$$
+r(m+n)
+$$</p>
 <p>只要：</p>
-<p>$$<br>r\ll\min(m,n)<br>$$</p>
+<p>$$
+r\ll\min(m,n)
+$$</p>
 <p>参数量就会大幅减少。</p>
 <p>例如：</p>
-<p>$$<br>M\in\mathbb R^{4096\times4096}<br>$$</p>
+<p>$$
+M\in\mathbb R^{4096\times4096}
+$$</p>
 <p>原矩阵包含：</p>
-<p>$$<br>4096^2&#x3D;16,777,216<br>$$</p>
+<p>$$
+4096^2=16,777,216
+$$</p>
 <p>个参数。</p>
 <p>如果：</p>
-<p>$$<br>r&#x3D;8<br>$$</p>
+<p>$$
+r=8
+$$</p>
 <p>则：</p>
-<p>$$<br>A\in\mathbb R^{8\times4096}<br>$$</p>
-<p>$$<br>B\in\mathbb R^{4096\times8}<br>$$</p>
+<p>$$
+A\in\mathbb R^{8\times4096}
+$$</p>
+<p>$$
+B\in\mathbb R^{4096\times8}
+$$</p>
 <p>参数数量变为：</p>
-<h1 id="8-times4096-4096-times8"><a href="#8-times4096-4096-times8" class="headerlink" title="$$8\times4096+4096\times8"></a>$$<br>8\times4096+4096\times8</h1><p>65,536<br>$$</p>
+<p>$$
+8\times4096+4096\times8
+=
+65,536
+$$</p>
 <p>约为原矩阵的：</p>
-<p>$$<br>0.39%<br>$$</p>
+<p>$$
+0.39\%
+$$</p>
 <h3 id="低秩分解的限制"><a href="#低秩分解的限制" class="headerlink" title="低秩分解的限制"></a>低秩分解的限制</h3><p>并不是任何大矩阵都能被两个很小的矩阵<strong>精确</strong>表示。</p>
 <p>如果：</p>
-<p>$$<br>M&#x3D;BA<br>$$</p>
+<p>$$
+M=BA
+$$</p>
 <p>并且中间维度为 $r$，那么一定有：</p>
-<p>$$<br>\operatorname{rank}(M)\le r<br>$$</p>
+<p>$$
+\operatorname{rank}(M)\le r
+$$</p>
 <p>所以一个：</p>
-<p>$$<br>\operatorname{rank}(M)&#x3D;100<br>$$</p>
+<p>$$
+\operatorname{rank}(M)=100
+$$</p>
 <p>的矩阵，不可能精确写成：</p>
-<p>$$<br>(m\times8)(8\times n)<br>$$</p>
+<p>$$
+(m\times8)(8\times n)
+$$</p>
 <p>因为右边矩阵乘积的秩最多为 8。</p>
 <p>因此：</p>
 <blockquote>
 <p>只有本身就是低秩的矩阵，才能被足够小的两个矩阵精确表示。</p>
 </blockquote>
 <p>对于一般矩阵，我们只能寻找：</p>
-<p>$$<br>M\approx BA<br>$$</p>
+<p>$$
+M\approx BA
+$$</p>
 <p>也就是一个<strong>低秩近似</strong>。</p>
 <p>这就引出了 SVD。</p>
 <hr>
@@ -564,9 +984,13 @@
 <p><strong>Singular Value Decomposition</strong></p>
 <p>中文叫作<strong>奇异值分解</strong>。</p>
 <p>任意实矩阵：</p>
-<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>$$
+M\in\mathbb R^{m\times n}
+$$</p>
 <p>都可以写成：</p>
-<p>$$<br>M&#x3D;U\Sigma V^\mathsf T<br>$$</p>
+<p>$$
+M=U\Sigma V^\mathsf T
+$$</p>
 <p>其中：</p>
 <ul>
 <li>$U$：由左奇异向量组成</li>
@@ -574,14 +998,26 @@
 <li>$\Sigma$：保存奇异值</li>
 </ul>
 <p>$U$ 和 $V$ 是正交矩阵：</p>
-<p>$$<br>U^\mathsf TU&#x3D;I<br>$$</p>
-<p>$$<br>V^\mathsf TV&#x3D;I<br>$$</p>
+<p>$$
+U^\mathsf TU=I
+$$</p>
+<p>$$
+V^\mathsf TV=I
+$$</p>
 <p>因此：</p>
-<p>$$<br>U^{-1}&#x3D;U^\mathsf T<br>$$</p>
-<p>$$<br>V^{-1}&#x3D;V^\mathsf T<br>$$</p>
+<p>$$
+U^{-1}=U^\mathsf T
+$$</p>
+<p>$$
+V^{-1}=V^\mathsf T
+$$</p>
 <p>正交矩阵在几何上可以理解为旋转或翻转，不改变向量长度和夹角。</p>
 <h3 id="SVD-的几何意义"><a href="#SVD-的几何意义" class="headerlink" title="SVD 的几何意义"></a>SVD 的几何意义</h3><p>因为：</p>
-<h1 id="M-mathbf-x-1"><a href="#M-mathbf-x-1" class="headerlink" title="$$M\mathbf x"></a>$$<br>M\mathbf x</h1><p>U\Sigma V^\mathsf T\mathbf x<br>$$</p>
+<p>$$
+M\mathbf x
+=
+U\Sigma V^\mathsf T\mathbf x
+$$</p>
 <p>矩阵作用在向量上时从右向左计算。</p>
 <p>整个线性变换可以拆成三步：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">输入 x<br>  ↓<br>Vᵀ：把输入转到一组特殊的正交方向<br>  ↓<br>Σ：沿不同方向分别放大或缩小<br>  ↓<br>U：把结果转到最终输出方向<br>  ↓<br>输出<br></code></pre></td></tr></table></figure>
@@ -591,7 +1027,11 @@
 <p><strong>把一个复杂线性变换拆成“换方向 → 缩放 → 再换方向”。</strong></p>
 </blockquote>
 <h3 id="奇异值和奇异向量"><a href="#奇异值和奇异向量" class="headerlink" title="奇异值和奇异向量"></a>奇异值和奇异向量</h3><p>SVD 中有一个非常重要的关系：</p>
-<h1 id="M-mathbf-v-i"><a href="#M-mathbf-v-i" class="headerlink" title="$$M\mathbf v_i"></a>$$<br>M\mathbf v_i</h1><p>\sigma_i\mathbf u_i<br>$$</p>
+<p>$$
+M\mathbf v_i
+=
+\sigma_i\mathbf u_i
+$$</p>
 <p>其中：</p>
 <ul>
 <li>$\mathbf v_i$：第 $i$ 个右奇异向量，即输入空间中的特殊方向</li>
@@ -599,117 +1039,247 @@
 <li>$\sigma_i$：第 $i$ 个奇异值，即这个方向的缩放强度</li>
 </ul>
 <p>可以写成：</p>
-<p>$$<br>\mathbf v_i<br>\xrightarrow{M}<br>\sigma_i\mathbf u_i<br>$$</p>
+<p>$$
+\mathbf v_i
+\xrightarrow{M}
+\sigma_i\mathbf u_i
+$$</p>
 <p>例如：</p>
-<p>$$<br>\sigma_1&#x3D;100<br>$$</p>
+<p>$$
+\sigma_1=100
+$$</p>
 <p>而：</p>
-<p>$$<br>\sigma_{10}&#x3D;0.01<br>$$</p>
+<p>$$
+\sigma_{10}=0.01
+$$</p>
 <p>意味着第一个方向对矩阵的作用非常强，而第十个方向的影响很弱。</p>
 <p>所以奇异值可以理解为：</p>
 <blockquote>
 <p><strong>矩阵不同独立变化方向的重要程度。</strong></p>
 </blockquote>
 <h3 id="奇异值是怎么得到的"><a href="#奇异值是怎么得到的" class="headerlink" title="奇异值是怎么得到的"></a>奇异值是怎么得到的</h3><p>对于：</p>
-<p>$$<br>M\in\mathbb R^{m\times n}<br>$$</p>
+<p>$$
+M\in\mathbb R^{m\times n}
+$$</p>
 <p>构造：</p>
-<p>$$<br>M^\mathsf TM<br>$$</p>
+<p>$$
+M^\mathsf TM
+$$</p>
 <p>它是一个 $n\times n$ 的对称矩阵：</p>
-<p>$$<br>(M^\mathsf TM)^\mathsf T&#x3D;M^\mathsf TM<br>$$</p>
+<p>$$
+(M^\mathsf TM)^\mathsf T=M^\mathsf TM
+$$</p>
 <p>对于任意向量 $\mathbf x$：</p>
-<h1 id="mathbf-x-mathsf-TM-mathsf-TM-mathbf-x"><a href="#mathbf-x-mathsf-TM-mathsf-TM-mathbf-x" class="headerlink" title="$$\mathbf x^\mathsf TM^\mathsf TM\mathbf x"></a>$$<br>\mathbf x^\mathsf TM^\mathsf TM\mathbf x</h1><p>(M\mathbf x)^\mathsf T(M\mathbf x)<br>$$</p>
+<p>$$
+\mathbf x^\mathsf TM^\mathsf TM\mathbf x
+=
+(M\mathbf x)^\mathsf T(M\mathbf x)
+$$</p>
 <p>所以：</p>
-<h1 id="mathbf-x-mathsf-TM-mathsf-TM-mathbf-x-1"><a href="#mathbf-x-mathsf-TM-mathsf-TM-mathbf-x-1" class="headerlink" title="$$\mathbf x^\mathsf TM^\mathsf TM\mathbf x"></a>$$<br>\mathbf x^\mathsf TM^\mathsf TM\mathbf x</h1><p>\lVert M\mathbf x\rVert^2<br>\ge0<br>$$</p>
+<p>$$
+\mathbf x^\mathsf TM^\mathsf TM\mathbf x
+=
+\lVert M\mathbf x\rVert^2
+\ge0
+$$</p>
 <p>因此 $M^\mathsf TM$ 是半正定矩阵，它的特征值满足：</p>
-<p>$$<br>\lambda_i\ge0<br>$$</p>
+<p>$$
+\lambda_i\ge0
+$$</p>
 <p>假设：</p>
-<h1 id="M-mathsf-TM-mathbf-v-i"><a href="#M-mathsf-TM-mathbf-v-i" class="headerlink" title="$$M^\mathsf TM\mathbf v_i"></a>$$<br>M^\mathsf TM\mathbf v_i</h1><p>\lambda_i\mathbf v_i<br>$$</p>
+<p>$$
+M^\mathsf TM\mathbf v_i
+=
+\lambda_i\mathbf v_i
+$$</p>
 <p>那么定义：</p>
-<p>$$<br>\sigma_i&#x3D;\sqrt{\lambda_i}<br>$$</p>
+<p>$$
+\sigma_i=\sqrt{\lambda_i}
+$$</p>
 <p>$\sigma_i$ 就是矩阵 $M$ 的奇异值，而 $\mathbf v_i$ 是对应的右奇异向量。</p>
 <p>对于：</p>
-<p>$$<br>\sigma_i&gt;0<br>$$</p>
+<p>$$
+\sigma_i&gt;0
+$$</p>
 <p>左奇异向量可以通过：</p>
-<h1 id="mathbf-u-i"><a href="#mathbf-u-i" class="headerlink" title="$$\mathbf u_i"></a>$$<br>\mathbf u_i</h1><p>\frac{M\mathbf v_i}{\sigma_i}<br>$$</p>
+<p>$$
+\mathbf u_i
+=
+\frac{M\mathbf v_i}{\sigma_i}
+$$</p>
 <p>得到。</p>
 <p>之所以对特征值开平方，是因为：</p>
-<p>$$<br>\lVert M\mathbf v_i\rVert^2&#x3D;\lambda_i<br>$$</p>
+<p>$$
+\lVert M\mathbf v_i\rVert^2=\lambda_i
+$$</p>
 <p>所以实际的长度缩放倍数为：</p>
-<p>$$<br>\lVert M\mathbf v_i\rVert&#x3D;\sqrt{\lambda_i}&#x3D;\sigma_i<br>$$</p>
+<p>$$
+\lVert M\mathbf v_i\rVert=\sqrt{\lambda_i}=\sigma_i
+$$</p>
 <h3 id="SVD-与秩的关系"><a href="#SVD-与秩的关系" class="headerlink" title="SVD 与秩的关系"></a>SVD 与秩的关系</h3><p>SVD 可以展开成：</p>
-<h1 id="M"><a href="#M" class="headerlink" title="$$M"></a>$$<br>M</h1><p>\sigma_1\mathbf u_1\mathbf v_1^\mathsf T<br>+<br>\sigma_2\mathbf u_2\mathbf v_2^\mathsf T<br>+\cdots<br>$$</p>
+<p>$$
+M
+=
+\sigma_1\mathbf u_1\mathbf v_1^\mathsf T
++
+\sigma_2\mathbf u_2\mathbf v_2^\mathsf T
++\cdots
+$$</p>
 <p>每一项：</p>
-<p>$$<br>\sigma_i\mathbf u_i\mathbf v_i^\mathsf T<br>$$</p>
+<p>$$
+\sigma_i\mathbf u_i\mathbf v_i^\mathsf T
+$$</p>
 <p>都是一个秩最多为 1 的矩阵。</p>
 <p>因此可以把任意矩阵理解成：</p>
 <blockquote>
 <p>多个秩为 1 的基本变化模式叠加而成。</p>
 </blockquote>
 <p>并且：</p>
-<h1 id="operatorname-rank-M-1"><a href="#operatorname-rank-M-1" class="headerlink" title="$$\operatorname{rank}(M)"></a>$$<br>\operatorname{rank}(M)</h1><p>\text{非零奇异值的数量}<br>$$</p>
+<p>$$
+\operatorname{rank}(M)
+=
+\text{非零奇异值的数量}
+$$</p>
 <p>如果只有两个非零奇异值，那么：</p>
-<p>$$<br>\operatorname{rank}(M)&#x3D;2<br>$$</p>
+<p>$$
+\operatorname{rank}(M)=2
+$$</p>
 <h3 id="截断-SVD"><a href="#截断-SVD" class="headerlink" title="截断 SVD"></a>截断 SVD</h3><p>假设：</p>
-<h1 id="M-1"><a href="#M-1" class="headerlink" title="$$M"></a>$$<br>M</h1><p>\sum_{i&#x3D;1}^{k}<br>\sigma_i\mathbf u_i\mathbf v_i^\mathsf T<br>$$</p>
+<p>$$
+M
+=
+\sum_{i=1}^{k}
+\sigma_i\mathbf u_i\mathbf v_i^\mathsf T
+$$</p>
 <p>并按照：</p>
-<p>$$<br>\sigma_1\ge\sigma_2\ge\cdots<br>$$</p>
+<p>$$
+\sigma_1\ge\sigma_2\ge\cdots
+$$</p>
 <p>排列。</p>
 <p>例如：</p>
-<p>$$<br>100,\quad30,\quad5,\quad0.1,\quad0.01,\quad0.001<br>$$</p>
+<p>$$
+100,\quad30,\quad5,\quad0.1,\quad0.01,\quad0.001
+$$</p>
 <p>后面的奇异方向影响已经很弱。</p>
 <p>于是可以只保留前 $r$ 个：</p>
-<h1 id="M-r"><a href="#M-r" class="headerlink" title="$$M_r"></a>$$<br>M_r</h1><p>\sum_{i&#x3D;1}^{r}<br>\sigma_i\mathbf u_i\mathbf v_i^\mathsf T<br>$$</p>
+<p>$$
+M_r
+=
+\sum_{i=1}^{r}
+\sigma_i\mathbf u_i\mathbf v_i^\mathsf T
+$$</p>
 <p>例如只保留两个方向：</p>
-<h1 id="M-2"><a href="#M-2" class="headerlink" title="$$M_2"></a>$$<br>M_2</h1><p>\sigma_1\mathbf u_1\mathbf v_1^\mathsf T<br>+<br>\sigma_2\mathbf u_2\mathbf v_2^\mathsf T<br>$$</p>
+<p>$$
+M_2
+=
+\sigma_1\mathbf u_1\mathbf v_1^\mathsf T
++
+\sigma_2\mathbf u_2\mathbf v_2^\mathsf T
+$$</p>
 <p>此时：</p>
-<p>$$<br>\operatorname{rank}(M_2)\le2<br>$$</p>
+<p>$$
+\operatorname{rank}(M_2)\le2
+$$</p>
 <p>同时：</p>
-<p>$$<br>M\approx M_2<br>$$</p>
+<p>$$
+M\approx M_2
+$$</p>
 <p>这个过程称为<strong>截断 SVD（Truncated SVD）</strong>。</p>
 <p>它的思想就是：</p>
 <blockquote>
 <p>保留最重要的变化方向，舍弃作用很弱的方向。</p>
 </blockquote>
 <h3 id="如何把截断-SVD-写成两个矩阵"><a href="#如何把截断-SVD-写成两个矩阵" class="headerlink" title="如何把截断 SVD 写成两个矩阵"></a>如何把截断 SVD 写成两个矩阵</h3><p>截断以后：</p>
-<h1 id="M-r-1"><a href="#M-r-1" class="headerlink" title="$$M_r"></a>$$<br>M_r</h1><p>U_r\Sigma_rV_r^\mathsf T<br>$$</p>
+<p>$$
+M_r
+=
+U_r\Sigma_rV_r^\mathsf T
+$$</p>
 <p>其中：</p>
-<p>$$<br>U_r\in\mathbb R^{m\times r}<br>$$</p>
-<p>$$<br>\Sigma_r\in\mathbb R^{r\times r}<br>$$</p>
-<p>$$<br>V_r^\mathsf T\in\mathbb R^{r\times n}<br>$$</p>
+<p>$$
+U_r\in\mathbb R^{m\times r}
+$$</p>
+<p>$$
+\Sigma_r\in\mathbb R^{r\times r}
+$$</p>
+<p>$$
+V_r^\mathsf T\in\mathbb R^{r\times n}
+$$</p>
 <p>定义：</p>
-<p>$$<br>B&#x3D;U_r\Sigma_r<br>$$</p>
-<p>$$<br>A&#x3D;V_r^\mathsf T<br>$$</p>
+<p>$$
+B=U_r\Sigma_r
+$$</p>
+<p>$$
+A=V_r^\mathsf T
+$$</p>
 <p>那么：</p>
-<p>$$<br>M_r&#x3D;BA<br>$$</p>
+<p>$$
+M_r=BA
+$$</p>
 <p>于是：</p>
-<p>$$<br>M\approx BA<br>$$</p>
+<p>$$
+M\approx BA
+$$</p>
 <p>也可以把奇异值平均分给两边：</p>
-<p>$$<br>B&#x3D;U_r\Sigma_r^{1&#x2F;2}<br>$$</p>
-<p>$$<br>A&#x3D;\Sigma_r^{1&#x2F;2}V_r^\mathsf T<br>$$</p>
+<p>$$
+B=U_r\Sigma_r^{1/2}
+$$</p>
+<p>$$
+A=\Sigma_r^{1/2}V_r^\mathsf T
+$$</p>
 <p>因为：</p>
-<p>$$<br>\Sigma_r^{1&#x2F;2}\Sigma_r^{1&#x2F;2}&#x3D;\Sigma_r<br>$$</p>
+<p>$$
+\Sigma_r^{1/2}\Sigma_r^{1/2}=\Sigma_r
+$$</p>
 <p>所以：</p>
-<h1 id="BA"><a href="#BA" class="headerlink" title="$$BA"></a>$$<br>BA</h1><h1 id="U-r-Sigma-rV-r-mathsf-T"><a href="#U-r-Sigma-rV-r-mathsf-T" class="headerlink" title="U_r\Sigma_rV_r^\mathsf T"></a>U_r\Sigma_rV_r^\mathsf T</h1><p>M_r<br>$$</p>
+<p>$$
+BA
+=
+U_r\Sigma_rV_r^\mathsf T
+=
+M_r
+$$</p>
 <h3 id="为什么截断-SVD-是好的低秩近似"><a href="#为什么截断-SVD-是好的低秩近似" class="headerlink" title="为什么截断 SVD 是好的低秩近似"></a>为什么截断 SVD 是好的低秩近似</h3><p>截断 SVD 有一个非常重要的性质：</p>
 <blockquote>
 <p>在所有秩不超过 $r$ 的矩阵中，截断 SVD 得到的 $M_r$ 是对原矩阵 $M$ 的最佳低秩近似。</p>
 </blockquote>
 <p>例如使用 Frobenius 范数：</p>
-<h1 id="lVert-M-M-r-rVert-F"><a href="#lVert-M-M-r-rVert-F" class="headerlink" title="$$\lVert M-M_r\rVert_F"></a>$$<br>\lVert M-M_r\rVert_F</h1><p>\sqrt{<br>\sigma_{r+1}^2+<br>\sigma_{r+2}^2+<br>\cdots<br>}<br>$$</p>
+<p>$$
+\lVert M-M_r\rVert_F
+=
+\sqrt{
+\sigma_{r+1}^2+
+\sigma_{r+2}^2+
+\cdots
+}
+$$</p>
 <p>因此，如果被舍弃的奇异值：</p>
-<p>$$<br>\sigma_{r+1},\sigma_{r+2},\dots<br>$$</p>
+<p>$$
+\sigma_{r+1},\sigma_{r+2},\dots
+$$</p>
 <p>都很小，那么：</p>
-<p>$$<br>M_r\approx M<br>$$</p>
+<p>$$
+M_r\approx M
+$$</p>
 <p>会非常准确。</p>
 <p>所以一个矩阵即使严格来说并不是低秩的，只要绝大部分重要变化集中在少数奇异方向上，也可能具有非常好的低秩近似。</p>
 <hr>
 <h2 id="从低秩近似到-LoRA"><a href="#从低秩近似到-LoRA" class="headerlink" title="从低秩近似到 LoRA"></a>从低秩近似到 LoRA</h2><h3 id="完整微调在做什么"><a href="#完整微调在做什么" class="headerlink" title="完整微调在做什么"></a>完整微调在做什么</h3><p>神经网络中的一个普通线性层：</p>
-<p>$$<br>y&#x3D;Wx<br>$$</p>
+<p>$$
+y=Wx
+$$</p>
 <p>假设：</p>
-<p>$$<br>W\in\mathbb R^{4096\times4096}<br>$$</p>
+<p>$$
+W\in\mathbb R^{4096\times4096}
+$$</p>
 <p>完整微调会改变 $W$：</p>
-<p>$$<br>W’&#x3D;W+\Delta W<br>$$</p>
+<p>$$
+W&#39;=W+\Delta W
+$$</p>
 <p>其中：</p>
-<p>$$<br>\Delta W\in\mathbb R^{4096\times4096}<br>$$</p>
+<p>$$
+\Delta W\in\mathbb R^{4096\times4096}
+$$</p>
 <p>这意味着完整微调允许 $\Delta W$ 在整个高维参数空间中自由变化。</p>
 <h3 id="LoRA-的核心假设"><a href="#LoRA-的核心假设" class="headerlink" title="LoRA 的核心假设"></a>LoRA 的核心假设</h3><p>假设基础模型已经学会：</p>
 <ul>
@@ -734,32 +1304,59 @@
 <p>模型为了适应新任务而真正需要的权重变化，可能主要集中在少数几个方向中。</p>
 </blockquote>
 <p>也就是说，虽然完整的：</p>
-<p>$$<br>\Delta W<br>$$</p>
+<p>$$
+\Delta W
+$$</p>
 <p>可能非常大，但它的<strong>有效变化维度</strong>可能比较低。</p>
 <p>因此 LoRA 直接规定：</p>
-<p>$$<br>\Delta W&#x3D;BA<br>$$</p>
+<p>$$
+\Delta W=BA
+$$</p>
 <p>其中：</p>
-<p>$$<br>A\in\mathbb R^{r\times n}<br>$$</p>
-<p>$$<br>B\in\mathbb R^{m\times r}<br>$$</p>
+<p>$$
+A\in\mathbb R^{r\times n}
+$$</p>
+<p>$$
+B\in\mathbb R^{m\times r}
+$$</p>
 <p>于是：</p>
-<h1 id="operatorname-rank-Delta-W"><a href="#operatorname-rank-Delta-W" class="headerlink" title="$$\operatorname{rank}(\Delta W)"></a>$$<br>\operatorname{rank}(\Delta W)</h1><p>\operatorname{rank}(BA)<br>\le r<br>$$</p>
+<p>$$
+\operatorname{rank}(\Delta W)
+=
+\operatorname{rank}(BA)
+\le r
+$$</p>
 <p>这相当于主动限制：</p>
 <blockquote>
 <p>权重更新只能存在于一个低维子空间中。</p>
 </blockquote>
 <h3 id="SVD-和-LoRA-的区别"><a href="#SVD-和-LoRA-的区别" class="headerlink" title="SVD 和 LoRA 的区别"></a>SVD 和 LoRA 的区别</h3><p>从 SVD 的角度，可以设想：</p>
 <p>先完整微调得到：</p>
-<p>$$<br>\Delta W<br>$$</p>
+<p>$$
+\Delta W
+$$</p>
 <p>然后：</p>
-<h1 id="Delta-W"><a href="#Delta-W" class="headerlink" title="$$\Delta W"></a>$$<br>\Delta W</h1><p>U\Sigma V^\mathsf T<br>$$</p>
+<p>$$
+\Delta W
+=
+U\Sigma V^\mathsf T
+$$</p>
 <p>再只保留前 $r$ 个奇异方向：</p>
-<h1 id="Delta-W-r"><a href="#Delta-W-r" class="headerlink" title="$$\Delta W_r"></a>$$<br>\Delta W_r</h1><p>U_r\Sigma_rV_r^\mathsf T<br>$$</p>
+<p>$$
+\Delta W_r
+=
+U_r\Sigma_rV_r^\mathsf T
+$$</p>
 <p>最后写成：</p>
-<p>$$<br>\Delta W_r&#x3D;BA<br>$$</p>
+<p>$$
+\Delta W_r=BA
+$$</p>
 <p>数学上这是可行的，但这<strong>不是 LoRA 实际采用的方法</strong>。</p>
 <p>如果先完整训练出 $\Delta W$，完整微调最昂贵的部分已经发生了。</p>
 <p>LoRA 真正的做法是从训练开始就直接规定：</p>
-<p>$$<br>\Delta W:&#x3D;BA<br>$$</p>
+<p>$$
+\Delta W:=BA
+$$</p>
 <p>然后直接训练 $A$ 和 $B$。</p>
 <p>可以类比为：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs text">先完整微调再 SVD：<br><br>先写 10000 字<br>      ↓<br>找出最重要内容<br>      ↓<br>压缩成 1000 字<br><br><br>LoRA：<br><br>一开始就规定只能写 1000 字<br>      ↓<br>直接寻找这 1000 字中的最佳答案<br></code></pre></td></tr></table></figure>
@@ -770,15 +1367,25 @@
 </blockquote>
 <hr>
 <h2 id="LoRA-的训练与计算过程"><a href="#LoRA-的训练与计算过程" class="headerlink" title="LoRA 的训练与计算过程"></a>LoRA 的训练与计算过程</h2><h3 id="LoRA-如何加入线性层"><a href="#LoRA-如何加入线性层" class="headerlink" title="LoRA 如何加入线性层"></a>LoRA 如何加入线性层</h3><p>原来的线性层：</p>
-<p>$$<br>y&#x3D;Wx<br>$$</p>
+<p>$$
+y=Wx
+$$</p>
 <p>LoRA 规定：</p>
-<p>$$<br>\Delta W&#x3D;BA<br>$$</p>
+<p>$$
+\Delta W=BA
+$$</p>
 <p>所以：</p>
-<p>$$<br>W’&#x3D;W+BA<br>$$</p>
+<p>$$
+W&#39;=W+BA
+$$</p>
 <p>代入：</p>
-<p>$$<br>y&#x3D;(W+BA)x<br>$$</p>
+<p>$$
+y=(W+BA)x
+$$</p>
 <p>利用分配律：</p>
-<p>$$<br>y&#x3D;Wx+BAx<br>$$</p>
+<p>$$
+y=Wx+BAx
+$$</p>
 <p>于是可以理解成两条并行路径：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">                    ┌──── W ────→ Wx ────┐<br>x ──────────────────┤                     ├──→ 相加 → y<br>                    └── A → B ─→ BAx ────┘<br></code></pre></td></tr></table></figure>
 
@@ -791,25 +1398,51 @@
 </ul>
 <p>LoRA 本质上是在原模型旁边增加了一条<strong>可训练的小型修正分支</strong>。</p>
 <h3 id="A-和-B-分别做什么"><a href="#A-和-B-分别做什么" class="headerlink" title="$A$ 和 $B$ 分别做什么"></a>$A$ 和 $B$ 分别做什么</h3><p>假设：</p>
-<p>$$<br>x\in\mathbb R^{4096}<br>$$</p>
+<p>$$
+x\in\mathbb R^{4096}
+$$</p>
 <p>选择：</p>
-<p>$$<br>r&#x3D;8<br>$$</p>
+<p>$$
+r=8
+$$</p>
 <p>那么：</p>
-<p>$$<br>A\in\mathbb R^{8\times4096}<br>$$</p>
+<p>$$
+A\in\mathbb R^{8\times4096}
+$$</p>
 <p>首先：</p>
-<p>$$<br>z&#x3D;Ax<br>$$</p>
+<p>$$
+z=Ax
+$$</p>
 <p>得到：</p>
-<p>$$<br>z\in\mathbb R^8<br>$$</p>
+<p>$$
+z\in\mathbb R^8
+$$</p>
 <p>即：</p>
-<p>$$<br>\mathbb R^{4096}<br>\xrightarrow{A}<br>\mathbb R^8<br>$$</p>
+<p>$$
+\mathbb R^{4096}
+\xrightarrow{A}
+\mathbb R^8
+$$</p>
 <p>然后：</p>
-<p>$$<br>B\in\mathbb R^{4096\times8}<br>$$</p>
+<p>$$
+B\in\mathbb R^{4096\times8}
+$$</p>
 <p>再计算：</p>
-<p>$$<br>Bz&#x3D;BAx<br>$$</p>
+<p>$$
+Bz=BAx
+$$</p>
 <p>得到：</p>
-<p>$$<br>Bz\in\mathbb R^{4096}<br>$$</p>
+<p>$$
+Bz\in\mathbb R^{4096}
+$$</p>
 <p>所以整个 LoRA 分支为：</p>
-<p>$$<br>\mathbb R^{4096}<br>\xrightarrow{A}<br>\mathbb R^8<br>\xrightarrow{B}<br>\mathbb R^{4096}<br>$$</p>
+<p>$$
+\mathbb R^{4096}
+\xrightarrow{A}
+\mathbb R^8
+\xrightarrow{B}
+\mathbb R^{4096}
+$$</p>
 <p>可以粗略理解为：</p>
 <ul>
 <li>$A$：把高维输入映射到少量低维变化特征</li>
@@ -818,53 +1451,104 @@
 <p>中间的 $r$ 维空间就是 LoRA 的<strong>低秩瓶颈</strong>。</p>
 <p>需要注意的是，某个具体维度通常不能直接解释成“礼貌”“法律知识”之类明确的人类概念，它只是模型自己学到的数学表示。</p>
 <h3 id="LoRA-实际训练什么"><a href="#LoRA-实际训练什么" class="headerlink" title="LoRA 实际训练什么"></a>LoRA 实际训练什么</h3><p>加入 LoRA 后：</p>
-<p>$$<br>y&#x3D;Wx+BAx<br>$$</p>
+<p>$$
+y=Wx+BAx
+$$</p>
 <p>根据模型输出与目标结果之间的差异计算损失：</p>
-<p>$$<br>L<br>$$</p>
+<p>$$
+L
+$$</p>
 <p>完整微调会直接更新：</p>
-<p>$$<br>W<br>$$</p>
+<p>$$
+W
+$$</p>
 <p>例如：</p>
-<p>$$<br>W<br>\leftarrow<br>W-\eta<br>\frac{\partial L}{\partial W}<br>$$</p>
+<p>$$
+W
+\leftarrow
+W-\eta
+\frac{\partial L}{\partial W}
+$$</p>
 <p>LoRA 中则冻结：</p>
-<p>$$<br>W<br>$$</p>
+<p>$$
+W
+$$</p>
 <p>只训练：</p>
-<p>$$<br>A<br>$$</p>
+<p>$$
+A
+$$</p>
 <p>和：</p>
-<p>$$<br>B<br>$$</p>
+<p>$$
+B
+$$</p>
 <p>即：</p>
-<p>$$<br>A<br>\leftarrow<br>A-\eta<br>\frac{\partial L}{\partial A}<br>$$</p>
-<p>$$<br>B<br>\leftarrow<br>B-\eta<br>\frac{\partial L}{\partial B}<br>$$</p>
+<p>$$
+A
+\leftarrow
+A-\eta
+\frac{\partial L}{\partial A}
+$$</p>
+<p>$$
+B
+\leftarrow
+B-\eta
+\frac{\partial L}{\partial B}
+$$</p>
 <p>所以训练过程实际上是在寻找一组 $A,B$，使：</p>
-<p>$$<br>W+BA<br>$$</p>
+<p>$$
+W+BA
+$$</p>
 <p>在当前任务上的损失尽可能低。</p>
 <p>可以理解为：</p>
 <blockquote>
-<p>完整微调是在所有可能的 $\Delta W$ 中寻找答案；LoRA 则只在满足 $\Delta W&#x3D;BA$ 的低秩更新空间中寻找答案。</p>
+<p>完整微调是在所有可能的 $\Delta W$ 中寻找答案；LoRA 则只在满足 $\Delta W=BA$ 的低秩更新空间中寻找答案。</p>
 </blockquote>
 <h3 id="为什么初始化时不影响原模型"><a href="#为什么初始化时不影响原模型" class="headerlink" title="为什么初始化时不影响原模型"></a>为什么初始化时不影响原模型</h3><p>LoRA 常采用类似：</p>
-<p>$$<br>A&#x3D;\text{随机初始化}<br>$$</p>
-<p>$$<br>B&#x3D;0<br>$$</p>
+<p>$$
+A=\text{随机初始化}
+$$</p>
+<p>$$
+B=0
+$$</p>
 <p>的初始化方式。</p>
 <p>因为：</p>
-<p>$$<br>B&#x3D;0<br>$$</p>
+<p>$$
+B=0
+$$</p>
 <p>所以：</p>
-<p>$$<br>BA&#x3D;0<br>$$</p>
+<p>$$
+BA=0
+$$</p>
 <p>训练刚开始时：</p>
-<p>$$<br>y&#x3D;Wx+BAx<br>$$</p>
+<p>$$
+y=Wx+BAx
+$$</p>
 <p>实际上就是：</p>
-<p>$$<br>y&#x3D;Wx<br>$$</p>
+<p>$$
+y=Wx
+$$</p>
 <p>因此 LoRA 刚加入模型时不会破坏基础模型原来的行为。</p>
 <p>随着训练进行：</p>
-<p>$$<br>BA\neq0<br>$$</p>
+<p>$$
+BA\neq0
+$$</p>
 <p>LoRA 才逐渐形成任务相关的权重修正。</p>
 <h3 id="Rank"><a href="#Rank" class="headerlink" title="Rank"></a>Rank</h3><p>LoRA 最重要的超参数之一是：</p>
-<p>$$<br>r<br>$$</p>
+<p>$$
+r
+$$</p>
 <p>常见设置例如：</p>
-<p>$$<br>r&#x3D;4,8,16,32,64<br>$$</p>
+<p>$$
+r=4,8,16,32,64
+$$</p>
 <p>如果：</p>
-<p>$$<br>r&#x3D;8<br>$$</p>
+<p>$$
+r=8
+$$</p>
 <p>那么：</p>
-<p>$$<br>\operatorname{rank}(\Delta W)\le8<br>$$</p>
+<p>$$
+\operatorname{rank}(\Delta W)\le8
+$$</p>
 <p>也就是说权重更新最多包含 8 个独立变化方向。</p>
 <p>rank 越小：</p>
 <ul>
@@ -884,32 +1568,52 @@
 <p><strong>LoRA 允许权重更新拥有多少个独立变化方向。</strong></p>
 </blockquote>
 <h3 id="Alpha"><a href="#Alpha" class="headerlink" title="Alpha"></a>Alpha</h3><p>实际 LoRA 通常写成：</p>
-<h1 id="Delta-W-1"><a href="#Delta-W-1" class="headerlink" title="$$\Delta W"></a>$$<br>\Delta W</h1><p>\frac{\alpha}{r}BA<br>$$</p>
+<p>$$
+\Delta W
+=
+\frac{\alpha}{r}BA
+$$</p>
 <p>因此：</p>
-<h1 id="y"><a href="#y" class="headerlink" title="$$y"></a>$$<br>y</h1><p>Wx+<br>\frac{\alpha}{r}BAx<br>$$</p>
+<p>$$
+y
+=
+Wx+
+\frac{\alpha}{r}BAx
+$$</p>
 <p>其中：</p>
 <ul>
 <li>$r$：LoRA 的 rank</li>
 <li>$\alpha$：缩放参数</li>
 </ul>
 <p>可以简单理解为：</p>
-<p>$$<br>BA<br>$$</p>
+<p>$$
+BA
+$$</p>
 <p>决定：</p>
 <blockquote>
 <p>权重修改的方向和结构。</p>
 </blockquote>
 <p>而：</p>
-<p>$$<br>\frac{\alpha}{r}<br>$$</p>
+<p>$$
+\frac{\alpha}{r}
+$$</p>
 <p>控制：</p>
 <blockquote>
 <p>LoRA 更新的整体数值尺度。</p>
 </blockquote>
 <p>因此最终有效权重是：</p>
-<h1 id="W’"><a href="#W’" class="headerlink" title="$$W’"></a>$$<br>W’</h1><p>W+<br>\frac{\alpha}{r}BA<br>$$</p>
+<p>$$
+W&#39;
+=
+W+
+\frac{\alpha}{r}BA
+$$</p>
 <hr>
 <h2 id="LoRA-在-Transformer-中的实际使用"><a href="#LoRA-在-Transformer-中的实际使用" class="headerlink" title="LoRA 在 Transformer 中的实际使用"></a>LoRA 在 Transformer 中的实际使用</h2><p>Transformer 中包含大量线性变换。</p>
 <p>Attention 中常见：</p>
-<p>$$<br>W_Q,\quad W_K,\quad W_V,\quad W_O<br>$$</p>
+<p>$$
+W_Q,\quad W_K,\quad W_V,\quad W_O
+$$</p>
 <p>代码中通常对应：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs text">q_proj<br>k_proj<br>v_proj<br>o_proj<br></code></pre></td></tr></table></figure>
 
@@ -918,21 +1622,41 @@
 
 <p>LoRA 通常不是整个模型只使用一组 $A,B$，而是给选中的多个权重矩阵分别增加自己的 LoRA。</p>
 <p>例如：</p>
-<h1 id="W-Q’"><a href="#W-Q’" class="headerlink" title="$$W_Q’"></a>$$<br>W_Q’</h1><p>W_Q+B_QA_Q<br>$$</p>
-<h1 id="W-V’"><a href="#W-V’" class="headerlink" title="$$W_V’"></a>$$<br>W_V’</h1><p>W_V+B_VA_V<br>$$</p>
+<p>$$
+W_Q&#39;
+=
+W_Q+B_QA_Q
+$$</p>
+<p>$$
+W_V&#39;
+=
+W_V+B_VA_V
+$$</p>
 <p>一个多层 Transformer 可能类似：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs text">Layer 1<br>├── q_proj<br>│   └── A₁, B₁<br>└── v_proj<br>    └── A₂, B₂<br><br>Layer 2<br>├── q_proj<br>│   └── A₃, B₃<br>└── v_proj<br>    └── A₄, B₄<br><br>...<br><br>Layer N<br></code></pre></td></tr></table></figure>
 
 <p>每一个目标权重矩阵都有自己的低秩更新。</p>
 <h3 id="为什么很多小更新能够明显改变模型"><a href="#为什么很多小更新能够明显改变模型" class="headerlink" title="为什么很多小更新能够明显改变模型"></a>为什么很多小更新能够明显改变模型</h3><p>Transformer 中，一层的输出会成为下一层的输入。</p>
 <p>可以简化表示为：</p>
-<p>$$<br>h_1&#x3D;f_1(h_0)+\Delta_1<br>$$</p>
-<p>$$<br>h_2&#x3D;f_2(h_1)+\Delta_2<br>$$</p>
-<p>$$<br>h_3&#x3D;f_3(h_2)+\Delta_3<br>$$</p>
+<p>$$
+h_1=f_1(h_0)+\Delta_1
+$$</p>
+<p>$$
+h_2=f_2(h_1)+\Delta_2
+$$</p>
+<p>$$
+h_3=f_3(h_2)+\Delta_3
+$$</p>
 <p>如果前面一层发生了一点变化：</p>
-<p>$$<br>h_1\rightarrow h_1’<br>$$</p>
+<p>$$
+h_1\rightarrow h_1&#39;
+$$</p>
 <p>那么下一层接收到的输入也发生变化：</p>
-<p>$$<br>f_2(h_1)<br>\rightarrow<br>f_2(h_1’)<br>$$</p>
+<p>$$
+f_2(h_1)
+\rightarrow
+f_2(h_1&#39;)
+$$</p>
 <p>这个差异会继续向后传播。</p>
 <p>因此，一个 LoRA 层可能只造成较小变化，但很多层共同作用后，可以明显改变模型的：</p>
 <ul>
@@ -944,7 +1668,9 @@
 </ul>
 <hr>
 <h2 id="LoRA-的保存、推理与合并"><a href="#LoRA-的保存、推理与合并" class="headerlink" title="LoRA 的保存、推理与合并"></a>LoRA 的保存、推理与合并</h2><h3 id="训练完成后保存什么"><a href="#训练完成后保存什么" class="headerlink" title="训练完成后保存什么"></a>训练完成后保存什么</h3><p>因为基础模型中的：</p>
-<p>$$<br>W<br>$$</p>
+<p>$$
+W
+$$</p>
 <p>始终被冻结，所以训练结束后不需要重新保存整个基础模型。</p>
 <p>只需要保存：</p>
 <ul>
@@ -962,21 +1688,44 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs text">Base Model + 客服 LoRA<br><br>Base Model + 法律 LoRA<br><br>Base Model + SQL LoRA<br></code></pre></td></tr></table></figure>
 
 <h3 id="推理时如何使用"><a href="#推理时如何使用" class="headerlink" title="推理时如何使用"></a>推理时如何使用</h3><p>推理时，对于安装了 LoRA 的线性层：</p>
-<h1 id="y-1"><a href="#y-1" class="headerlink" title="$$y"></a>$$<br>y</h1><p>Wx+<br>\frac{\alpha}{r}BAx<br>$$</p>
+<p>$$
+y
+=
+Wx+
+\frac{\alpha}{r}BAx
+$$</p>
 <p>模型首先计算：</p>
-<p>$$<br>Wx<br>$$</p>
+<p>$$
+Wx
+$$</p>
 <p>再加上 LoRA 学到的修正：</p>
-<p>$$<br>\frac{\alpha}{r}BAx<br>$$</p>
+<p>$$
+\frac{\alpha}{r}BAx
+$$</p>
 <p>这些修正在多个 Transformer 层中逐渐传播，最终影响模型生成结果。</p>
 <h3 id="LoRA-Merge"><a href="#LoRA-Merge" class="headerlink" title="LoRA Merge"></a>LoRA Merge</h3><p>因为：</p>
-<h1 id="W’-1"><a href="#W’-1" class="headerlink" title="$$W’"></a>$$<br>W’</h1><p>W+<br>\frac{\alpha}{r}BA<br>$$</p>
+<p>$$
+W&#39;
+=
+W+
+\frac{\alpha}{r}BA
+$$</p>
 <p>所以训练完成以后，也可以提前计算：</p>
-<h1 id="W-text-merged"><a href="#W-text-merged" class="headerlink" title="$$W_{\text{merged}}"></a>$$<br>W_{\text{merged}}</h1><p>W+<br>\frac{\alpha}{r}BA<br>$$</p>
+<p>$$
+W_{\text{merged}}
+=
+W+
+\frac{\alpha}{r}BA
+$$</p>
 <p>之后直接使用：</p>
-<p>$$<br>y&#x3D;W_{\text{merged}}x<br>$$</p>
+<p>$$
+y=W_{\text{merged}}x
+$$</p>
 <p>这个过程叫作 <strong>LoRA Merge</strong>。</p>
 <p>未合并时：</p>
-<p>$$<br>Wx+\frac{\alpha}{r}BAx<br>$$</p>
+<p>$$
+Wx+\frac{\alpha}{r}BAx
+$$</p>
 <p>优点是：</p>
 <ul>
 <li>可以随时加载或卸载 LoRA</li>
@@ -984,7 +1733,9 @@
 <li>可以快速切换不同 LoRA</li>
 </ul>
 <p>合并以后：</p>
-<p>$$<br>W_{\text{merged}}x<br>$$</p>
+<p>$$
+W_{\text{merged}}x
+$$</p>
 <p>部署更加简单，但失去了快速切换和关闭 LoRA 的灵活性。</p>
 <hr>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>整个 LoRA 的思维链路可以概括为：</p>
@@ -996,7 +1747,7 @@
 </blockquote>
 <p>更准确地说：</p>
 <blockquote>
-<p><strong>LoRA 假设一个已经训练好的模型为了适应新任务，真正需要的权重变化主要存在于一个低维子空间中。因此，它直接把权重更新限制为低秩形式 $\Delta W&#x3D;BA$，冻结原模型，只训练小矩阵 $A$ 和 $B$，从而以很少的可训练参数完成模型适配。</strong></p>
+<p><strong>LoRA 假设一个已经训练好的模型为了适应新任务，真正需要的权重变化主要存在于一个低维子空间中。因此，它直接把权重更新限制为低秩形式 $\Delta W=BA$，冻结原模型，只训练小矩阵 $A$ 和 $B$，从而以很少的可训练参数完成模型适配。</strong></p>
 </blockquote>
 <h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2106.09685">LoRA: Low-Rank Adaptation of Large Language Models</a></p>
 
@@ -1032,11 +1783,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
         <a href="/tags/LoRA/" class="print-no-link">#LoRA</a>
       
         <a href="/tags/%E5%BE%AE%E8%B0%83/" class="print-no-link">#微调</a>
-      
-        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
       
     </div>
   
@@ -1161,6 +1912,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -1418,9 +2175,56 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
   <script  src="/js/local-search.js" ></script>
 
 
+
+
+  
+<script src="/js/navbar-search.js"></script>
 
 
 

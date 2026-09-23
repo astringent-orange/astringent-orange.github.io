@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -70,6 +70,12 @@
     <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
 
 
 
@@ -143,11 +149,55 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -159,6 +209,18 @@
               <a class="nav-link" href="/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
               </a>
             </li>
           
@@ -221,14 +283,72 @@
           
           
           
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
             </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
           
         
           
@@ -240,6 +360,20 @@
                 <div class="mobile-grid-item">
                   <i class="iconfont icon-tags-fill"></i>
                   <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
                 </div>
               </a>
             </div>
@@ -304,7 +438,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.7k 字
+          8.4k 字
         
       </span>
     
@@ -315,7 +449,7 @@
         
         
         
-          48 分钟
+          71 分钟
         
       </span>
     
@@ -368,10 +502,10 @@
 <p>此处可能会遇到两个问题</p>
 <ol>
 <li>下载pybind11与yaml-cpp：如果无法连接GitHub，可能无法自动下载。需要手动下载<a target="_blank" rel="noopener" href="https://github.com/pybind/pybind11">pybind11</a>，与<a target="_blank" rel="noopener" href="https://github.com/jbeder/yaml-cpp#">yaml-cpp</a><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd catkin_ws/src/flightmare/flightmare/flightlib/externals<br>// 删除过去的编译结果<br>rm -f ./*<br>git clone https://github.com/pybind/pybind11 pybind11-src<br>git clone https://github.com/jbeder/yaml-cpp yaml-src<br></code></pre></td></tr></table></figure>
-然后需要对<code>cmake</code>文件进行修改，优先使用本地文件。<br><code>src/flightmare/flightmare/cmake/pybind11.cmake</code><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># Download and unpack pybind11 at configure time</span><br><span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Getting Pybind11...&quot;</span>)<br><br><span class="hljs-comment"># set(PYBIND11_PYTHON_VERSION 3.6)</span><br><span class="hljs-keyword">set</span>(PYBIND11_PYTHON_VERSION <span class="hljs-variable">$&#123;PYTHON_VERSION_STRING&#125;</span>)   <br><br><span class="hljs-keyword">set</span>(PYBIND11_INCLUDE_DIR <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-src/<span class="hljs-keyword">include</span>)<br><span class="hljs-keyword">set</span>(PYBIND11_SOURCE_DIR <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-src)<br><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">EXISTS</span> <span class="hljs-variable">$&#123;PYBIND11_SOURCE_DIR&#125;</span>/CMakeLists.txt)<br>  <span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Using vendored Pybind11 from $&#123;PYBIND11_SOURCE_DIR&#125;&quot;</span>)<br><span class="hljs-keyword">else</span>()<br>  <span class="hljs-keyword">configure_file</span>(<br>    cmake/pybind11_download.cmake<br>    <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-download/CMakeLists.txt)<br><br>  <span class="hljs-keyword">execute_process</span>(<span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&#123;CMAKE_COMMAND&#125;</span> -G <span class="hljs-string">&quot;$&#123;CMAKE_GENERATOR&#125;&quot;</span> .<br>    RESULT_VARIABLE result<br>    WORKING_DIRECTORY <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-download<br>    OUTPUT_QUIET)<br>  <span class="hljs-keyword">if</span>(result)<br>    <span class="hljs-keyword">message</span>(FATAL_ERROR <span class="hljs-string">&quot;Cmake Step for Pybind11 failed: $&#123;result&#125;&quot;</span>)<br>  <span class="hljs-keyword">endif</span>()<br><br>  <span class="hljs-keyword">execute_process</span>(<span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&#123;CMAKE_COMMAND&#125;</span> --build .<br>    RESULT_VARIABLE result<br>    WORKING_DIRECTORY <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-download<br>    OUTPUT_QUIET)<br>  <span class="hljs-keyword">if</span>(result)<br>    <span class="hljs-keyword">message</span>(FATAL_ERROR <span class="hljs-string">&quot;Build step for Pybind11 failed: $&#123;result&#125;&quot;</span>)<br>  <span class="hljs-keyword">endif</span>()<br><br>  <span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Pybind11 downloaded!&quot;</span>)<br><span class="hljs-keyword">endif</span>()<br><br><span class="hljs-keyword">add_subdirectory</span>(<span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-src<br>                 EXCLUDE_FROM_ALL)<br><br><span class="hljs-keyword">include_directories</span>(SYSTEM <span class="hljs-string">&quot;$&#123;PROJECT_SOURCE_DIR&#125;/externals/pybind11-src/include&quot;</span>)<br></code></pre></td></tr></table></figure></li>
+然后需要对<code>cmake</code>文件进行修改，优先使用本地文件。<br><code>src/flightmare/flightmare/cmake/pybind11.cmake</code><figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># Download and unpack pybind11 at configure time</span><br><span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Getting Pybind11...&quot;</span>)<br><br><span class="hljs-comment"># set(PYBIND11_PYTHON_VERSION 3.6)</span><br><span class="hljs-keyword">set</span>(PYBIND11_PYTHON_VERSION <span class="hljs-variable">$&amp;#123;PYTHON_VERSION_STRING&amp;#125;&lt;/span&gt;)   &lt;br&gt;&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;set&lt;/span&gt;(PYBIND11_INCLUDE_DIR &lt;span class=&quot;hljs-variable&quot;&gt;$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-src/<span class="hljs-keyword">include</span>)<br><span class="hljs-keyword">set</span>(PYBIND11_SOURCE_DIR <span class="hljs-variable">$&amp;#123;PROJECT_SOURCE_DIR&amp;#125;&lt;/span&gt;/externals/pybind11-src)&lt;br&gt;&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;if&lt;/span&gt;(&lt;span class=&quot;hljs-keyword&quot;&gt;EXISTS&lt;/span&gt; &lt;span class=&quot;hljs-variable&quot;&gt;$&#123;PYBIND11_SOURCE_DIR&#125;</span>/CMakeLists.txt)<br>  <span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Using vendored Pybind11 from $&amp;#123;PYBIND11_SOURCE_DIR&amp;#125;&amp;quot;&lt;/span&gt;)&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;else&lt;/span&gt;()&lt;br&gt;  &lt;span class=&quot;hljs-keyword&quot;&gt;configure_file&lt;/span&gt;(&lt;br&gt;    cmake/pybind11_download.cmake&lt;br&gt;    &lt;span class=&quot;hljs-variable&quot;&gt;$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-download/CMakeLists.txt)<br><br>  <span class="hljs-keyword">execute_process</span>(<span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&amp;#123;CMAKE_COMMAND&amp;#125;&lt;/span&gt; -G &lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;$&#123;CMAKE_GENERATOR&#125;&quot;</span> .<br>    RESULT_VARIABLE result<br>    WORKING_DIRECTORY <span class="hljs-variable">$&amp;#123;PROJECT_SOURCE_DIR&amp;#125;&lt;/span&gt;/externals/pybind11-download&lt;br&gt;    OUTPUT_QUIET)&lt;br&gt;  &lt;span class=&quot;hljs-keyword&quot;&gt;if&lt;/span&gt;(result)&lt;br&gt;    &lt;span class=&quot;hljs-keyword&quot;&gt;message&lt;/span&gt;(FATAL_ERROR &lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;Cmake Step for Pybind11 failed: $&#123;result&#125;&quot;</span>)<br>  <span class="hljs-keyword">endif</span>()<br><br>  <span class="hljs-keyword">execute_process</span>(<span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&amp;#123;CMAKE_COMMAND&amp;#125;&lt;/span&gt; --build .&lt;br&gt;    RESULT_VARIABLE result&lt;br&gt;    WORKING_DIRECTORY &lt;span class=&quot;hljs-variable&quot;&gt;$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-download<br>    OUTPUT_QUIET)<br>  <span class="hljs-keyword">if</span>(result)<br>    <span class="hljs-keyword">message</span>(FATAL_ERROR <span class="hljs-string">&quot;Build step for Pybind11 failed: $&amp;#123;result&amp;#125;&amp;quot;&lt;/span&gt;)&lt;br&gt;  &lt;span class=&quot;hljs-keyword&quot;&gt;endif&lt;/span&gt;()&lt;br&gt;&lt;br&gt;  &lt;span class=&quot;hljs-keyword&quot;&gt;message&lt;/span&gt;(STATUS &lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;Pybind11 downloaded!&amp;quot;&lt;/span&gt;)&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;endif&lt;/span&gt;()&lt;br&gt;&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;add_subdirectory&lt;/span&gt;(&lt;span class=&quot;hljs-variable&quot;&gt;$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/pybind11-src<br>                 EXCLUDE_FROM_ALL)<br><br><span class="hljs-keyword">include_directories</span>(SYSTEM <span class="hljs-string">&quot;$&#123;PROJECT_SOURCE_DIR&#125;/externals/pybind11-src/include&quot;</span>)<br></code></pre></td></tr></table></figure></li>
 </ol>
 <p><code>src/flightmare/flightmare/cmake/yaml.cmake</code></p>
-<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># Download and unpack eigen at configure time</span><br><span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Getting yaml-cpp...&quot;</span>)<br><br><span class="hljs-keyword">set</span>(YAML_SOURCE_DIR <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-src)<br><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">EXISTS</span> <span class="hljs-variable">$&#123;YAML_SOURCE_DIR&#125;</span>/CMakeLists.txt)<br>  <span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Using vendored yaml-cpp from $&#123;YAML_SOURCE_DIR&#125;&quot;</span>)<br><span class="hljs-keyword">else</span>()<br>  <span class="hljs-keyword">configure_file</span>(<br>    cmake/yaml_download.cmake<br>    <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-download/CMakeLists.txt)<br><br>  <span class="hljs-keyword">execute_process</span>(<span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&#123;CMAKE_COMMAND&#125;</span> -G <span class="hljs-string">&quot;$&#123;CMAKE_GENERATOR&#125;&quot;</span> .<br>    RESULT_VARIABLE result<br>    WORKING_DIRECTORY <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-download<br>    OUTPUT_QUIET<br>    ERROR_QUIET)<br>  <span class="hljs-keyword">if</span>(result)<br>    <span class="hljs-keyword">message</span>(FATAL_ERROR <span class="hljs-string">&quot;CMake step for yaml-cpp failed: $&#123;result&#125;&quot;</span>)<br>  <span class="hljs-keyword">endif</span>()<br>  <span class="hljs-keyword">execute_process</span>(<span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&#123;CMAKE_COMMAND&#125;</span> --build .<br>    RESULT_VARIABLE result<br>    WORKING_DIRECTORY <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-download<br>    OUTPUT_QUIET<br>    ERROR_QUIET)<br>  <span class="hljs-keyword">if</span>(result)<br>    <span class="hljs-keyword">message</span>(FATAL_ERROR <span class="hljs-string">&quot;Build step for yaml-cpp failed: $&#123;result&#125;&quot;</span>)<br>  <span class="hljs-keyword">endif</span>()<br><br>  <span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Yaml downloaded!&quot;</span>)<br><span class="hljs-keyword">endif</span>()<br><br><span class="hljs-keyword">add_subdirectory</span>(<span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-src<br>                 <span class="hljs-variable">$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-build<br>                 EXCLUDE_FROM_ALL)<br><span class="hljs-keyword">target_compile_options</span>(yaml-cpp PUBLIC -fPIC -w)<br><br><span class="hljs-keyword">include_directories</span>(SYSTEM <span class="hljs-string">&quot;$&#123;PROJECT_SOURCE_DIR&#125;/externals/yaml-src/include&quot;</span>)<br><span class="hljs-keyword">link_directories</span>(<span class="hljs-string">&quot;$&#123;PROJECT_SOURCE_DIR&#125;/externals/yaml-build&quot;</span>)<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs cmake"><span class="hljs-comment"># Download and unpack eigen at configure time</span><br><span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Getting yaml-cpp...&quot;</span>)<br><br><span class="hljs-keyword">set</span>(YAML_SOURCE_DIR <span class="hljs-variable">$&amp;#123;PROJECT_SOURCE_DIR&amp;#125;&lt;/span&gt;/externals/yaml-src)&lt;br&gt;&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;if&lt;/span&gt;(&lt;span class=&quot;hljs-keyword&quot;&gt;EXISTS&lt;/span&gt; &lt;span class=&quot;hljs-variable&quot;&gt;$&#123;YAML_SOURCE_DIR&#125;</span>/CMakeLists.txt)<br>  <span class="hljs-keyword">message</span>(STATUS <span class="hljs-string">&quot;Using vendored yaml-cpp from $&amp;#123;YAML_SOURCE_DIR&amp;#125;&amp;quot;&lt;/span&gt;)&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;else&lt;/span&gt;()&lt;br&gt;  &lt;span class=&quot;hljs-keyword&quot;&gt;configure_file&lt;/span&gt;(&lt;br&gt;    cmake/yaml_download.cmake&lt;br&gt;    &lt;span class=&quot;hljs-variable&quot;&gt;$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-download/CMakeLists.txt)<br><br>  <span class="hljs-keyword">execute_process</span>(<span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&amp;#123;CMAKE_COMMAND&amp;#125;&lt;/span&gt; -G &lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;$&#123;CMAKE_GENERATOR&#125;&quot;</span> .<br>    RESULT_VARIABLE result<br>    WORKING_DIRECTORY <span class="hljs-variable">$&amp;#123;PROJECT_SOURCE_DIR&amp;#125;&lt;/span&gt;/externals/yaml-download&lt;br&gt;    OUTPUT_QUIET&lt;br&gt;    ERROR_QUIET)&lt;br&gt;  &lt;span class=&quot;hljs-keyword&quot;&gt;if&lt;/span&gt;(result)&lt;br&gt;    &lt;span class=&quot;hljs-keyword&quot;&gt;message&lt;/span&gt;(FATAL_ERROR &lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;CMake step for yaml-cpp failed: $&#123;result&#125;&quot;</span>)<br>  <span class="hljs-keyword">endif</span>()<br>  <span class="hljs-keyword">execute_process</span>(<span class="hljs-keyword">COMMAND</span> <span class="hljs-variable">$&amp;#123;CMAKE_COMMAND&amp;#125;&lt;/span&gt; --build .&lt;br&gt;    RESULT_VARIABLE result&lt;br&gt;    WORKING_DIRECTORY &lt;span class=&quot;hljs-variable&quot;&gt;$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-download<br>    OUTPUT_QUIET<br>    ERROR_QUIET)<br>  <span class="hljs-keyword">if</span>(result)<br>    <span class="hljs-keyword">message</span>(FATAL_ERROR <span class="hljs-string">&quot;Build step for yaml-cpp failed: $&amp;#123;result&amp;#125;&amp;quot;&lt;/span&gt;)&lt;br&gt;  &lt;span class=&quot;hljs-keyword&quot;&gt;endif&lt;/span&gt;()&lt;br&gt;&lt;br&gt;  &lt;span class=&quot;hljs-keyword&quot;&gt;message&lt;/span&gt;(STATUS &lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;Yaml downloaded!&amp;quot;&lt;/span&gt;)&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;endif&lt;/span&gt;()&lt;br&gt;&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;add_subdirectory&lt;/span&gt;(&lt;span class=&quot;hljs-variable&quot;&gt;$&#123;PROJECT_SOURCE_DIR&#125;</span>/externals/yaml-src<br>                 <span class="hljs-variable">$&amp;#123;PROJECT_SOURCE_DIR&amp;#125;&lt;/span&gt;/externals/yaml-build&lt;br&gt;                 EXCLUDE_FROM_ALL)&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;target_compile_options&lt;/span&gt;(yaml-cpp PUBLIC -fPIC -w)&lt;br&gt;&lt;br&gt;&lt;span class=&quot;hljs-keyword&quot;&gt;include_directories&lt;/span&gt;(SYSTEM &lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;$&#123;PROJECT_SOURCE_DIR&#125;/externals/yaml-src/include&quot;</span>)<br><span class="hljs-keyword">link_directories</span>(<span class="hljs-string">&quot;$&#123;PROJECT_SOURCE_DIR&#125;/externals/yaml-build&quot;</span>)<br><br></code></pre></td></tr></table></figure>
 
 
 <ol start="2">
@@ -569,6 +703,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -826,9 +966,56 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
   <script  src="/js/local-search.js" ></script>
 
 
+
+
+  
+<script src="/js/navbar-search.js"></script>
 
 
 

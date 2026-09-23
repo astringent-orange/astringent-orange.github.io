@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -71,6 +71,12 @@
     <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
 
 
 
@@ -144,11 +150,55 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -160,6 +210,18 @@
               <a class="nav-link" href="/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
               </a>
             </li>
           
@@ -222,14 +284,72 @@
           
           
           
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
             </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
           
         
           
@@ -241,6 +361,20 @@
                 <div class="mobile-grid-item">
                   <i class="iconfont icon-tags-fill"></i>
                   <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
                 </div>
               </a>
             </div>
@@ -372,7 +506,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">sudo</span> docker pull osrf/ros:noetic-desktop-full<br></code></pre></td></tr></table></figure>
 <p>但是由于本实验需要使用nvidia显卡即会用到cuda，可以预见的从配置好cuda的基础镜像去下载ros，会比从配置好ros的基础镜像去下载cuda更方便。在<code>dockerfile</code>所在文件夹运行<code>docker build -t vitlfy .</code>构建镜像</p>
 <h3 id="本地运行"><a href="#本地运行" class="headerlink" title="本地运行"></a>本地运行</h3><p>使用以下脚本来运行容器</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">Allow Docker containers to connect to the X server</span><br>xhost +local:docker &gt; /dev/null 2&gt;&amp;1<br><br>docker run -it --rm \<br>    --gpus all \<br>    --device=/dev/dri:/dev/dri \<br>    --ipc=host \<br>    -v /tmp/.X11-unix:/tmp/.X11-unix:rw \<br>    -e DISPLAY=$DISPLAY \<br>    -e QT_X11_NO_MITSHM=1 \<br>    -e XAUTHORITY=/root/.Xauthority \<br>    -v $HOME/.Xauthority:/root/.Xauthority:ro \<br>    -e XDG_RUNTIME_DIR=/tmp \<br>    -v path/to/vitfly_ws:/root/vitfly_ws \<br>    --network host \<br>    --name vitfly \<br>    vitfly<br></code></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">Allow Docker containers to connect to the X server</span><br>xhost +local:docker &gt; /dev/null 2&gt;&amp;1<br><br>docker run -it --rm \<br>    --gpus all \<br>    --device=/dev/dri:/dev/dri \<br>    --ipc=host \<br>    -v /tmp/.X11-unix:/tmp/.X11-unix:rw \<br>    -e DISPLAY=$DISPLAY \&lt;br&gt;    -e QT_X11_NO_MITSHM=1 \&lt;br&gt;    -e XAUTHORITY=/root/.Xauthority \&lt;br&gt;    -v $HOME/.Xauthority:/root/.Xauthority:ro \<br>    -e XDG_RUNTIME_DIR=/tmp \<br>    -v path/to/vitfly_ws:/root/vitfly_ws \<br>    --network host \<br>    --name vitfly \<br>    vitfly<br></code></pre></td></tr></table></figure>
 <p>这里有许多参数的作用是为了让容器中运行的程序能够在宿主机上显示出来</p>
 <h3 id="服务器运行"><a href="#服务器运行" class="headerlink" title="服务器运行"></a>服务器运行</h3><p>在服务器上运行时，由于unity刚需显示器的特性，需要在服务器上运行虚拟屏幕，于是在<code>dockerfile</code>中加入以下内容</p>
 <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">COPY</span><span class="language-bash"> docker-entrypoint.sh /docker-entrypoint.sh</span><br><span class="hljs-keyword">RUN</span><span class="language-bash"> <span class="hljs-built_in">chmod</span> +x /docker-entrypoint.sh</span><br><br><span class="hljs-keyword">ENV</span> DISPLAY=:<span class="hljs-number">99</span><br><br><span class="hljs-keyword">SHELL</span><span class="language-bash"> [<span class="hljs-string">&quot;/bin/bash&quot;</span>, <span class="hljs-string">&quot;-c&quot;</span>]</span><br><span class="hljs-keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="hljs-string">&quot;/docker-entrypoint.sh&quot;</span>]</span><br><span class="hljs-keyword">CMD</span><span class="language-bash"> [<span class="hljs-string">&quot;bash&quot;</span>]</span><br></code></pre></td></tr></table></figure>
@@ -599,6 +733,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -856,9 +996,56 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
   <script  src="/js/local-search.js" ></script>
 
 
+
+
+  
+<script src="/js/navbar-search.js"></script>
 
 
 

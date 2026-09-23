@@ -1,0 +1,286 @@
+/**
+ * 从 flexblock 主题迁移而来：导航栏内联搜索 + /search/ 搜索页样式。
+ * 颜色取自 Fluid 的 CSS 变量，暗色模式自动适配。
+ */
+
+/* ==================== 导航栏内联搜索 ==================== */
+
+#search-btn.nb-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* 图标固定在按钮右端（输入框右内侧），始终可点 */
+#search-btn.nb-search .nav-link {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--nb-icon-w, 2.75rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+/* 收起时以图标宽度占位；展开时向左变宽，把左侧菜单项推开而不是盖住 */
+.nb-search-form {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  width: var(--nb-icon-w, 2.75rem);
+  height: 38px;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+  border: 1px solid var(--line-color);
+  border-radius: 999px;
+  background: var(--board-bg-color);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, visibility 0s linear 0.32s;
+}
+
+#search-btn.nb-search.is-open .nb-search-form {
+  width: clamp(190px, 24vw, 280px);
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
+  transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease, visibility 0s linear 0s;
+}
+
+.nb-search-input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0 40px 0 16px;
+  border: 0;
+  background: transparent;
+  color: var(--text-color);
+  font-size: 14px;
+  line-height: 1;
+  outline: none;
+}
+
+.nb-search-input::placeholder {
+  color: var(--sec-text-color);
+}
+
+.nb-search-results {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: clamp(250px, 28vw, 360px);
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid var(--line-color);
+  border-radius: 14px;
+  background: var(--board-bg-color);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
+  text-align: left;
+  z-index: 1030;
+}
+
+.nb-search-results[hidden] {
+  display: none;
+}
+
+.nb-search-state {
+  padding: 14px 12px;
+  color: var(--sec-text-color);
+  font-size: 13px;
+}
+
+.nb-search-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nb-search-result-item {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px;
+  border-radius: 10px;
+  color: var(--text-color);
+  text-decoration: none;
+  transition: background-color 0.22s ease, transform 0.22s ease;
+}
+
+.nb-search-result-item:hover {
+  background: var(--link-hover-bg-color);
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+.nb-search-result-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--text-color);
+}
+
+.nb-search-result-snippet {
+  color: var(--sec-text-color);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.nb-search-result-meta {
+  color: var(--sec-text-color);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.nb-search-results mark,
+.nb-search-page mark {
+  padding: 0 2px;
+  border-radius: 4px;
+  background: rgba(47, 65, 84, 0.16);
+  color: inherit;
+}
+
+@media (max-width: 991.98px) {
+  #search-btn.nb-search {
+    max-width: 100%;
+  }
+
+  .nb-search-form {
+    height: 34px;
+  }
+
+  #search-btn.nb-search.is-open .nb-search-form {
+    width: min(58vw, 220px);
+  }
+
+  .nb-search-results {
+    width: min(72vw, 300px);
+  }
+}
+
+/* ==================== /search/ 搜索页 ==================== */
+
+.nb-search-page-form {
+  margin-bottom: 1.2rem;
+}
+
+.nb-search-page-input {
+  width: 100%;
+  height: 46px;
+  padding: 0 20px;
+  border: 1px solid var(--line-color);
+  border-radius: 999px;
+  background: var(--board-bg-color);
+  color: var(--text-color);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.nb-search-page-input::placeholder {
+  color: var(--sec-text-color);
+}
+
+.nb-search-page-input:focus {
+  border-color: var(--link-hover-color);
+  box-shadow: 0 0 0 3px var(--link-hover-bg-color);
+}
+
+.nb-search-page-summary {
+  margin-bottom: 0.8rem;
+  color: var(--sec-text-color);
+  font-size: 14px;
+}
+
+.nb-search-page-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.nb-search-page-item {
+  display: block;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--line-color);
+  border-radius: 12px;
+  background: var(--board-bg-color);
+  color: var(--text-color);
+  text-decoration: none;
+  transition: border-color 0.22s ease, transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.nb-search-page-item:hover {
+  border-color: var(--link-hover-color);
+  text-decoration: none;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.nb-search-page-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.nb-search-page-meta {
+  margin-bottom: 0.4rem;
+  color: var(--sec-text-color);
+  font-size: 12.5px;
+}
+
+.nb-search-page-snippet {
+  margin: 0;
+  color: var(--sec-text-color);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.nb-search-page-empty {
+  padding: 2rem 1.2rem;
+  border: 1px dashed var(--line-color);
+  border-radius: 12px;
+  color: var(--sec-text-color);
+  text-align: center;
+}
+
+.nb-search-page-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1.5rem;
+}
+
+.nb-search-page-pagination[hidden] {
+  display: none;
+}
+
+.nb-search-page-pagination a,
+.nb-search-page-pagination .page-number {
+  min-width: 34px;
+  padding: 0.3rem 0.65rem;
+  border: 1px solid var(--line-color);
+  border-radius: 8px;
+  background: var(--board-bg-color);
+  color: var(--text-color);
+  font-size: 14px;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.22s ease, background-color 0.22s ease;
+}
+
+.nb-search-page-pagination a:hover {
+  border-color: var(--link-hover-color);
+  text-decoration: none;
+}
+
+.nb-search-page-pagination .page-number.current {
+  border-color: transparent;
+  background: var(--navbar-bg-color);
+  color: var(--navbar-text-color);
+}

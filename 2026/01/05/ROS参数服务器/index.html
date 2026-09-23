@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -67,6 +67,12 @@
     <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
 
 
 
@@ -140,11 +146,55 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -156,6 +206,18 @@
               <a class="nav-link" href="/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
               </a>
             </li>
           
@@ -218,14 +280,72 @@
           
           
           
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
             </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
           
         
           
@@ -237,6 +357,20 @@
                 <div class="mobile-grid-item">
                   <i class="iconfont icon-tags-fill"></i>
                   <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
                 </div>
               </a>
             </div>
@@ -301,7 +435,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.6k 字
+          4.5k 字
         
       </span>
     
@@ -312,7 +446,7 @@
         
         
         
-          30 分钟
+          38 分钟
         
       </span>
     
@@ -377,7 +511,7 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">init</span><span class="hljs-params">(ros::NodeHandle&amp; nh, ros::NodeHandle&amp; nh_private)</span> </span>&#123;<br>    <span class="hljs-comment">// 1. 用私有句柄读取节点专属配置 (比如 PID 参数、文件名)</span><br>    <span class="hljs-comment">// 查找 /node_name/fsm/flight_type</span><br>    nh_private.<span class="hljs-built_in">param</span>(<span class="hljs-string">&quot;fsm/flight_type&quot;</span>, ...); <br><br>    <span class="hljs-comment">// 2. 用全局句柄读取公共配置 (比如 全局地图分辨率、仿真时间)</span><br>    <span class="hljs-comment">// 查找 /global_radius (或者是相对当前命名空间的路径)</span><br>    nh.<span class="hljs-built_in">param</span>(<span class="hljs-string">&quot;global_radius&quot;</span>, ...);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-type">int</span> argc, <span class="hljs-type">char</span>** argv)</span> </span>&#123;<br>    ros::<span class="hljs-built_in">init</span>(argc, argv, <span class="hljs-string">&quot;my_node&quot;</span>);<br><br>    ros::NodeHandle nh;        <span class="hljs-comment">// 全局/公共句柄</span><br>    <span class="hljs-function">ros::NodeHandle <span class="hljs-title">nh_private</span><span class="hljs-params">(<span class="hljs-string">&quot;~&quot;</span>)</span></span>; <span class="hljs-comment">// 私有句柄</span><br><br>    <span class="hljs-built_in">init</span>(nh, nh_private); <span class="hljs-comment">// 把两个都传进去</span><br>&#125;<br></code></pre></td></tr></table></figure>
 
 <h3 id="加载YAML文件"><a href="#加载YAML文件" class="headerlink" title="加载YAML文件"></a>加载YAML文件</h3><p>批量加载参数字典</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">launch</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 加载 YAML 文件内容到参数服务器 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">rosparam</span> <span class="hljs-attr">file</span>=<span class="hljs-string">&quot;$(find my_pkg)/config/params.yaml&quot;</span> <span class="hljs-attr">command</span>=<span class="hljs-string">&quot;load&quot;</span>/&gt;</span><br>    <br>    <span class="hljs-tag">&lt;<span class="hljs-name">node</span> <span class="hljs-attr">pkg</span>=<span class="hljs-string">&quot;my_pkg&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;my_node&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;node1&quot;</span>&gt;</span><br>        <span class="hljs-comment">&lt;!-- 仅在这个节点命名空间下加载参数 --&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">rosparam</span> <span class="hljs-attr">file</span>=<span class="hljs-string">&quot;$(find my_pkg)/config/private_params.yaml&quot;</span> <span class="hljs-attr">command</span>=<span class="hljs-string">&quot;load&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">node</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">launch</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">launch</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- 加载 YAML 文件内容到参数服务器 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">rosparam</span> <span class="hljs-attr">file</span>=<span class="hljs-string">&quot;$(find my_pkg)/config/params.yaml&amp;quot;&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;command&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;load&amp;quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;br&gt;    &lt;br&gt;    &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;&lt;span class=&quot;hljs-name&quot;&gt;node&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;pkg&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;my_pkg&amp;quot;&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;type&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;my_node&amp;quot;&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;node1&amp;quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;        &lt;span class=&quot;hljs-comment&quot;&gt;&amp;lt;!-- 仅在这个节点命名空间下加载参数 --&amp;gt;&lt;/span&gt;&lt;br&gt;        &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;&lt;span class=&quot;hljs-name&quot;&gt;rosparam&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;file&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;$(find my_pkg)/config/private_params.yaml&quot;</span> <span class="hljs-attr">command</span>=<span class="hljs-string">&quot;load&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">node</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">launch</span>&gt;</span><br></code></pre></td></tr></table></figure>
 
 <hr>
 <h2 id="在代码中操作"><a href="#在代码中操作" class="headerlink" title="在代码中操作"></a>在代码中操作</h2><h3 id="CPP接口"><a href="#CPP接口" class="headerlink" title="CPP接口"></a>CPP接口</h3><p>在cpp中，主要通过<code>ros::NodeHandle</code>来操作</p>
@@ -567,6 +701,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -824,9 +964,56 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
   <script  src="/js/local-search.js" ></script>
 
 
+
+
+  
+<script src="/js/navbar-search.js"></script>
 
 
 

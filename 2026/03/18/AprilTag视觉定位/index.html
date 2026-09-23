@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -70,6 +70,12 @@
     <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
 
 
 
@@ -143,11 +149,55 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -159,6 +209,18 @@
               <a class="nav-link" href="/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
               </a>
             </li>
           
@@ -221,14 +283,72 @@
           
           
           
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
             </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
           
         
           
@@ -240,6 +360,20 @@
                 <div class="mobile-grid-item">
                   <i class="iconfont icon-tags-fill"></i>
                   <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
                 </div>
               </a>
             </div>
@@ -386,10 +520,10 @@
 <h3 id="边缘检测-1"><a href="#边缘检测-1" class="headerlink" title="边缘检测"></a>边缘检测</h3><p>此处方法与ARTag的检测器相似。是整个过程中最为耗时的部分，通常可以以一半的分辨率执行，提高4倍速度。</p>
 <h4 id="计算梯度"><a href="#计算梯度" class="headerlink" title="计算梯度"></a>计算梯度</h4><p>首先对于图像上的任意一点 <code>(x,y)</code>，考察它水平方向和垂直方向的亮度差</p>
 <ul>
-<li>水平差分：$g_x &#x3D; I(x+1,y) - I(x-1,y)$</li>
-<li>垂直差分：$g_y &#x3D; I(x,y+1) - I(x,y-1)$<br>从而可以计算出梯度的大小与方向</li>
-<li>梯度幅值：$M(x,y) &#x3D; \sqrt{g_x(x,y)^2 + g_y(x,y)^2}$</li>
-<li>梯度方向：$\theta(x,y) &#x3D; \operatorname{arctan2}(g_y(x,y), g_x(x,y))$</li>
+<li>水平差分：$g_x = I(x+1,y) - I(x-1,y)$</li>
+<li>垂直差分：$g_y = I(x,y+1) - I(x,y-1)$<br>从而可以计算出梯度的大小与方向</li>
+<li>梯度幅值：$M(x,y) = \sqrt{g_x(x,y)^2 + g_y(x,y)^2}$</li>
+<li>梯度方向：$\theta(x,y) = \operatorname{arctan2}(g_y(x,y), g_x(x,y))$</li>
 </ul>
 <h4 id="聚类"><a href="#聚类" class="headerlink" title="聚类"></a>聚类</h4><p>经过上述操作，图上每一个像素点p都有了两个物理量，然后使用基于图的聚类方法。<br>创建一个图，其中每个节点代表一个像素。在相邻像素之间添加边，边权重等于像素在梯度方向上的差异：</p>
 
@@ -409,8 +543,8 @@ $$
 
 <p>其中：</p>
 <ul>
-<li>$D(n) &#x3D; \max_{p \in n} \theta(p) - \min_{p \in n} \theta(p)$ 为方向极差</li>
-<li>$K(n) &#x3D; \max_{p \in n} M(p) - \min_{p \in n} M(p)$ 为幅值极差</li>
+<li>$D(n) = \max_{p \in n} \theta(p) - \min_{p \in n} \theta(p)$ 为方向极差</li>
+<li>$K(n) = \max_{p \in n} M(p) - \min_{p \in n} M(p)$ 为幅值极差</li>
 <li>$|n \cup m|$：代表合并后群落包含的<strong>像素总数</strong>。 </li>
 <li>$K_D$：人为设定的常数。 </li>
 <li><strong>巧妙之处</strong>：公式右侧的 $\frac{K_D}{|n \cup m|}$ 是一个动态宽容度项。当群落很小（像素少）时，分母小，宽容度极大，允许像素快速抱团，具有极强的抗噪能力；当群落成长为长线段时（像素多），宽容度迅速趋近于 0，算法变得极其严苛，强制保证最终提取出的线段必须是“笔直且方向均匀”的。</li>
@@ -423,14 +557,14 @@ $$
 $$
 
 
-<p>随后将所有坐标平移至重心处（去中心化）：$x_i^{\prime} &#x3D; x_i - \bar{x}, \quad y_i^{\prime} &#x3D; y_i - \bar{y}$</p>
+<p>随后将所有坐标平移至重心处（去中心化）：$x_i^{\prime} = x_i - \bar{x}, \quad y_i^{\prime} = y_i - \bar{y}$</p>
 <p><strong>2. 构建加权协方差矩阵</strong> 利用去中心化后的坐标，构建一个 $2 \times 2$ 的加权协方差矩阵 $\mathbf{C}$ 来描述像素的几何分布形态：</p>
 
 $$
 \mathbf{C} =
 \begin{bmatrix}
-C_{xx} & C_{xy} \\
-C_{xy} & C_{yy}
+C_{xx} &amp; C_{xy} \\
+C_{xy} &amp; C_{yy}
 \end{bmatrix}
 $$
 
@@ -452,7 +586,7 @@ $$
 $$
 
 
-<p>最终，利用倾斜角  $\theta$  和重心  $(\bar{x}, \bar{y})$ ，我们可以直接写出没有任何数学奇点的亚像素级直线标准方程 $Ax + By + C &#x3D; 0$： </p>
+<p>最终，利用倾斜角  $\theta$  和重心  $(\bar{x}, \bar{y})$ ，我们可以直接写出没有任何数学奇点的亚像素级直线标准方程 $Ax + By + C = 0$： </p>
 
 $$
 A = -\sin\theta, \quad B = \cos\theta, \quad C = -(A\bar{x} + B\bar{y})
@@ -480,7 +614,7 @@ v \\
 =
 \mathbf{K}
 \begin{bmatrix}
-\mathbf{r_1} & \mathbf{r_2} & \mathbf{r_3} & \mathbf{t}
+\mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{r_3} &amp; \mathbf{t}
 \end{bmatrix}
 \begin{bmatrix}
 X_w \\
@@ -499,7 +633,7 @@ $$
 <li>$\mathbf{t}$：平移向量 $[t_x, t_y, t_z]^T$，即相机到标签中心的真实物理距离。</li>
 </ul>
 </blockquote>
-<p> 由于 $Z_w &#x3D; 0$，矩阵乘法中涉及 $\mathbf{r_3}$ 的项统统被消灭（乘以 0）。原本 $3 \times 4$ 的复杂空间投影，完美坍缩为一个 $3 \times 3$ 的平面映射矩阵，这就是**单应性矩阵 $\mathbf{H}$**：</p>
+<p> 由于 $Z_w = 0$，矩阵乘法中涉及 $\mathbf{r_3}$ 的项统统被消灭（乘以 0）。原本 $3 \times 4$ 的复杂空间投影，完美坍缩为一个 $3 \times 3$ 的平面映射矩阵，这就是<strong>单应性矩阵 $\mathbf{H}$</strong>：</p>
 
 $$
 s
@@ -511,7 +645,7 @@ v \\
 =
 \mathbf{K}
 \begin{bmatrix}
-\mathbf{r_1} & \mathbf{r_2} & \mathbf{t}
+\mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t}
 \end{bmatrix}
 \begin{bmatrix}
 X_w \\
@@ -523,7 +657,7 @@ Y_w \\
 =
 \mathbf{K}
 \begin{bmatrix}
-\mathbf{r_1} & \mathbf{r_2} & \mathbf{t}
+\mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t}
 \end{bmatrix}
 $$
 
@@ -535,12 +669,12 @@ $$
 \mathbf{K}^{-1}\mathbf{H}
 =
 \begin{bmatrix}
-\mathbf{h_1} & \mathbf{h_2} & \mathbf{h_3}
+\mathbf{h_1} &amp; \mathbf{h_2} &amp; \mathbf{h_3}
 \end{bmatrix}
 =
 s
 \begin{bmatrix}
-\mathbf{r_1} & \mathbf{r_2} & \mathbf{t}
+\mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{t}
 \end{bmatrix}
 $$
 
@@ -554,7 +688,7 @@ $$
 $$
 
 
-<p><strong>4. 利用刚体物理定理求解缩放因子 $s$</strong> 在真实的物理空间中，旋转矩阵的列向量 $\mathbf{r_1}$ 和 $\mathbf{r_2}$ 代表方向轴，它们的<strong>模长（长度）必须严格等于 1</strong>（即 $|\mathbf{r_1}| &#x3D; |\mathbf{r_2}| &#x3D; 1$）。基于这个物理公理，我们可以直接算出透视缩放因子 $s$。为了减少图像噪点误差，通常取前两列模长的几何平均值：</p>
+<p><strong>4. 利用刚体物理定理求解缩放因子 $s$</strong> 在真实的物理空间中，旋转矩阵的列向量 $\mathbf{r_1}$ 和 $\mathbf{r_2}$ 代表方向轴，它们的<strong>模长（长度）必须严格等于 1</strong>（即 $\|\mathbf{r_1}\| = \|\mathbf{r_2}\| = 1$）。基于这个物理公理，我们可以直接算出透视缩放因子 $s$。为了减少图像噪点误差，通常取前两列模长的几何平均值：</p>
 
 $$
 s = \sqrt{\|\mathbf{h_1}\| \cdot \|\mathbf{h_2}\|}
@@ -590,7 +724,7 @@ $$
 $$
 
 
-<p>至此，我们初步拼凑出了 $3 \times 3$ 的旋转矩阵 $\tilde{\mathbf{R}} &#x3D; \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{r_3} \end{bmatrix}$。</p>
+<p>至此，我们初步拼凑出了 $3 \times 3$ 的旋转矩阵 $\tilde{\mathbf{R}} = \begin{bmatrix} \mathbf{r_1} &amp; \mathbf{r_2} &amp; \mathbf{r_3} \end{bmatrix}$。</p>
 <p><strong>6.旋转矩阵正交化</strong> 由于像素离散误差和镜头畸变，我们粗略拼凑出来的 $\tilde{\mathbf{R}}$ 往往并不完美（三个轴可能不绝对正交）。如果将其直接输入无人机飞控，会导致严重的姿态计算错误。<br><strong>数学解法（极分解）：</strong> 我们需要寻找一个在三维旋转群 $SO(3)$ 中，距离 $\tilde{\mathbf{R}}$ 最近的“绝对完美的正交旋转矩阵” $\mathbf{R}^*$。通过对粗糙矩阵 $\tilde{\mathbf{R}}$ 进行奇异值分解（SVD）：</p>
 
 $$
@@ -620,7 +754,7 @@ I_{\text{white}}(x, y) = A_2 x + B_2 xy + C_2 y + D_2
 $$
 
 
-<p>现在，算法准备去读取标签内部的任意一个数据网格（密码位）。假设该网格中心的像素坐标为 $(x_k, y_k)$。我们不再去和一个死板的固定数字比大小，而是将该坐标分别代入刚刚拟合出的两张曲面方程中，计算出它**专属的动态阈值 $T(x_k, y_k)$**（即黑与白的中间值）：</p>
+<p>现在，算法准备去读取标签内部的任意一个数据网格（密码位）。假设该网格中心的像素坐标为 $(x_k, y_k)$。我们不再去和一个死板的固定数字比大小，而是将该坐标分别代入刚刚拟合出的两张曲面方程中，计算出它<strong>专属的动态阈值 $T(x_k, y_k)$</strong>（即黑与白的中间值）：</p>
 
 $$
 T(x_k, y_k) = \frac{I_{\text{black}}(x_k, y_k) + I_{\text{white}}(x_k, y_k)}{2}
@@ -632,8 +766,8 @@ $$
 $$
 \text{Bit}(x_k, y_k) =
 \begin{cases}
-1 \text{ (白)} & \text{if } I_{\text{actual}}(x_k, y_k) > T(x_k, y_k) \\
-0 \text{ (黑)} & \text{if } I_{\text{actual}}(x_k, y_k) \le T(x_k, y_k)
+1 \text{ (白)} &amp; \text{if } I_{\text{actual}}(x_k, y_k) &gt; T(x_k, y_k) \\
+0 \text{ (黑)} &amp; \text{if } I_{\text{actual}}(x_k, y_k) \le T(x_k, y_k)
 \end{cases}
 $$
 
@@ -804,6 +938,12 @@ $$
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -1061,9 +1201,56 @@ $$
 
   <script>Fluid.plugins.imageCaption();</script>
 
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
   <script  src="/js/local-search.js" ></script>
 
 
+
+
+  
+<script src="/js/navbar-search.js"></script>
 
 
 

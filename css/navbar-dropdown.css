@@ -1,0 +1,23 @@
+/**
+ * 导航栏「分类」下拉小三角（Bootstrap .dropdown-toggle::after）动效。
+ * 静止时指向右侧，仅在悬停展开（或点击展开）时转向下。
+ * 缓动沿用旧 flexblock 主题 .arrow 的过渡曲线。
+ */
+
+.navbar .dropdown-toggle::after {
+  transform: rotate(-90deg);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* 桌面端悬停展开（与 Fluid 的 .dropdown:hover 打开逻辑同步）时转向下 */
+@media (min-width: 992px) {
+  .navbar .dropdown:hover > .dropdown-toggle::after {
+    transform: rotate(0deg);
+  }
+}
+
+/* 点击展开（Bootstrap 切换 .show / aria-expanded）时同样指向下 */
+.navbar .dropdown-toggle[aria-expanded="true"]::after,
+.navbar .dropdown.show > .dropdown-toggle::after {
+  transform: rotate(0deg);
+}

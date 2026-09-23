@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -29,8 +29,8 @@
 <meta property="article:published_time" content="2026-09-20T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-09-20T16:00:00.000Z">
 <meta property="article:author" content="Mian">
-<meta property="article:tag" content="大模型">
 <meta property="article:tag" content="MoE">
+<meta property="article:tag" content="大模型">
 <meta name="twitter:card" content="summary_large_image">
   
   
@@ -67,6 +67,12 @@
     <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
 
 
 
@@ -140,11 +146,55 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -156,6 +206,18 @@
               <a class="nav-link" href="/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
               </a>
             </li>
           
@@ -218,14 +280,72 @@
           
           
           
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
             </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
           
         
           
@@ -237,6 +357,20 @@
                 <div class="mobile-grid-item">
                   <i class="iconfont icon-tags-fill"></i>
                   <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
                 </div>
               </a>
             </div>
@@ -301,7 +435,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8.1k 字
+          8k 字
         
       </span>
     
@@ -312,7 +446,7 @@
         
         
         
-          68 分钟
+          67 分钟
         
       </span>
     
@@ -367,53 +501,92 @@
 
 <p>这里最重要的变化不是“FFN 数量变多”本身，而是<strong>不同输入不必使用所有 FFN</strong>。因此 MoE 可以看作一种 Conditional Computation（条件计算）：模型拥有一个较大的参数池，但每次只调用其中的一部分参数。</p>
 <p>如果只从大模型 Scaling 的角度看，可以把它概括为：Dense 模型中，总参数量增加通常意味着每次计算量也增加；MoE 则试图让两者部分解耦，使模型可以拥有更大的参数容量，而单个 token 的计算量主要由被选中的少数 Expert 决定。</p>
-<h2 id="2-基础原理：Expert、Router-与稀疏计算"><a href="#2-基础原理：Expert、Router-与稀疏计算" class="headerlink" title="2. 基础原理：Expert、Router 与稀疏计算"></a>2. 基础原理：Expert、Router 与稀疏计算</h2><h3 id="2-1-Expert-是什么"><a href="#2-1-Expert-是什么" class="headerlink" title="2.1 Expert 是什么"></a>2.1 Expert 是什么</h3><p>经典 MoE 中的 Expert 通常并不是什么特殊网络，它本质上就是一个独立的 FFN。普通 Transformer 的 FFN 可以写成 $FFN(x)&#x3D;W_2\sigma(W_1x)$，其中 $x$ 是 token 的 hidden state，$W_1$ 和 $W_2$ 是两层线性变换的参数，$\sigma$ 则可以是 GELU、SiLU 等非线性函数。</p>
+<h2 id="2-基础原理：Expert、Router-与稀疏计算"><a href="#2-基础原理：Expert、Router-与稀疏计算" class="headerlink" title="2. 基础原理：Expert、Router 与稀疏计算"></a>2. 基础原理：Expert、Router 与稀疏计算</h2><h3 id="2-1-Expert-是什么"><a href="#2-1-Expert-是什么" class="headerlink" title="2.1 Expert 是什么"></a>2.1 Expert 是什么</h3><p>经典 MoE 中的 Expert 通常并不是什么特殊网络，它本质上就是一个独立的 FFN。普通 Transformer 的 FFN 可以写成 $FFN(x)=W_2\sigma(W_1x)$，其中 $x$ 是 token 的 hidden state，$W_1$ 和 $W_2$ 是两层线性变换的参数，$\sigma$ 则可以是 GELU、SiLU 等非线性函数。</p>
 <p>MoE 将一个 FFN 扩展成多个独立 FFN：</p>
-<p>$$<br>E_1(x),E_2(x),\dots,E_N(x)<br>$$</p>
+<p>$$
+E_1(x),E_2(x),\dots,E_N(x)
+$$</p>
 <p>每个 Expert 都有自己的一套参数。例如 $E_1$ 和 $E_2$ 虽然结构相同，但它们的 $W_1$、$W_2$ 并不共享。正因为参数彼此独立，它们在训练过程中才有机会逐渐学习不同的数据模式。</p>
 <h3 id="2-2-Router-如何选择-Expert"><a href="#2-2-Router-如何选择-Expert" class="headerlink" title="2.2 Router 如何选择 Expert"></a>2.2 Router 如何选择 Expert</h3><p>有了多个 Expert 后，需要一个模块决定当前 token 应该交给谁处理，这个模块就是 Router，也常被称为 Gate。最简单的 Router 可以只是一个线性层。假设 token 的 hidden state 为 $x\in\mathbb{R}^d$，共有 $N$ 个 Expert，则可以计算：</p>
-<p>$$<br>z&#x3D;W_rx,\qquad W_r\in\mathbb{R}^{N\times d}<br>$$</p>
+<p>$$
+z=W_rx,\qquad W_r\in\mathbb{R}^{N\times d}
+$$</p>
 <p>再对 $z$ 做 softmax，得到每个 Expert 的路由概率：</p>
-<p>$$<br>p_i&#x3D;\frac{e^{z_i}}{\sum_j e^{z_j}}<br>$$</p>
+<p>$$
+p_i=\frac{e^{z_i}}{\sum_j e^{z_j}}
+$$</p>
 <p>例如某个 token 得到的结果为：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs text">Expert 1: 0.05<br>Expert 2: 0.70<br>Expert 3: 0.20<br>Expert 4: 0.05<br></code></pre></td></tr></table></figure>
 
 <p>如果使用 Top-1 routing，就只选择 Expert 2；如果使用 Top-2，就选择 Expert 2 和 Expert 3，并通常再对被选中的两个权重重新归一化。</p>
-<h3 id="2-3-“一个-token-不经过所有-Expert”到底是什么意思"><a href="#2-3-“一个-token-不经过所有-Expert”到底是什么意思" class="headerlink" title="2.3 “一个 token 不经过所有 Expert”到底是什么意思"></a>2.3 “一个 token 不经过所有 Expert”到底是什么意思</h3><p>“经过某个 Expert”从实际运算角度看，就是让这个 token 的向量与该 Expert 的权重发生矩阵乘法。假设第 $i$ 个 Expert 为 $E_i(x)&#x3D;W_{2,i}\sigma(W_{1,i}x)$，而 Router 最终只选择了 Expert 2，那么实际执行的是：</p>
-<p>$$<br>E_2(x)&#x3D;W_{2,2}\sigma(W_{1,2}x)<br>$$</p>
+<h3 id="2-3-“一个-token-不经过所有-Expert”到底是什么意思"><a href="#2-3-“一个-token-不经过所有-Expert”到底是什么意思" class="headerlink" title="2.3 “一个 token 不经过所有 Expert”到底是什么意思"></a>2.3 “一个 token 不经过所有 Expert”到底是什么意思</h3><p>“经过某个 Expert”从实际运算角度看，就是让这个 token 的向量与该 Expert 的权重发生矩阵乘法。假设第 $i$ 个 Expert 为 $E_i(x)=W_{2,i}\sigma(W_{1,i}x)$，而 Router 最终只选择了 Expert 2，那么实际执行的是：</p>
+<p>$$
+E_2(x)=W_{2,2}\sigma(W_{1,2}x)
+$$</p>
 <p>其他 Expert 对这个 token 根本不会执行前向计算。因此“没有经过 Expert 1”并不是一种抽象说法，而是程序里根本没有调用 <code>expert_1(x)</code>，相应参数也没有参与该 token 的矩阵运算。</p>
 <p>这也是 Total Parameters 与 Active Parameters 的区别。假设一个模型总共有 100B 参数，但某个 token 的前向传播只实际使用了 20B 参数，那么可以说模型有 100B Total Parameters、20B Active Parameters。这里的“激活参数”并不是说参数被打开或关闭，而只是表示<strong>当前 forward 中真正参与计算的参数</strong>。</p>
 <h3 id="2-4-Dense-与-Sparse"><a href="#2-4-Dense-与-Sparse" class="headerlink" title="2.4 Dense 与 Sparse"></a>2.4 Dense 与 Sparse</h3><p>MoE 中的“稀疏”主要指<strong>计算路径稀疏</strong>，而不是参数矩阵里有大量 0。一个 Expert 自身完全可以是普通的 Dense FFN，只是对于某个 token 来说，大多数 Expert 不会被调用。</p>
-<p>如果一共有 $N$ 个 Expert，而每个 token 只选择 $K$ 个，那么从 Expert 层面看，某个 token 实际使用的比例大约是 $K&#x2F;N$。例如 $N&#x3D;64$、$K&#x3D;2$ 时，单个 token 只会进入约 $3.125%$ 的 Expert。需要注意的是，一个 batch 中不同 token 可能选择不同 Expert，因此从整个 batch 的角度看，很多甚至全部 Expert 都可能参与计算，只是每个 token 的路径仍然是稀疏的。</p>
+<p>如果一共有 $N$ 个 Expert，而每个 token 只选择 $K$ 个，那么从 Expert 层面看，某个 token 实际使用的比例大约是 $K/N$。例如 $N=64$、$K=2$ 时，单个 token 只会进入约 $3.125\%$ 的 Expert。需要注意的是，一个 batch 中不同 token 可能选择不同 Expert，因此从整个 batch 的角度看，很多甚至全部 Expert 都可能参与计算，只是每个 token 的路径仍然是稀疏的。</p>
 <h2 id="3-数学视角：MoE-与普通-FFN-的关系"><a href="#3-数学视角：MoE-与普通-FFN-的关系" class="headerlink" title="3. 数学视角：MoE 与普通 FFN 的关系"></a>3. 数学视角：MoE 与普通 FFN 的关系</h2><p>经典 MoE 可以写成：</p>
-<p>$$<br>MoE(x)&#x3D;\sum_{i\in TopK(x)}g_i(x)E_i(x)<br>$$</p>
-<p>其中 $E_i(x)$ 是第 $i$ 个 Expert，$g_i(x)$ 是 Router 给这个 Expert 的权重，$TopK(x)$ 表示当前输入最终选择的 Expert 集合。假设 Top-2 得到 $g_2&#x3D;0.7$、$g_5&#x3D;0.3$，那么输出就是：</p>
-<p>$$<br>y&#x3D;0.7E_2(x)+0.3E_5(x)<br>$$</p>
+<p>$$
+MoE(x)=\sum_{i\in TopK(x)}g_i(x)E_i(x)
+$$</p>
+<p>其中 $E_i(x)$ 是第 $i$ 个 Expert，$g_i(x)$ 是 Router 给这个 Expert 的权重，$TopK(x)$ 表示当前输入最终选择的 Expert 集合。假设 Top-2 得到 $g_2=0.7$、$g_5=0.3$，那么输出就是：</p>
+<p>$$
+y=0.7E_2(x)+0.3E_5(x)
+$$</p>
 <p>这个公式基本概括了经典稀疏 MoE 的核心：先根据输入决定计算哪些函数，再把这些函数的输出按路由权重组合起来。</p>
 <h3 id="3-1-多个-Expert-是否等价于一个更大的-FFN"><a href="#3-1-多个-Expert-是否等价于一个更大的-FFN" class="headerlink" title="3.1 多个 Expert 是否等价于一个更大的 FFN"></a>3.1 多个 Expert 是否等价于一个更大的 FFN</h3><p>如果所有 Expert 每次都参与计算，而且只是固定地把结果相加，那么它们确实可以等价成一个更宽的 FFN。以两个 Expert 为例：</p>
-<p>$$<br>E_1(x)&#x3D;W_2^{(1)}\sigma(W_1^{(1)}x),\qquad<br>E_2(x)&#x3D;W_2^{(2)}\sigma(W_1^{(2)}x)<br>$$</p>
+<p>$$
+E_1(x)=W_2^{(1)}\sigma(W_1^{(1)}x),\qquad
+E_2(x)=W_2^{(2)}\sigma(W_1^{(2)}x)
+$$</p>
 <p>如果总输出始终是 $E_1(x)+E_2(x)$，可以把第一层权重纵向拼接、第二层权重横向拼接：</p>
-<p>$$<br>W_1&#x3D;<br>\begin{bmatrix}<br>W_1^{(1)}\<br>W_1^{(2)}<br>\end{bmatrix},<br>\qquad<br>W_2&#x3D;<br>\begin{bmatrix}<br>W_2^{(1)} &amp; W_2^{(2)}<br>\end{bmatrix}<br>$$</p>
-<p>这样就有 $W_2\sigma(W_1x)&#x3D;E_1(x)+E_2(x)$。所以单纯把一个 FFN 拆成多个分支并不能体现 MoE 的本质；真正关键的是 Router 会根据输入改变计算路径。</p>
+<p>$$
+W_1=
+\begin{bmatrix}
+W_1^{(1)}\\
+W_1^{(2)}
+\end{bmatrix},
+\qquad
+W_2=
+\begin{bmatrix}
+W_2^{(1)} &amp; W_2^{(2)}
+\end{bmatrix}
+$$</p>
+<p>这样就有 $W_2\sigma(W_1x)=E_1(x)+E_2(x)$。所以单纯把一个 FFN 拆成多个分支并不能体现 MoE 的本质；真正关键的是 Router 会根据输入改变计算路径。</p>
 <p>对于 Top-1 MoE，可以把整个网络粗略理解为一个分段函数：</p>
-<p>$$<br>f(x)&#x3D;<br>\begin{cases}<br>E_1(x), &amp; x\in R_1\<br>E_2(x), &amp; x\in R_2\<br>E_3(x), &amp; x\in R_3<br>\end{cases}<br>$$</p>
+<p>$$
+f(x)=
+\begin{cases}
+E_1(x), &amp; x\in R_1\\
+E_2(x), &amp; x\in R_2\\
+E_3(x), &amp; x\in R_3
+\end{cases}
+$$</p>
 <p>这里的 $R_1,R_2,R_3$ 可以理解为 Router 在表示空间中划出的不同区域。不同输入落入不同区域，就会调用不同参数子网络。一个足够大的 Dense FFN 在函数逼近能力上可能逼近这样的映射，但它通常需要每次执行完整网络，而 MoE 可以只计算当前需要的部分。</p>
 <h3 id="3-2-为什么-MoE-能在增加参数量时控制计算量"><a href="#3-2-为什么-MoE-能在增加参数量时控制计算量" class="headerlink" title="3.2 为什么 MoE 能在增加参数量时控制计算量"></a>3.2 为什么 MoE 能在增加参数量时控制计算量</h3><p>假设共有 $N$ 个 Expert，每个 Expert 有大约 $P$ 个参数，那么 Expert 部分的总参数量约为 $NP$。如果每个 token 只选择 $K$ 个 Expert，则该 token 在 Expert 部分实际参与计算的参数量约为 $KP$。因此：</p>
-<p>$$<br>\frac{P_{\text{active}}}{P_{\text{total}}}\approx\frac{K}{N}<br>$$</p>
+<p>$$
+\frac{P_{\text{active}}}{P_{\text{total}}}\approx\frac{K}{N}
+$$</p>
 <p>例如有 64 个 Expert、Top-2 routing，Expert 总容量约为 $64P$，但单个 token 的 Expert 计算只涉及约 $2P$。这也是 MoE 在大模型中最有吸引力的地方：可以明显扩大参数池，而不让每个 token 都计算全部参数。</p>
 <p>不过这里不能简单把“active parameters 少”理解为“实际运行时间一定按同样比例下降”。真实系统还需要处理 Router、token 排序、数据搬运、跨卡通信和不规则矩阵计算，这些都会产生额外开销。因此 MoE 省的是主要的 Expert 矩阵乘法，而不是所有运行成本。</p>
-<h2 id="4-MoE-如何训练，以及-Expert-如何产生分工"><a href="#4-MoE-如何训练，以及-Expert-如何产生分工" class="headerlink" title="4. MoE 如何训练，以及 Expert 如何产生分工"></a>4. MoE 如何训练，以及 Expert 如何产生分工</h2><p>MoE 的训练仍然依赖普通的反向传播，只不过不同 token 会经过不同 Expert，因此不同 Expert 会收到不同的梯度。假设某个 token 被路由到 $E_2$ 和 $E_4$，输出为 $y&#x3D;g_2E_2(x)+g_4E_4(x)$，那么最终任务损失 $L$ 会对 $\theta_2$ 和 $\theta_4$ 产生梯度，而其他没有参与该 token 前向计算的 Expert 不会收到来自这个 token 的 Expert 梯度。</p>
+<h2 id="4-MoE-如何训练，以及-Expert-如何产生分工"><a href="#4-MoE-如何训练，以及-Expert-如何产生分工" class="headerlink" title="4. MoE 如何训练，以及 Expert 如何产生分工"></a>4. MoE 如何训练，以及 Expert 如何产生分工</h2><p>MoE 的训练仍然依赖普通的反向传播，只不过不同 token 会经过不同 Expert，因此不同 Expert 会收到不同的梯度。假设某个 token 被路由到 $E_2$ 和 $E_4$，输出为 $y=g_2E_2(x)+g_4E_4(x)$，那么最终任务损失 $L$ 会对 $\theta_2$ 和 $\theta_4$ 产生梯度，而其他没有参与该 token 前向计算的 Expert 不会收到来自这个 token 的 Expert 梯度。</p>
 <p>如果一个 batch 中存在很多 token，例如：</p>
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs text">token A → E1, E3<br>token B → E2, E3<br>token C → E1, E4<br>token D → E2, E4<br></code></pre></td></tr></table></figure>
 
 <p>那么不同 Expert 实际上会在不同的数据子集上被更新。随着训练持续进行，它们接触到的数据分布逐渐不同，参数也就逐渐产生差异。</p>
 <p>Expert 的分化通常从很小的随机差异开始。不同 Expert 独立初始化，Router 也有自己的随机初始化，因此训练早期某些 token 可能只是偶然更偏向某个 Expert。假设一类表示更频繁地被送给 $E_1$，那么 $E_1$ 会获得更多这类数据的梯度并逐渐更擅长处理它们；Router 又会发现把类似输入送给 $E_1$ 能得到更低的 loss，于是进一步强化这种路由偏好。这个过程可以看作 Router 与 Expert 的共同适应，而不是先人为规定“哪个 Expert 负责什么”。</p>
 <h3 id="4-1-Router-的梯度从哪里来"><a href="#4-1-Router-的梯度从哪里来" class="headerlink" title="4.1 Router 的梯度从哪里来"></a>4.1 Router 的梯度从哪里来</h3><p>Router 自身也有可学习参数。虽然 Top-K 的索引选择是离散操作，本身不可直接求导，但被选中的 routing weight 仍然是连续变量。例如：</p>
-<p>$$<br>y&#x3D;g_2(x)E_2(x)+g_5(x)E_5(x)<br>$$</p>
+<p>$$
+y=g_2(x)E_2(x)+g_5(x)E_5(x)
+$$</p>
 <p>损失可以沿着 $L\rightarrow g_i(x)\rightarrow W_r$ 传播到 Router。实际实现中，通常把当前 forward 得到的 Top-K index 当作固定的路由结果，而对选中 Expert 的 routing weight 正常求导。不同 MoE 还会配合 noisy routing、router regularization 或其他辅助方法来提高训练稳定性。</p>
 <h3 id="4-2-为什么还需要-Load-Balancing"><a href="#4-2-为什么还需要-Load-Balancing" class="headerlink" title="4.2 为什么还需要 Load Balancing"></a>4.2 为什么还需要 Load Balancing</h3><p>如果只依赖任务损失，Router 很容易越来越偏向少数 Expert。某个 Expert 一旦在训练早期稍微占优，就会得到更多 token，随后得到更多训练信号，又进一步变强，最后可能出现大多数 token 都集中到少数 Expert 的情况。这通常被称为 Expert Collapse 或 Routing Collapse。</p>
 <p>因此训练目标往往不是单独的任务损失，而是：</p>
-<p>$$<br>L_{\text{total}}&#x3D;L_{\text{task}}+\lambda L_{\text{balance}}<br>$$</p>
+<p>$$
+L_{\text{total}}=L_{\text{task}}+\lambda L_{\text{balance}}
+$$</p>
 <p>$L_{\text{balance}}$ 用来约束 Expert 的使用分布，避免某些 Expert 长期过载、另一些 Expert 几乎没有数据。这里要区分“负载均衡”和“学到相同内容”：负载均衡只希望不同 Expert 获得相对合理的 token 数量，并不要求它们的输入分布或参数变得相同。</p>
 <h2 id="5-从代码和系统角度理解-MoE"><a href="#5-从代码和系统角度理解-MoE" class="headerlink" title="5. 从代码和系统角度理解 MoE"></a>5. 从代码和系统角度理解 MoE</h2><p>一个最简单的 Expert 可以直接写成普通 FFN：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">Expert</span>(nn.Module):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, d_model, d_hidden</span>):<br>        <span class="hljs-built_in">super</span>().__init__()<br>        <span class="hljs-variable language_">self</span>.fc1 = nn.Linear(d_model, d_hidden)<br>        <span class="hljs-variable language_">self</span>.fc2 = nn.Linear(d_hidden, d_model)<br><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">self</span>.fc2(F.gelu(<span class="hljs-variable language_">self</span>.fc1(x)))<br></code></pre></td></tr></table></figure>
@@ -436,7 +609,9 @@
 <p>MoE 的价值可以从两个方向理解。第一个方向是 Scaling，即通过大量 Expert 扩大模型总参数，同时让单个 token 只使用少数 Expert；第二个方向是 Specialization，即让不同输入使用不同参数空间。例如在 VLM 或 VLA 中，可以让 Vision、Language、Action 等不同模态使用不同 Expert，以减少参数竞争和梯度干扰。这里 MoE 的目的未必是扩参，而是让不同类型的信息拥有更合适的处理路径。</p>
 <p>因此 MoE 并不是一种“越加越好”的万能模块。它更适合模型容量需求很大、训练数据充分、输入具有一定异质性，同时硬件能够承担额外存储和通信成本的场景。如果模型本身很小、数据有限、任务高度同质、batch 很小或者系统受内存和通信严重限制，Dense 结构往往更简单也更高效。</p>
 <p>回到最核心的定义，MoE 可以理解为：<strong>模型内部存在多个可独立工作的子网络，Router 根据输入选择少量子网络参与计算，从而实现条件计算。</strong> 数学上最典型的形式仍然是：</p>
-<p>$$<br>MoE(x)&#x3D;\sum_{i\in TopK(x)}g_i(x)E_i(x)<br>$$</p>
+<p>$$
+MoE(x)=\sum_{i\in TopK(x)}g_i(x)E_i(x)
+$$</p>
 <p>它带来的两个主要结果分别是：一方面，总参数容量和单次计算量不再严格绑定；另一方面，不同输入可以获得不同的参数和计算路径，这也正是 MoE 在大模型 Scaling 和多模态 Specialization 中都能发挥作用的原因。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/81886457827">混合专家模型（Mixture of Experts，MoE）详解（附代码）</a></p>
 
@@ -472,9 +647,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
-      
         <a href="/tags/MoE/" class="print-no-link">#MoE</a>
+      
+        <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
       
     </div>
   
@@ -593,6 +768,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -850,9 +1031,56 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
   <script  src="/js/local-search.js" ></script>
 
 
+
+
+  
+<script src="/js/navbar-search.js"></script>
 
 
 

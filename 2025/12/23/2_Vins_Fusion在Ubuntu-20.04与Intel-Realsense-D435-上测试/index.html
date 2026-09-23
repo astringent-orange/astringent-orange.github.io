@@ -8,8 +8,8 @@
 <head>
   <meta charset="UTF-8">
 
-  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
-  <link rel="icon" href="/img/fluid.png">
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
   
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
@@ -71,6 +71,12 @@
     <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
   
 
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
 
 
 
@@ -144,11 +150,55 @@
           
           
           
-            <li class="nav-item">
-              <a class="nav-link" href="/categories/" target="_self">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="iconfont icon-category-fill"></i>
                 <span>分类</span>
               </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+              </div>
             </li>
           
         
@@ -160,6 +210,18 @@
               <a class="nav-link" href="/tags/" target="_self">
                 <i class="iconfont icon-tags-fill"></i>
                 <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
               </a>
             </li>
           
@@ -222,14 +284,72 @@
           
           
           
-            <div class="col-4 mobile-grid-cell">
-              <a href="/categories/" target="_self">
-                <div class="mobile-grid-item">
-                  <i class="iconfont icon-category-fill"></i>
-                  <span>分类</span>
-                </div>
-              </a>
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
             </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
           
         
           
@@ -241,6 +361,20 @@
                 <div class="mobile-grid-item">
                   <i class="iconfont icon-tags-fill"></i>
                   <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
                 </div>
               </a>
             </div>
@@ -305,7 +439,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          8k 字
+          10k 字
         
       </span>
     
@@ -316,7 +450,7 @@
         
         
         
-          67 分钟
+          88 分钟
         
       </span>
     
@@ -411,7 +545,7 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs bash"><span class="hljs-built_in">cd</span> ~/UAV/vins_ws/src/Geneta_vins_fusion/vins_estimator/launch<br>vim d435_run.launch<br>vim vins_run.launch<br><br><span class="hljs-built_in">cd</span> ~/UAV/vins_ws<br><span class="hljs-built_in">source</span> ./devel/setup.bash<br></code></pre></td></tr></table></figure>
 
 <p>相机启动文件</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">launch</span>&gt;</span><br>  <span class="hljs-comment">&lt;!-- 定义相机名称 --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;camera_name&quot;</span>       <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;camera&quot;</span>/&gt;</span><br>  <br>  <span class="hljs-comment">&lt;!-- 核心配置：640x480 @ 30fps (USB 3.0 模式下最稳) --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;image_width&quot;</span>       <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;640&quot;</span>/&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;image_height&quot;</span>      <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;480&quot;</span>/&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;fps&quot;</span>               <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;30&quot;</span>/&gt;</span><br><br>  <span class="hljs-comment">&lt;!-- 调用官方驱动 --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">include</span> <span class="hljs-attr">file</span>=<span class="hljs-string">&quot;$(find realsense2_camera)/launch/rs_camera.launch&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;camera&quot;</span>          <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$(arg camera_name)&quot;</span>/&gt;</span><br>    <br>    <span class="hljs-comment">&lt;!-- 1. 开启双目红外 (VINS 需要) --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_infra&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_infra1&quot;</span>   <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_infra2&quot;</span>   <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;infra_rgb&quot;</span>       <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br>    <br>    <span class="hljs-comment">&lt;!-- 2. 关闭不需要的流 (节省带宽) --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_color&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_depth&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span> <span class="hljs-comment">&lt;!-- 关掉深度流，减轻 CPU 负担 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_gyro&quot;</span>     <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_accel&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 3. 设置分辨率 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;infra_width&quot;</span>     <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$(arg image_width)&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;infra_height&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$(arg image_height)&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;infra_fps&quot;</span>       <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$(arg fps)&quot;</span>/&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 4. 关键设置 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_sync&quot;</span>     <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span>  <span class="hljs-comment">&lt;!-- 开启硬件时间同步 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;align_depth&quot;</span>     <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;initial_reset&quot;</span>   <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span>  <span class="hljs-comment">&lt;!-- 每次启动强制复位 USB，防止僵尸状态 --&gt;</span><br>    <br>    <span class="hljs-comment">&lt;!-- 注意：不要在这里写 emitter_enabled，因为你的驱动版本不支持 --&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">include</span>&gt;</span><br><br>  <span class="hljs-comment">&lt;!-- 5. 强行关闭结构光 (防止红点干扰 VINS) --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">group</span> <span class="hljs-attr">ns</span>=<span class="hljs-string">&quot;$(arg camera_name)&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">rosparam</span> <span class="hljs-attr">param</span>=<span class="hljs-string">&quot;stereo_module/emitter_enabled&quot;</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">rosparam</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">group</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">launch</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">launch</span>&gt;</span><br>  <span class="hljs-comment">&lt;!-- 定义相机名称 --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;camera_name&quot;</span>       <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;camera&quot;</span>/&gt;</span><br>  <br>  <span class="hljs-comment">&lt;!-- 核心配置：640x480 @ 30fps (USB 3.0 模式下最稳) --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;image_width&quot;</span>       <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;640&quot;</span>/&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;image_height&quot;</span>      <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;480&quot;</span>/&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;fps&quot;</span>               <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;30&quot;</span>/&gt;</span><br><br>  <span class="hljs-comment">&lt;!-- 调用官方驱动 --&gt;</span><br>  <span class="hljs-tag">&lt;<span class="hljs-name">include</span> <span class="hljs-attr">file</span>=<span class="hljs-string">&quot;$(find realsense2_camera)/launch/rs_camera.launch&amp;quot;&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;    &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;&lt;span class=&quot;hljs-name&quot;&gt;arg&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;camera&amp;quot;&lt;/span&gt;          &lt;span class=&quot;hljs-attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;$(arg camera_name)&quot;</span>/&gt;</span><br>    <br>    <span class="hljs-comment">&lt;!-- 1. 开启双目红外 (VINS 需要) --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_infra&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_infra1&quot;</span>   <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_infra2&quot;</span>   <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;true&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;infra_rgb&quot;</span>       <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br>    <br>    <span class="hljs-comment">&lt;!-- 2. 关闭不需要的流 (节省带宽) --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_color&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_depth&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span> <span class="hljs-comment">&lt;!-- 关掉深度流，减轻 CPU 负担 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_gyro&quot;</span>     <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;enable_accel&quot;</span>    <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span>/&gt;</span><br><br>    <span class="hljs-comment">&lt;!-- 3. 设置分辨率 --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;infra_width&quot;</span>     <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$(arg image_width)&amp;quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;br&gt;    &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;&lt;span class=&quot;hljs-name&quot;&gt;arg&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;infra_height&amp;quot;&lt;/span&gt;    &lt;span class=&quot;hljs-attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;$(arg image_height)&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;infra_fps&quot;</span>       <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;$(arg fps)&amp;quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;br&gt;    &lt;span class=&quot;hljs-comment&quot;&gt;&amp;lt;!-- 4. 关键设置 --&amp;gt;&lt;/span&gt;&lt;br&gt;    &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;&lt;span class=&quot;hljs-name&quot;&gt;arg&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;enable_sync&amp;quot;&lt;/span&gt;     &lt;span class=&quot;hljs-attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;true&amp;quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;  &lt;span class=&quot;hljs-comment&quot;&gt;&amp;lt;!-- 开启硬件时间同步 --&amp;gt;&lt;/span&gt;&lt;br&gt;    &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;&lt;span class=&quot;hljs-name&quot;&gt;arg&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;align_depth&amp;quot;&lt;/span&gt;     &lt;span class=&quot;hljs-attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;false&amp;quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;&lt;br&gt;    &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;&lt;span class=&quot;hljs-name&quot;&gt;arg&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;name&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;initial_reset&amp;quot;&lt;/span&gt;   &lt;span class=&quot;hljs-attr&quot;&gt;value&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;true&amp;quot;&lt;/span&gt;/&amp;gt;&lt;/span&gt;  &lt;span class=&quot;hljs-comment&quot;&gt;&amp;lt;!-- 每次启动强制复位 USB，防止僵尸状态 --&amp;gt;&lt;/span&gt;&lt;br&gt;    &lt;br&gt;    &lt;span class=&quot;hljs-comment&quot;&gt;&amp;lt;!-- 注意：不要在这里写 emitter_enabled，因为你的驱动版本不支持 --&amp;gt;&lt;/span&gt;&lt;br&gt;  &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;/&lt;span class=&quot;hljs-name&quot;&gt;include&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;br&gt;&lt;br&gt;  &lt;span class=&quot;hljs-comment&quot;&gt;&amp;lt;!-- 5. 强行关闭结构光 (防止红点干扰 VINS) --&amp;gt;&lt;/span&gt;&lt;br&gt;  &lt;span class=&quot;hljs-tag&quot;&gt;&amp;lt;&lt;span class=&quot;hljs-name&quot;&gt;group&lt;/span&gt; &lt;span class=&quot;hljs-attr&quot;&gt;ns&lt;/span&gt;=&lt;span class=&quot;hljs-string&quot;&gt;&amp;quot;$(arg camera_name)&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">rosparam</span> <span class="hljs-attr">param</span>=<span class="hljs-string">&quot;stereo_module/emitter_enabled&quot;</span>&gt;</span>false<span class="hljs-tag">&lt;/<span class="hljs-name">rosparam</span>&gt;</span><br>  <span class="hljs-tag">&lt;/<span class="hljs-name">group</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">launch</span>&gt;</span><br></code></pre></td></tr></table></figure>
 
 <p>里程计启动文件</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">launch</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">arg</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;config_path&quot;</span> <span class="hljs-attr">default</span>=<span class="hljs-string">&quot;/home/drone/UAV/vins_ws/src/Geneta_vins_fusion/config/realsense_d435i/d435_stereo_no_imu.yaml&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">node</span> <span class="hljs-attr">pkg</span>=<span class="hljs-string">&quot;vins&quot;</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;vins_node&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;vins_node&quot;</span> <span class="hljs-attr">args</span>=<span class="hljs-string">&quot;$(arg config_path)&quot;</span> <span class="hljs-attr">output</span>=<span class="hljs-string">&quot;screen&quot;</span> /&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">launch</span>&gt;</span><br></code></pre></td></tr></table></figure>
@@ -592,6 +726,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -849,9 +989,56 @@
 
   <script>Fluid.plugins.imageCaption();</script>
 
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
   <script  src="/js/local-search.js" ></script>
 
 
+
+
+  
+<script src="/js/navbar-search.js"></script>
 
 
 

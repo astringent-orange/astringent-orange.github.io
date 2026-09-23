@@ -1,0 +1,33 @@
+/**
+ * 修复 Fluid 目录（tocbot）子级标题不显示的问题。
+ *
+ * 原因：Fluid 对 .toc-list-item（整个 <li>）加了
+ * `display:-webkit-box; -webkit-line-clamp:2; overflow:hidden`，
+ * 而 li 内除标题链接外还嵌套着子级 <ol>（2.1、2.2 等二级条目）。
+ * 行数截断作用于整个 li 后：
+ *   1. 子级列表被 overflow:hidden 整层裁掉；
+ *   2. 含子级的父级标题被截出「…」。
+ *
+ * 处理：取消 li 上的截断，改为只对标题链接文本做两行截断；
+ * 折叠箭头左浮动以保持与标题同行、各级条目缩进一致。
+ */
+
+.toc-list-item {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+/* 折叠箭头脱离行内文本流，避免占据截断行数并保持与标题同行 */
+.toc-list-item > .toc-toggle {
+  float: left;
+}
+
+/* 标题文本最多两行，超出省略（链接自带 title 属性可悬停看全文） */
+.toc-list-item > .tocbot-link {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
