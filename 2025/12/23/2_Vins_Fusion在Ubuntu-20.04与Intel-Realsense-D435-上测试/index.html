@@ -22,7 +22,7 @@
     <meta name="description" content="注意事项vins适配版本首先要注意原项目只支持ubuntu 16.04与18.04，在20.04 及以上版本因为默认的opencv库从opencv3升级为4，导致许多库文件不再适配（部分变量名称改变），强行使用编译时会报错，需要自己修改库文件https:&#x2F;&#x2F;github.com&#x2F;HKUST-Aerial-Robotics&#x2F;VINS-Fusion Ubuntu 20.04支持版https:&#x2F;&#x2F;git">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试">
-<meta property="og:url" content="https://astringent-orange.github.io/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:url" content="https://mian221.top/2025/12/23/2_Vins_Fusion%E5%9C%A8Ubuntu-20.04%E4%B8%8EIntel-Realsense-D435-%E4%B8%8A%E6%B5%8B%E8%AF%95/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="注意事项vins适配版本首先要注意原项目只支持ubuntu 16.04与18.04，在20.04 及以上版本因为默认的opencv库从opencv3升级为4，导致许多库文件不再适配（部分变量名称改变），强行使用编译时会报错，需要自己修改库文件https:&#x2F;&#x2F;github.com&#x2F;HKUST-Aerial-Robotics&#x2F;VINS-Fusion Ubuntu 20.04支持版https:&#x2F;&#x2F;git">
 <meta property="og:locale" content="zh_CN">
@@ -31,12 +31,14 @@
 <meta property="article:author" content="Mian">
 <meta property="article:tag" content="Ubuntu20-04">
 <meta property="article:tag" content="ROS1">
-<meta property="article:tag" content="vins">
-<meta property="article:tag" content="IntelRealsenseD435">
 <meta property="article:tag" content="px4">
+<meta property="article:tag" content="vins">
 <meta property="article:tag" content="实机">
+<meta property="article:tag" content="IntelRealsenseD435">
 <meta name="twitter:card" content="summary_large_image">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试 - Mian的笔记</title>
@@ -83,7 +85,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -457,6 +459,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -595,13 +606,13 @@
       
         <a href="/tags/ROS1/" class="print-no-link">#ROS1</a>
       
-        <a href="/tags/vins/" class="print-no-link">#vins</a>
-      
-        <a href="/tags/IntelRealsenseD435/" class="print-no-link">#IntelRealsenseD435</a>
-      
         <a href="/tags/px4/" class="print-no-link">#px4</a>
       
+        <a href="/tags/vins/" class="print-no-link">#vins</a>
+      
         <a href="/tags/%E5%AE%9E%E6%9C%BA/" class="print-no-link">#实机</a>
+      
+        <a href="/tags/IntelRealsenseD435/" class="print-no-link">#IntelRealsenseD435</a>
       
     </div>
   
@@ -614,7 +625,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>2_Vins_Fusion在Ubuntu 20.04与Intel Realsense D435 上测试</div>
-      <div>https://astringent-orange.github.io/2025/12/23/2_Vins_Fusion在Ubuntu-20.04与Intel-Realsense-D435-上测试/</div>
+      <div>https://mian221.top/2025/12/23/2_Vins_Fusion在Ubuntu-20.04与Intel-Realsense-D435-上测试/</div>
     </div>
     <div class="license-meta">
       
@@ -781,6 +792,26 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -1033,6 +1064,8 @@
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

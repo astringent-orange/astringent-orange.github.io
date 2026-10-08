@@ -22,7 +22,7 @@
     <meta name="description" content="前言使用ROS+Flightmare的通信结构ROS继续负责算法的控制，而Flightmare则取代Gazebo负责进行仿真 核心区别。该工作流程中，客户端通过UnityBridge向服务端注册actor并持续更新状态 flightmare基础概念server与client类比于roscore与rosnode，flightmare设计中存在server与client。其中将unity渲染引擎称为s">
 <meta property="og:type" content="article">
 <meta property="og:title" content="8.2_Flightmare仿真器——基础使用1">
-<meta property="og:url" content="https://astringent-orange.github.io/2026/04/07/8.2_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A81/index.html">
+<meta property="og:url" content="https://mian221.top/2026/04/07/8.2_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A81/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="前言使用ROS+Flightmare的通信结构ROS继续负责算法的控制，而Flightmare则取代Gazebo负责进行仿真 核心区别。该工作流程中，客户端通过UnityBridge向服务端注册actor并持续更新状态 flightmare基础概念server与client类比于roscore与rosnode，flightmare设计中存在server与client。其中将unity渲染引擎称为s">
 <meta property="og:locale" content="zh_CN">
@@ -40,6 +40,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/8.2_Flightmare%E4%BB%BF%E7%9C%9F%E5%99%A8%E2%80%94%E2%80%94%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A81/a5f7b378541de78042c5ae337cbb648b-4650ec5a90bb.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>8.2_Flightmare仿真器——基础使用1 - Mian的笔记</title>
@@ -86,7 +88,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -460,6 +462,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -577,7 +588,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>8.2_Flightmare仿真器——基础使用1</div>
-      <div>https://astringent-orange.github.io/2026/04/07/8.2_Flightmare仿真器——基础使用1/</div>
+      <div>https://mian221.top/2026/04/07/8.2_Flightmare仿真器——基础使用1/</div>
     </div>
     <div class="license-meta">
       
@@ -744,6 +755,26 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -996,6 +1027,8 @@
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

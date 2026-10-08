@@ -47,9 +47,9 @@
     
     <tags>
       
-      <tag>MoE</tag>
-      
       <tag>大模型</tag>
+      
+      <tag>MoE</tag>
       
     </tags>
     
@@ -101,9 +101,9 @@
     
     <tags>
       
-      <tag>jetson</tag>
-      
       <tag>Ubuntu20-04</tag>
+      
+      <tag>jetson</tag>
       
     </tags>
     
@@ -128,11 +128,11 @@
     
     <tags>
       
-      <tag>大模型</tag>
-      
       <tag>LoRA</tag>
       
       <tag>微调</tag>
+      
+      <tag>大模型</tag>
       
     </tags>
     
@@ -543,11 +543,11 @@
       
       <tag>Gazebo</tag>
       
+      <tag>octomap</tag>
+      
       <tag>astar</tag>
       
       <tag>路径规划</tag>
-      
-      <tag>octomap</tag>
       
     </tags>
     
@@ -607,11 +607,11 @@
       
       <tag>Gazebo</tag>
       
+      <tag>octomap</tag>
+      
       <tag>astar</tag>
       
       <tag>路径规划</tag>
-      
-      <tag>octomap</tag>
       
     </tags>
     
@@ -642,9 +642,9 @@
       
       <tag>Gazebo</tag>
       
-      <tag>octomap</tag>
-      
       <tag>建图</tag>
+      
+      <tag>octomap</tag>
       
     </tags>
     
@@ -855,13 +855,13 @@
       
       <tag>ROS1</tag>
       
-      <tag>vins</tag>
+      <tag>MAVROS</tag>
       
       <tag>px4</tag>
       
-      <tag>实机</tag>
+      <tag>vins</tag>
       
-      <tag>MAVROS</tag>
+      <tag>实机</tag>
       
     </tags>
     
@@ -890,13 +890,13 @@
       
       <tag>ROS1</tag>
       
-      <tag>vins</tag>
-      
-      <tag>IntelRealsenseD435</tag>
-      
       <tag>px4</tag>
       
+      <tag>vins</tag>
+      
       <tag>实机</tag>
+      
+      <tag>IntelRealsenseD435</tag>
       
     </tags>
     
@@ -921,9 +921,9 @@
     
     <tags>
       
-      <tag>Ubuntu20-04</tag>
-      
       <tag>NUC13</tag>
+      
+      <tag>Ubuntu20-04</tag>
       
       <tag>ROS1</tag>
       

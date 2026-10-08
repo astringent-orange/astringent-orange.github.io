@@ -22,7 +22,7 @@
     <meta name="description" content="前言在阅读无人机跟踪论文Fast-Tracker时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”AprilTag进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。关于Apirl">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AprilTag视觉定位">
-<meta property="og:url" content="https://astringent-orange.github.io/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/index.html">
+<meta property="og:url" content="https://mian221.top/2026/03/18/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="前言在阅读无人机跟踪论文Fast-Tracker时，突然好奇是如何实现目标识别与定位的，发现文中是使用了一种“二维码”AprilTag进行定位。使用ApirlTag，系统可以迅速得到该二维码距离距离自己（摄像头）有多远，处于什么位姿。这是一种稳定的目标识别与定位方法，常用于后续算法，如跟踪算法，的验证。补充，在现实应用与商业无人机（例如大疆）上，目标的识别通常通过图像识别算法来实现。关于Apirl">
 <meta property="og:locale" content="zh_CN">
@@ -36,6 +36,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/AprilTag%E8%A7%86%E8%A7%89%E5%AE%9A%E4%BD%8D/fast-tracker01-93191883c8bc.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>AprilTag视觉定位 - Mian的笔记</title>
@@ -82,7 +84,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -456,6 +458,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -826,7 +837,7 @@ $$
   <div class="license-box my-3">
     <div class="license-title">
       <div>AprilTag视觉定位</div>
-      <div>https://astringent-orange.github.io/2026/03/18/AprilTag视觉定位/</div>
+      <div>https://mian221.top/2026/03/18/AprilTag视觉定位/</div>
     </div>
     <div class="license-meta">
       
@@ -993,6 +1004,26 @@ $$
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -1245,6 +1276,8 @@ $$
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

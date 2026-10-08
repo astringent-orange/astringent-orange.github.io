@@ -22,7 +22,7 @@
     <meta name="description" content="前言复现vitfly实验，包含基础的下载、测试、训练。预计在测试部分需要分析代码的结构，后续该如何修改。在训练部分，首先需要知道整个训练的流程，怎么将整个流程部署到服务器上，得到一个大概的训练框架；然后是学会怎么采集数据集，标准化。预计在运行之后可以对具体的内容进行分析，得到更好的idea-&gt;而在此之前，可能需要去调研vitfly的后续工作，快要两年的论文，到现在的进展如何，有什么引用  本">
 <meta property="og:type" content="article">
 <meta property="og:title" content="9_ViTFly实验复现">
-<meta property="og:url" content="https://astringent-orange.github.io/2026/05/06/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/index.html">
+<meta property="og:url" content="https://mian221.top/2026/05/06/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="前言复现vitfly实验，包含基础的下载、测试、训练。预计在测试部分需要分析代码的结构，后续该如何修改。在训练部分，首先需要知道整个训练的流程，怎么将整个流程部署到服务器上，得到一个大概的训练框架；然后是学会怎么采集数据集，标准化。预计在运行之后可以对具体的内容进行分析，得到更好的idea-&gt;而在此之前，可能需要去调研vitfly的后续工作，快要两年的论文，到现在的进展如何，有什么引用  本">
 <meta property="og:locale" content="zh_CN">
@@ -39,6 +39,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/9_ViTFly%E5%AE%9E%E9%AA%8C%E5%A4%8D%E7%8E%B0/d6451eaaa75e52459319b18403368792-aa76e8117496.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>9_ViTFly实验复现 - Mian的笔记</title>
@@ -85,7 +87,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -459,6 +461,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -573,7 +584,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>9_ViTFly实验复现</div>
-      <div>https://astringent-orange.github.io/2026/05/06/9_ViTFly实验复现/</div>
+      <div>https://mian221.top/2026/05/06/9_ViTFly实验复现/</div>
     </div>
     <div class="license-meta">
       
@@ -740,6 +751,26 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -992,6 +1023,8 @@
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

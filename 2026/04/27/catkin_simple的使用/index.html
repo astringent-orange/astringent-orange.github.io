@@ -22,7 +22,7 @@
     <meta name="description" content="前言由于ROS使用中package.xml和CMakeLists中依赖的作用的不同，且缺一不可，就导致我们需要两边写依赖，为了简化依赖的填写，eth开发了一个包叫catkin_simple来规范化依赖填写并简化CMakeLists的填写。 将对catkin的find_package部分移到package.xml的依赖中，通过读取.xml来自动填写find_package(catkin ...)。这">
 <meta property="og:type" content="article">
 <meta property="og:title" content="catkin_simple的使用">
-<meta property="og:url" content="https://astringent-orange.github.io/2026/04/27/catkin_simple%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
+<meta property="og:url" content="https://mian221.top/2026/04/27/catkin_simple%E7%9A%84%E4%BD%BF%E7%94%A8/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="前言由于ROS使用中package.xml和CMakeLists中依赖的作用的不同，且缺一不可，就导致我们需要两边写依赖，为了简化依赖的填写，eth开发了一个包叫catkin_simple来规范化依赖填写并简化CMakeLists的填写。 将对catkin的find_package部分移到package.xml的依赖中，通过读取.xml来自动填写find_package(catkin ...)。这">
 <meta property="og:locale" content="zh_CN">
@@ -34,6 +34,8 @@
 <meta property="article:tag" content="catkin">
 <meta name="twitter:card" content="summary_large_image">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>catkin_simple的使用 - Mian的笔记</title>
@@ -80,7 +82,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -454,6 +456,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -595,7 +606,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>catkin_simple的使用</div>
-      <div>https://astringent-orange.github.io/2026/04/27/catkin_simple的使用/</div>
+      <div>https://mian221.top/2026/04/27/catkin_simple的使用/</div>
     </div>
     <div class="license-meta">
       
@@ -762,6 +773,26 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -1014,6 +1045,8 @@
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

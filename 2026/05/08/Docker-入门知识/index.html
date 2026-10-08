@@ -22,7 +22,7 @@
     <meta name="description" content="提出背景-容器假设一个程序员在开发一个app时，在自己电脑上从头到尾搭建了一套环境，而在测试时需要在另一台电脑上进行，最终运行时又需要在第三台电脑上运行。一般的方式是分别在测试电脑与运行电脑上再重新搭建这套环境，但是这样一是搭建了3次环境，耗费时间；第二是由于硬件的以及操作系统的不同，可能即使搭建了相同的环境，相同的程序也无法正确运行。 这时提出，可以使用虚拟机来解决该问题，只需要开发人员配置好一">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Docker 入门知识">
-<meta property="og:url" content="https://astringent-orange.github.io/2026/05/08/Docker-%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/index.html">
+<meta property="og:url" content="https://mian221.top/2026/05/08/Docker-%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="提出背景-容器假设一个程序员在开发一个app时，在自己电脑上从头到尾搭建了一套环境，而在测试时需要在另一台电脑上进行，最终运行时又需要在第三台电脑上运行。一般的方式是分别在测试电脑与运行电脑上再重新搭建这套环境，但是这样一是搭建了3次环境，耗费时间；第二是由于硬件的以及操作系统的不同，可能即使搭建了相同的环境，相同的程序也无法正确运行。 这时提出，可以使用虚拟机来解决该问题，只需要开发人员配置好一">
 <meta property="og:locale" content="zh_CN">
@@ -35,6 +35,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Docker-%E5%85%A5%E9%97%A8%E7%9F%A5%E8%AF%86/docker%E4%BD%BF%E7%94%A8%E4%BE%8B1-95a94dd3ceea.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>Docker 入门知识 - Mian的笔记</title>
@@ -81,7 +83,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -455,6 +457,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -556,7 +567,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>Docker 入门知识</div>
-      <div>https://astringent-orange.github.io/2026/05/08/Docker-入门知识/</div>
+      <div>https://mian221.top/2026/05/08/Docker-入门知识/</div>
     </div>
     <div class="license-meta">
       
@@ -723,6 +734,26 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -975,6 +1006,8 @@
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

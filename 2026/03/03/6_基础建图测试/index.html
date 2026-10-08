@@ -22,7 +22,7 @@
     <meta name="description" content="尝试在无人机上使用octomap进行建图，并于RVIZ中查看结果 仿真测试深度相机模型修改之前的启动仿真的launch文件，将其中vehicle修改为iris_depth_camera，启用深度相机模型可能返回报错ERROR [init] Unknown model iris_depth_camera (not found by name on ~&#x2F;.ros&#x2F;etc&#x2F;init.d-posix&#x2F;ai">
 <meta property="og:type" content="article">
 <meta property="og:title" content="6_基础建图测试">
-<meta property="og:url" content="https://astringent-orange.github.io/2026/03/03/6_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:url" content="https://mian221.top/2026/03/03/6_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="尝试在无人机上使用octomap进行建图，并于RVIZ中查看结果 仿真测试深度相机模型修改之前的启动仿真的launch文件，将其中vehicle修改为iris_depth_camera，启用深度相机模型可能返回报错ERROR [init] Unknown model iris_depth_camera (not found by name on ~&#x2F;.ros&#x2F;etc&#x2F;init.d-posix&#x2F;ai">
 <meta property="og:locale" content="zh_CN">
@@ -33,11 +33,13 @@
 <meta property="article:tag" content="ROS1">
 <meta property="article:tag" content="IntelRealsenseD435">
 <meta property="article:tag" content="Gazebo">
-<meta property="article:tag" content="octomap">
 <meta property="article:tag" content="建图">
+<meta property="article:tag" content="octomap">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/6_%E5%9F%BA%E7%A1%80%E5%BB%BA%E5%9B%BE%E6%B5%8B%E8%AF%95/242b5ff9-7270-407a-9093-aa838c9380a1-86d3b9e70b49.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>6_基础建图测试 - Mian的笔记</title>
@@ -84,7 +86,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -458,6 +460,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -575,9 +586,9 @@
       
         <a href="/tags/Gazebo/" class="print-no-link">#Gazebo</a>
       
-        <a href="/tags/octomap/" class="print-no-link">#octomap</a>
-      
         <a href="/tags/%E5%BB%BA%E5%9B%BE/" class="print-no-link">#建图</a>
+      
+        <a href="/tags/octomap/" class="print-no-link">#octomap</a>
       
     </div>
   
@@ -590,7 +601,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>6_基础建图测试</div>
-      <div>https://astringent-orange.github.io/2026/03/03/6_基础建图测试/</div>
+      <div>https://mian221.top/2026/03/03/6_基础建图测试/</div>
     </div>
     <div class="license-meta">
       
@@ -757,6 +768,26 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -1009,6 +1040,8 @@
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

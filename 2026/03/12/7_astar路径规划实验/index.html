@@ -22,7 +22,7 @@
     <meta name="description" content="前言实验目标在仿真环境中给出终点坐标，让无人机在octomap建立的二维全局地图上，使用A* 算法进行路径规划抵达终点。一是学习如果使用建好的图来进行规划；二是在一个文件运行所有内容的基础上，学习分模块的项目结构。 但是注意本项目中的路径规划还是非常初级，即目标点限制在已知地图中，且对于一个目标点，执行一次路径规划，无人机按照该路径走完才进行下一次规划。 实验配置Ubuntu 20.04；zsh；">
 <meta property="og:type" content="article">
 <meta property="og:title" content="7_astar路径规划实验">
-<meta property="og:url" content="https://astringent-orange.github.io/2026/03/12/7_astar%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92%E5%AE%9E%E9%AA%8C/index.html">
+<meta property="og:url" content="https://mian221.top/2026/03/12/7_astar%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92%E5%AE%9E%E9%AA%8C/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="前言实验目标在仿真环境中给出终点坐标，让无人机在octomap建立的二维全局地图上，使用A* 算法进行路径规划抵达终点。一是学习如果使用建好的图来进行规划；二是在一个文件运行所有内容的基础上，学习分模块的项目结构。 但是注意本项目中的路径规划还是非常初级，即目标点限制在已知地图中，且对于一个目标点，执行一次路径规划，无人机按照该路径走完才进行下一次规划。 实验配置Ubuntu 20.04；zsh；">
 <meta property="og:locale" content="zh_CN">
@@ -34,12 +34,14 @@
 <meta property="article:tag" content="px4">
 <meta property="article:tag" content="仿真">
 <meta property="article:tag" content="Gazebo">
+<meta property="article:tag" content="octomap">
 <meta property="article:tag" content="astar">
 <meta property="article:tag" content="路径规划">
-<meta property="article:tag" content="octomap">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/7_astar%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92%E5%AE%9E%E9%AA%8C/astar%E5%AE%9E%E9%AA%8C%E6%88%AA%E5%9B%BE01-40e0d6be502b.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>7_astar路径规划实验 - Mian的笔记</title>
@@ -86,7 +88,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -460,6 +462,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -591,11 +602,11 @@
       
         <a href="/tags/Gazebo/" class="print-no-link">#Gazebo</a>
       
+        <a href="/tags/octomap/" class="print-no-link">#octomap</a>
+      
         <a href="/tags/astar/" class="print-no-link">#astar</a>
       
         <a href="/tags/%E8%B7%AF%E5%BE%84%E8%A7%84%E5%88%92/" class="print-no-link">#路径规划</a>
-      
-        <a href="/tags/octomap/" class="print-no-link">#octomap</a>
       
     </div>
   
@@ -608,7 +619,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>7_astar路径规划实验</div>
-      <div>https://astringent-orange.github.io/2026/03/12/7_astar路径规划实验/</div>
+      <div>https://mian221.top/2026/03/12/7_astar路径规划实验/</div>
     </div>
     <div class="license-meta">
       
@@ -775,6 +786,26 @@
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -1027,6 +1058,8 @@
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 

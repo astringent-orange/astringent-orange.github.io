@@ -22,17 +22,19 @@
     <meta name="description" content="部分内容由AI生成  1. 引言：MoE 想解决什么问题MoE（Mixture of Experts，混合专家）的核心并不复杂：模型内部准备多组可以独立工作的子网络，但每次只根据输入选择其中一部分参与计算。它最初强调的是“专家分工”，后来随着模型规模不断扩大，这种结构又被用来解决另一个更现实的问题——如何增加模型的参数容量，同时避免单次计算量与总参数量同步增长。 以 Transformer 为例">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MoE理论学习">
-<meta property="og:url" content="https://astringent-orange.github.io/2026/09/21/MoE%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:url" content="https://mian221.top/2026/09/21/MoE%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/index.html">
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="部分内容由AI生成  1. 引言：MoE 想解决什么问题MoE（Mixture of Experts，混合专家）的核心并不复杂：模型内部准备多组可以独立工作的子网络，但每次只根据输入选择其中一部分参与计算。它最初强调的是“专家分工”，后来随着模型规模不断扩大，这种结构又被用来解决另一个更现实的问题——如何增加模型的参数容量，同时避免单次计算量与总参数量同步增长。 以 Transformer 为例">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-09-20T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-09-20T16:00:00.000Z">
 <meta property="article:author" content="Mian">
-<meta property="article:tag" content="MoE">
 <meta property="article:tag" content="大模型">
+<meta property="article:tag" content="MoE">
 <meta name="twitter:card" content="summary_large_image">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>MoE理论学习 - Mian的笔记</title>
@@ -79,7 +81,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"astringent-orange.github.io","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -453,6 +455,15 @@
 
     
     
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
   </div>
 
 
@@ -647,9 +658,9 @@ $$</p>
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/MoE/" class="print-no-link">#MoE</a>
-      
         <a href="/tags/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="print-no-link">#大模型</a>
+      
+        <a href="/tags/MoE/" class="print-no-link">#MoE</a>
       
     </div>
   
@@ -662,7 +673,7 @@ $$</p>
   <div class="license-box my-3">
     <div class="license-title">
       <div>MoE理论学习</div>
-      <div>https://astringent-orange.github.io/2026/09/21/MoE理论学习/</div>
+      <div>https://mian221.top/2026/09/21/MoE理论学习/</div>
     </div>
     <div class="license-meta">
       
@@ -829,6 +840,26 @@ $$</p>
        <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
     </div>
   
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
   
   
 </div>
@@ -1081,6 +1112,8 @@ $$</p>
   <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
 
 
