@@ -1,0 +1,1947 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="引言主题：以无人机状态估计为例，理解卡尔曼滤波（KF）与扩展卡尔曼滤波（EKF）。 假设一架无人机需要稳定悬停在 10 m 高度。气压计显示 14 m，而根据上一时刻的运动状态，预测高度为 10 m。两者不一致时，飞控该采用哪个结果？ 直接相信传感器不可靠，因为测量有噪声；完全相信预测也不可靠，因为运动模型不可能包含阵风、推力波动等全部因素。 卡尔曼滤波的思路是：  用物理模型预测状态，用传感器修">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从卡尔曼滤波到扩展卡尔曼滤波_无人机状态估计笔记">
+<meta property="og:url" content="https://mian221.top/2026/10/09/%E4%BB%8E%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%88%B0%E6%89%A9%E5%B1%95%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2_%E6%97%A0%E4%BA%BA%E6%9C%BA%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="Mian的笔记">
+<meta property="og:description" content="引言主题：以无人机状态估计为例，理解卡尔曼滤波（KF）与扩展卡尔曼滤波（EKF）。 假设一架无人机需要稳定悬停在 10 m 高度。气压计显示 14 m，而根据上一时刻的运动状态，预测高度为 10 m。两者不一致时，飞控该采用哪个结果？ 直接相信传感器不可靠，因为测量有噪声；完全相信预测也不可靠，因为运动模型不可能包含阵风、推力波动等全部因素。 卡尔曼滤波的思路是：  用物理模型预测状态，用传感器修">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-10-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-08T16:00:00.000Z">
+<meta property="article:author" content="Mian">
+<meta property="article:tag" content="卡尔曼滤波">
+<meta property="article:tag" content="扩展卡尔曼滤波">
+<meta property="article:tag" content="KF">
+<meta property="article:tag" content="EKF">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>从卡尔曼滤波到扩展卡尔曼滤波_无人机状态估计笔记 - Mian的笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Mian的笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" target="_self">
+                    
+                    <span>理论学习</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
+            </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>理论学习</span>
+                  </div>
+                </a>
+              </div>
+            
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="从卡尔曼滤波到扩展卡尔曼滤波_无人机状态估计笔记"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-10-09 00:00" pubdate>
+          2026年10月9日
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          15k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          126 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">从卡尔曼滤波到扩展卡尔曼滤波_无人机状态估计笔记</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p><strong>主题：以无人机状态估计为例，理解卡尔曼滤波（KF）与扩展卡尔曼滤波（EKF）。</strong></p>
+<p>假设一架无人机需要稳定悬停在 10 m 高度。气压计显示 14 m，而根据上一时刻的运动状态，预测高度为 10 m。两者不一致时，飞控该采用哪个结果？</p>
+<p>直接相信传感器不可靠，因为测量有噪声；完全相信预测也不可靠，因为运动模型不可能包含阵风、推力波动等全部因素。</p>
+<p>卡尔曼滤波的思路是：</p>
+<blockquote>
+<p>用物理模型预测状态，用传感器修正预测，并根据双方的不确定性决定修正幅度。</p>
+</blockquote>
+<p>这里有两个始终一起更新的量：</p>
+<ul>
+<li><strong>状态估计 $\hat{\mathbf{x}}$</strong>：目前认为无人机在哪里、以什么速度运动、朝向哪里。</li>
+<li><strong>估计误差协方差 $P$</strong>：对这些估计有多大把握，以及不同状态的误差是否相关。</li>
+</ul>
+<p>全文采用如下记号：</p>
+<table>
+<thead>
+<tr>
+<th>记号</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$k$</td>
+<td>离散时刻</td>
+</tr>
+<tr>
+<td>$\hat{\mathbf{x}}_k^-$</td>
+<td>时刻 $k$ 的预测值（先验）</td>
+</tr>
+<tr>
+<td>$\hat{\mathbf{x}}_k^+$</td>
+<td>时刻 $k$ 融合测量后的值（后验）</td>
+</tr>
+<tr>
+<td>$P_k^-,P_k^+$</td>
+<td>对应的误差协方差</td>
+</tr>
+<tr>
+<td>$Q$</td>
+<td>过程噪声协方差</td>
+</tr>
+<tr>
+<td>$R$</td>
+<td>测量噪声协方差</td>
+</tr>
+<tr>
+<td>$K$</td>
+<td>卡尔曼增益</td>
+</tr>
+<tr>
+<td>$\mathbf z$</td>
+<td>传感器测量值</td>
+</tr>
+</tbody></table>
+<p>上标 $-$、$+$ 表示<strong>更新前后</strong>，不是正负号。</p>
+<p><strong>状态估计在飞控系统中的作用</strong></p>
+<p>无人机飞控可粗略划分为：传感器采集、状态估计、飞行控制和执行机构。任务规划给出目标，状态估计提供“当前状态”，控制器计算“如何接近目标”。</p>
+<pre><code class=" mermaid">flowchart TD
+    A[IMU / GPS / 气压计 / 磁力计 / 视觉] --&gt; B[状态估计: KF / EKF 等]
+    B --&gt; C[估计位置 / 速度 / 姿态]
+    D[目标位置 / 目标姿态] --&gt; E[飞行控制: PID / MPC 等]
+    C --&gt; E
+    E --&gt; F[电机与螺旋桨]
+    F --&gt; G[无人机实际运动]
+    G --&gt; A
+</code></pre>
+
+<p><strong>KF 不负责直接控制电机</strong>，它只负责估计状态。飞控上的 EKF 通常是由主 MCU（例如 STM32 系列）运行的软件模块，并非必须有专用 EKF 芯片。PX4 的 EKF2、ArduPilot 的 EKF3 都属于工程实现。</p>
+<p>常用传感器提供的信息并不相同：</p>
+<table>
+<thead>
+<tr>
+<th>传感器</th>
+<th>主要信息</th>
+<th>典型问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IMU 加速度计</td>
+<td>三轴比力</td>
+<td>噪声、偏置；积分后误差累积</td>
+</tr>
+<tr>
+<td>IMU 陀螺仪</td>
+<td>三轴角速度</td>
+<td>积分后姿态漂移</td>
+</tr>
+<tr>
+<td>气压计</td>
+<td>相对高度</td>
+<td>环境气压和温度影响</td>
+</tr>
+<tr>
+<td>GPS&#x2F;GNSS</td>
+<td>室外位置、速度</td>
+<td>更新较慢，遮挡或多路径误差</td>
+</tr>
+<tr>
+<td>磁力计</td>
+<td>地磁信息</td>
+<td>磁场干扰</td>
+</tr>
+<tr>
+<td>测距&#x2F;视觉传感器</td>
+<td>地面距离、相对运动或特征观测</td>
+<td>受量程、纹理、光照等限制</td>
+</tr>
+</tbody></table>
+<p>KF 是状态估计的<strong>一种算法</strong>。除此之外还包括互补滤波、UKF、粒子滤波以及滑动窗口优化等；EKF 则属于 KF 家族，用于处理非线性问题。这里先掌握 KF，再进入 EKF。</p>
+<h2 id="一维卡尔曼滤波：高度融合与最优增益"><a href="#一维卡尔曼滤波：高度融合与最优增益" class="headerlink" title="一维卡尔曼滤波：高度融合与最优增益"></a>一维卡尔曼滤波：高度融合与最优增益</h2><p>从最简单的单变量高度估计出发，先说明预测与测量如何融合，再推导增益的选择原则。此时暂不考虑速度，也不引入矩阵。</p>
+<h3 id="误差建模与最优融合"><a href="#误差建模与最优融合" class="headerlink" title="误差建模与最优融合"></a>误差建模与最优融合</h3><p>假设无人机高度的预测值是 $10\,\mathrm m$，气压计测量值是 $14\,\mathrm m$。</p>
+<p>先定义一个加权修正方法：</p>
+<p>$$
+\hat h^+=\hat h^-+K(z-\hat h^-)
+$$</p>
+<p>其中 $z-\hat h^-$ 称为<strong>测量残差</strong>，后面也称为<strong>新息（innovation）</strong>。</p>
+<ul>
+<li>$K=0$：完全沿用预测。</li>
+<li>$K=1$：完全采用测量。</li>
+<li>$0&lt;K&lt;1$：折中。</li>
+</ul>
+<p>但 $K$ 不能凭感觉设定，需要由预测和测量的可靠程度决定。</p>
+<p><strong>误差方差与测量可靠性</strong></p>
+<p>假设预测误差标准差为 $2\,\mathrm m$，气压计测量噪声标准差为 $3\,\mathrm m$。那么：</p>
+<p>$$
+P^-=2^2=4\,\mathrm{m}^2,\qquad R=3^2=9\,\mathrm{m}^2
+$$</p>
+<p>$P^-$ 描述<strong>预测有多不确定</strong>，$R$ 描述<strong>测量有多不确定</strong>。二者单位都是 $\mathrm{m}^2$，数值越大，越不能轻信。</p>
+<p>一维 KF 的最优增益为：</p>
+<p>$$
+\boxed{K=\frac{P^-}{P^-+R}}
+$$</p>
+<p>代入：</p>
+<p>$$
+K=\frac4{4+9}=\frac4{13}\approx0.308
+$$</p>
+<p>因此：</p>
+<p>$$
+\hat h^+=10+\frac4{13}(14-10)\approx11.23\,\mathrm m
+$$</p>
+<p>因为气压计噪声相对更大，修正结果偏向预测值。反之，若 $R$ 很小，滤波器就更相信测量。</p>
+<p><strong>最优性准则：均方误差与无偏估计</strong></p>
+<p>定义真实高度为 $h$，估计误差为：</p>
+<p>$$
+e=h-\hat h
+$$</p>
+<p>误差可以为正，也可以为负。例如 $+10,-10,+10,-10$ 的平均误差为 $0$，但显然不是准确的估计。</p>
+<p>在标准的<strong>无偏</strong>假设下：</p>
+<p>$$
+E[e^-]=0,\qquad E[n]=0
+$$</p>
+<p>其中 $n$ 为测量噪声，且 $z=h+n$。由融合公式可得：</p>
+<p>$$
+e^+=(1-K)e^- -Kn
+$$</p>
+<p>取期望：</p>
+<p>$$
+E[e^+]=(1-K)E[e^-]-KE[n]=0
+$$</p>
+<p><strong>无论 $K$ 取什么值，融合后的误差期望都是零</strong>，所以最小化有符号的误差期望无法选出最优权重。</p>
+<p>真正希望减小的是均方误差（MSE）：</p>
+<p>$$
+\operatorname{MSE}=E[e^2]
+$$</p>
+<p>均方误差与方差满足：</p>
+<p>$$
+E[e^2]=\operatorname{Var}(e)+(E[e])^2
+$$</p>
+<p><strong>仅当误差无偏时，最小化均方误差才等价于最小化误差方差。</strong> 如果传感器始终偏高 5 m，方差再小也不等于准确，需要额外校准或估计偏置。</p>
+<p><strong>一维卡尔曼增益的数学推导</strong></p>
+<p>继续从：</p>
+<p>$$
+e^+=(1-K)e^- -Kn
+$$</p>
+<p>出发。假设预测误差与当前测量噪声独立，且都零均值，则交叉项的期望为零：</p>
+<p>$$
+\begin{aligned}
+P^+(K)&amp;=E[(e^+)^2]\\
+&amp;=(1-K)^2P^-+K^2R
+\end{aligned}
+$$</p>
+<p>对 $K$ 求导：</p>
+<p>$$
+\frac{dP^+}{dK}=-2(1-K)P^-+2KR
+$$</p>
+<p>令导数为零，得到：</p>
+<p>$$
+-2(1-K)P^-+2KR=0
+$$</p>
+<p>$$
+\boxed{K=\frac{P^-}{P^-+R}}
+$$</p>
+<p>二阶导数 $2(P^-+R)&gt;0$，因此这是方差的最小值。再将最优 $K$ 代回去：</p>
+<p>$$
+\boxed{P^+=(1-K)P^-=\frac{P^-R}{P^-+R}}
+$$</p>
+<p>对前面的数值：</p>
+<p>$$
+P^+=\frac{4\times9}{13}\approx2.77\,\mathrm{m}^2
+$$</p>
+<p>这表示融合后，估计的不确定性比原预测更小。这里的 $P$ 是<strong>误差的统计方差</strong>，不是某次估计实际产生的误差。</p>
+<h3 id="递归预测与过程噪声"><a href="#递归预测与过程噪声" class="headerlink" title="递归预测与过程噪声"></a>递归预测与过程噪声</h3><p>刚才直接给出了预测高度 $10\,\mathrm m$。真实系统需要自己计算预测值。</p>
+<p>在最简单的悬停模型中，假设两次计算之间高度基本不变：</p>
+<p>$$
+h_k=h_{k-1}+w_{k-1}
+$$</p>
+<p>$w$ 表示未建模的高度变化。于是：</p>
+<p>$$
+\hat h_k^-=\hat h_{k-1}^+
+$$</p>
+<p>也就是说，前面的一维例子<strong>已经在进行预测</strong>，只是采用了“高度不变”的简单模型。</p>
+<p>预测不会百分之百准确，所以还要更新不确定性：</p>
+<p>$$
+\boxed{P_k^-=P_{k-1}^++Q}
+$$</p>
+<p>$Q$ 是过程噪声方差，例如阵风、推力波动和模型不完善造成的随机变化。</p>
+<p>可以把 $Q$ 理解成<strong>预测阶段新加入 $P$ 的不确定性</strong>，但不能把 $Q$ 与 $P$ 视为同一个量：</p>
+<ul>
+<li>$P$：目前累计形成的状态估计误差协方差。</li>
+<li>$Q$：这一步运动预测新增的过程不确定性。</li>
+</ul>
+<p>有新测量时，再执行：</p>
+<p>$$
+K_k=\frac{P_k^-}{P_k^-+R}
+$$</p>
+<p>$$
+\hat h_k^+=\hat h_k^-+K_k(z_k-\hat h_k^-)
+$$</p>
+<p>$$
+P_k^+=(1-K_k)P_k^-
+$$</p>
+<p>于是形成一个循环：<strong>预测状态 → 预测方差 → 接收测量 → 计算增益 → 修正状态与方差</strong>。</p>
+<p>预测阶段的不确定性一般会因 $Q$ 增大；测量更新通常能够降低不确定性。如果长时间没有有效测量，估计就可能越来越不可靠。</p>
+<h2 id="多维状态建模与卡尔曼滤波推导"><a href="#多维状态建模与卡尔曼滤波推导" class="headerlink" title="多维状态建模与卡尔曼滤波推导"></a>多维状态建模与卡尔曼滤波推导</h2><p>单变量模型能够解释测量融合，但不足以描述正在运动的无人机。本节首先扩展状态，再讨论多维误差为何需要协方差矩阵，最后将一维增益推广到多维形式。</p>
+<h3 id="状态空间与协方差传播"><a href="#状态空间与协方差传播" class="headerlink" title="状态空间与协方差传播"></a>状态空间与协方差传播</h3><p>“高度不变”模型适合简化的悬停问题，却无法合理预测正在上升或下降的无人机。</p>
+<p>例如，无人机此刻高度 $10\,\mathrm m$，正以 $2\,\mathrm{m/s}$ 上升，那么一秒后：</p>
+<ul>
+<li>静止模型预测：$10\,\mathrm m$。</li>
+<li>考虑速度的模型预测：$12\,\mathrm m$。</li>
+</ul>
+<p>因此把状态从一个数字扩展为：</p>
+<p>$$
+\boxed{\mathbf x=\begin{bmatrix}h\\v\end{bmatrix}}
+$$</p>
+<p><strong>离散运动模型与状态转移矩阵</strong></p>
+<p>在相邻两次计算间隔 $\Delta t$ 足够短时，可近似认为加速度恒定：</p>
+<p>$$
+\begin{cases}
+h_k=h_{k-1}+v_{k-1}\Delta t+\frac12a\Delta t^2\\
+v_k=v_{k-1}+a\Delta t
+\end{cases}
+$$</p>
+<p>这里不是假设无人机整个飞行过程一直匀加速，而是<strong>在每一个很短的离散时间段内局部近似匀加速</strong>。间隔越大、加速度变化越剧烈，近似误差通常越明显。</p>
+<p>写成矩阵：</p>
+<p>$$
+\boxed{\mathbf x_k=F\mathbf x_{k-1}+Ba+\mathbf w_k}
+$$</p>
+<p>$$
+F=\begin{bmatrix}1&amp;\Delta t\\0&amp;1\end{bmatrix},\qquad
+B=\begin{bmatrix}\frac12\Delta t^2\\\Delta t\end{bmatrix}
+$$</p>
+<ul>
+<li>$F$：上一时刻位置和速度对下一时刻状态的影响。</li>
+<li>$B$：加速度输入对位置、速度的影响。</li>
+<li>$a$：这里假定已知的加速度输入，实际可来自经过处理的 IMU 数据。</li>
+<li>$\mathbf w_k$：输入误差和其他未建模扰动。</li>
+</ul>
+<p>如果不掌握可靠的加速度输入，也可以采用<strong>近似匀速模型</strong>（$a=0$），再用过程噪声描述未知加速度。模型选择取决于系统、传感器和精度需求，不是 KF 强制规定的。</p>
+<p><strong>估计误差的协方差矩阵</strong></p>
+<p>只估计高度时，误差只有一个：</p>
+<p>$$
+e_h=h-\hat h
+$$</p>
+<p>因此 $P=E[e_h^2]$ 是一个数字。</p>
+<p>同时估计高度和速度之后：</p>
+<p>$$
+\mathbf e=\begin{bmatrix}e_h\\e_v\end{bmatrix}
+$$</p>
+<p>需要记录的内容不仅有高度误差方差、速度误差方差，还包括<strong>二者是否相关</strong>。例如速度估计偏高，经过积分，下一时刻预测高度也可能偏高。</p>
+<p>所以定义协方差矩阵：</p>
+<p>$$
+\boxed{
+P=E[\mathbf e\mathbf e^T]
+=\begin{bmatrix}
+E[e_h^2]&amp;E[e_he_v]\\
+E[e_ve_h]&amp;E[e_v^2]
+\end{bmatrix}}
+$$</p>
+<p>此处仍假设误差均值为零。对非零均值误差，协方差应按去均值后的误差定义。</p>
+<p>非对角元素是协方差，衡量两个误差的线性关联；矩阵对称，即 $P_{hv}=P_{vh}$。各元素还有不同单位：高度方差是 $\mathrm{m}^2$，速度方差是 $\mathrm{m}^2/\mathrm{s}^2$，交叉项是 $\mathrm{m}^2/\mathrm s$。</p>
+<p><strong>预测误差与协方差传播</strong></p>
+<p>线性运动模型为：</p>
+<p>$$
+\mathbf x_k=F\mathbf x_{k-1}+B a+\mathbf w_k
+$$</p>
+<p>预测值为：</p>
+<p>$$
+\hat{\mathbf x}_k^-=F\hat{\mathbf x}_{k-1}^++Ba
+$$</p>
+<p>真实状态减去预测状态，得到误差传播：</p>
+<p>$$
+\mathbf e_k^-=F\mathbf e_{k-1}^++\mathbf w_k
+$$</p>
+<p>令 $E[\mathbf w_k]=0$、$\operatorname{Cov}(\mathbf w_k)=Q$，且过程噪声与上一时刻估计误差独立：</p>
+<p>$$
+\begin{aligned}
+P_k^-&amp;=E[\mathbf e_k^-(\mathbf e_k^-)^T]\\
+&amp;=\boxed{FP_{k-1}^+F^T+Q}
+\end{aligned}
+$$</p>
+<p>这里 $FPF^T$ 表示原有不确定性经运动模型传播，$Q$ 表示新增不确定性。</p>
+<p>举例，取 $\Delta t=1$，暂时令 $Q=0$、上一步协方差为单位矩阵：</p>
+<p>$$
+P^+=\begin{bmatrix}1&amp;0\\0&amp;1\end{bmatrix}
+$$</p>
+<p>$$
+P^-=\begin{bmatrix}1&amp;1\\0&amp;1\end{bmatrix}
+P^+
+\begin{bmatrix}1&amp;0\\1&amp;1\end{bmatrix}
+=\begin{bmatrix}2&amp;1\\1&amp;1\end{bmatrix}
+$$</p>
+<p>原先高度误差与速度误差不相关，经过一次运动预测后，二者就产生了协方差 $1$。<strong>这正是多维状态估计必须保存 P 矩阵的理由。</strong></p>
+<p><strong>传感器测量模型与观测矩阵</strong></p>
+<p>现在状态中有高度和速度两个量，但气压计只能测量高度。</p>
+<p>气压计测量模型：</p>
+<p>$$
+z=h+n
+$$</p>
+<p>把它写成矩阵：</p>
+<p>$$
+\boxed{z=H\mathbf x+n},\qquad H=\begin{bmatrix}1&amp;0\end{bmatrix}
+$$</p>
+<p>$H$ 相当于“状态到测量”的映射。</p>
+<p>如果传感器只测量速度：</p>
+<p>$$
+H_v=\begin{bmatrix}0&amp;1\end{bmatrix}
+$$</p>
+<p>如果 GPS 同时提供高度和垂直速度，且排列顺序与状态一致：</p>
+<p>$$
+H_{\mathrm{GPS}}=\begin{bmatrix}1&amp;0\\0&amp;1\end{bmatrix}
+$$</p>
+<p>对于三维位置、速度状态 $[x,y,z,v_x,v_y,v_z]^T$，仅测量高度的气压计对应：</p>
+<p>$$
+H_{\mathrm{baro}}=\begin{bmatrix}0&amp;0&amp;1&amp;0&amp;0&amp;0\end{bmatrix}
+$$</p>
+<p>因此传感器的数量和类型改变，并不要求重新发明一套滤波算法，只需要正确建立各自的测量模型 $H$ 和测量噪声协方差 $R$。</p>
+<h3 id="多维卡尔曼增益与递推公式"><a href="#多维卡尔曼增益与递推公式" class="headerlink" title="多维卡尔曼增益与递推公式"></a>多维卡尔曼增益与递推公式</h3><p><strong>高度与速度的独立修正权重</strong></p>
+<p>设气压计的新息为：</p>
+<p>$$
+y=z-H\hat{\mathbf x}^-=z-\hat h^-
+$$</p>
+<p>如果只修正高度，可以使用一个增益 $K_h$。但由于高度误差和速度误差可能相关，同一次高度测量也可能修正速度：</p>
+<p>$$
+\hat h^+=\hat h^-+K_h y
+$$</p>
+<p>$$
+\hat v^+=\hat v^-+K_v y
+$$</p>
+<p>因此增益自然扩展为<strong>列向量</strong>：</p>
+<p>$$
+K=\begin{bmatrix}K_h\\K_v\end{bmatrix}
+$$</p>
+<p>假设预测协方差为：</p>
+<p>$$
+P^-=\begin{bmatrix}P_{hh}^-&amp;P_{hv}^-\\P_{vh}^-&amp;P_{vv}^-\end{bmatrix}
+$$</p>
+<p>由 $y=e_h^-+n$，可以得到更新后高度、速度误差：</p>
+<p>$$
+e_h^+=e_h^--K_hy,\qquad e_v^+=e_v^--K_vy
+$$</p>
+<p>分别最小化两者的均方误差，会得到：</p>
+<p>$$
+\boxed{K_h=\frac{P_{hh}^-}{P_{hh}^-+R}},\qquad
+\boxed{K_v=\frac{P_{vh}^-}{P_{hh}^-+R}}
+$$</p>
+<p>其中速度增益的推导为：</p>
+<p>$$
+\begin{aligned}
+E[(e_v^+)^2]
+&amp;=E[(e_v^--K_vy)^2]\\
+&amp;=P_{vv}^--2K_vP_{vh}^-+K_v^2(P_{hh}^-+R)
+\end{aligned}
+$$</p>
+<p>对 $K_v$ 求导并令其为零：</p>
+<p>$$
+-2P_{vh}^-+2K_v(P_{hh}^-+R)=0
+$$</p>
+<p>从而得到上面的 $K_v$。若 $P_{vh}^-=0$，则这次气压计高度测量不会直接修正速度。</p>
+<p>将两个权重写成列向量：</p>
+<p>$$
+K=\frac{1}{P_{hh}^-+R}\begin{bmatrix}P_{hh}^-\\P_{vh}^-\end{bmatrix}
+$$</p>
+<p>又因为：</p>
+<p>$$
+P^-H^T=\begin{bmatrix}P_{hh}^-\\P_{vh}^-\end{bmatrix},\qquad HP^-H^T+R=P_{hh}^-+R
+$$</p>
+<p>便可改写为：</p>
+<p>$$
+\boxed{K=P^-H^T(HP^-H^T+R)^{-1}}
+$$</p>
+<p>所以矩阵公式并不是凭空出现的：<strong>它就是对不同状态分别求最优修正权重后的统一写法。</strong></p>
+<p><strong>多维测量下的统一增益公式</strong></p>
+<p>定义测量新息向量：</p>
+<p>$$
+\mathbf y=\mathbf z-H\hat{\mathbf x}^-=H\mathbf e^-+\mathbf n
+$$</p>
+<p>其协方差称为新息协方差：</p>
+<p>$$
+S=E[\mathbf y\mathbf y^T]=HP^-H^T+R
+$$</p>
+<p>状态预测误差与新息的交叉协方差：</p>
+<p>$$
+E[\mathbf e^-\mathbf y^T]=P^-H^T
+$$</p>
+<p>更新公式写为：</p>
+<p>$$
+\hat{\mathbf x}^+=\hat{\mathbf x}^-+K\mathbf y
+$$</p>
+<p>更新后的误差：</p>
+<p>$$
+\mathbf e^+=\mathbf e^--K\mathbf y
+$$</p>
+<p>在线性最小均方误差估计中，最优残余误差与已使用的新息正交（不相关）：</p>
+<p>$$
+E[\mathbf e^+\mathbf y^T]=0
+$$</p>
+<p>代入并整理：</p>
+<p>$$
+P^-H^T-KS=0
+$$</p>
+<p>如果 $S$ 可逆：</p>
+<p>$$
+\boxed{K=P^-H^TS^{-1}=P^-H^T(HP^-H^T+R)^{-1}}
+$$</p>
+<p>可以把这个公式按作用记忆：</p>
+<ul>
+<li>$P^-H^T$：状态误差与测量新息的相关程度。</li>
+<li>$HP^-H^T+R$：新息本身有多不确定。</li>
+<li>$K$：依据上述信息分配修正量。</li>
+</ul>
+<p>更新状态之后还要更新协方差：</p>
+<p>$$
+\boxed{P^+=(I-KH)P^-}
+$$</p>
+<p>这是在模型假设及最优 $K$ 下的简化形式。工程实现中常使用数值上更稳健的 <strong>Joseph 形式</strong>：</p>
+<p>$$
+\boxed{P^+=(I-KH)P^-(I-KH)^T+KRK^T}
+$$</p>
+<p><strong>标准卡尔曼滤波的递推公式</strong></p>
+<p>对线性系统：</p>
+<p>$$
+\mathbf x_k=F\mathbf x_{k-1}+B\mathbf u_{k-1}+\mathbf w_{k-1}
+$$</p>
+<p>$$
+\mathbf z_k=H\mathbf x_k+\mathbf n_k
+$$</p>
+<p>假设过程噪声、测量噪声都是零均值，协方差分别为 $Q$、$R$，且它们与相关的已有估计误差互不相关。</p>
+<p><strong>预测：</strong></p>
+<p>$$
+\boxed{\hat{\mathbf x}_k^-=F\hat{\mathbf x}_{k-1}^++B\mathbf u_{k-1}}
+$$</p>
+<p>$$
+\boxed{P_k^-=FP_{k-1}^+F^T+Q}
+$$</p>
+<p><strong>测量更新：</strong></p>
+<p>$$
+\boxed{K_k=P_k^-H^T(HP_k^-H^T+R)^{-1}}
+$$</p>
+<p>$$
+\boxed{\hat{\mathbf x}_k^+=\hat{\mathbf x}_k^-+K_k(\mathbf z_k-H\hat{\mathbf x}_k^-)}
+$$</p>
+<p>$$
+\boxed{P_k^+=(I-K_kH)P_k^-}
+$$</p>
+<p>理解公式时，把它们对应到五个问题即可：</p>
+<table>
+<thead>
+<tr>
+<th>公式</th>
+<th>解决的问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>状态预测</td>
+<td>根据上一时刻及物理规律，现在可能在哪里？</td>
+</tr>
+<tr>
+<td>协方差预测</td>
+<td>运动模型又引入了多少不确定性？</td>
+</tr>
+<tr>
+<td>卡尔曼增益</td>
+<td>应该多相信这次测量？</td>
+</tr>
+<tr>
+<td>状态更新</td>
+<td>如何修正位置、速度等估计？</td>
+</tr>
+<tr>
+<td>协方差更新</td>
+<td>修正后估计变得多可靠？</td>
+</tr>
+</tbody></table>
+<h2 id="多传感器融合与无人机飞控实现"><a href="#多传感器融合与无人机飞控实现" class="headerlink" title="多传感器融合与无人机飞控实现"></a>多传感器融合与无人机飞控实现</h2><p>前面的推导已经得到可以递归更新的状态估计器。下面把它放入飞控的传感器工作流程中：先手算一次气压计与 GPS 的顺序更新，再考虑传感器采样频率不同、数据延迟等实际问题。</p>
+<h3 id="多传感器顺序融合算例"><a href="#多传感器顺序融合算例" class="headerlink" title="多传感器顺序融合算例"></a>多传感器顺序融合算例</h3><p>取垂直方向的状态 $\mathbf x=[h,v]^T$。假设上次更新完成后：</p>
+<p>$$
+\hat{\mathbf x}_{k-1}^+=\begin{bmatrix}10\\1\end{bmatrix},\qquad
+P_{k-1}^+=\begin{bmatrix}1&amp;0\\0&amp;1\end{bmatrix}
+$$</p>
+<p>取 $\Delta t=1\,\mathrm s$，平均加速度输入 $a=0$，并设教学用过程噪声协方差：</p>
+<p>$$
+F=\begin{bmatrix}1&amp;1\\0&amp;1\end{bmatrix},\qquad
+Q=\begin{bmatrix}1&amp;0\\0&amp;1\end{bmatrix}
+$$</p>
+<p>这里的 $Q$ 仅为方便手算，不是实际 IMU 的标准噪声模型。</p>
+<p><strong>状态与协方差预测</strong></p>
+<p>$$
+\hat{\mathbf x}_k^-=F\hat{\mathbf x}_{k-1}^+=\begin{bmatrix}11\\1\end{bmatrix}
+$$</p>
+<p>$$
+P_k^-=FP_{k-1}^+F^T+Q=\begin{bmatrix}3&amp;1\\1&amp;2\end{bmatrix}
+$$</p>
+<p>预测高度 $11\,\mathrm m$，速度 $1\,\mathrm{m/s}$。由于预测传播，高度与速度误差的协方差从 $0$ 变成 $1$。</p>
+<p><strong>气压计高度测量更新</strong></p>
+<p>假设气压计测得 $12\,\mathrm m$，测量噪声方差为 $R=1\,\mathrm{m}^2$：</p>
+<p>$$
+H=\begin{bmatrix}1&amp;0\end{bmatrix},\qquad y=12-11=1
+$$</p>
+<p>$$
+K=\frac{1}{3+1}\begin{bmatrix}3\\1\end{bmatrix}
+=\begin{bmatrix}0.75\\0.25\end{bmatrix}
+$$</p>
+<p>$$
+\hat{\mathbf x}_k^+=\begin{bmatrix}11\\1\end{bmatrix}+\begin{bmatrix}0.75\\0.25\end{bmatrix}\times1
+=\boxed{\begin{bmatrix}11.75\\1.25\end{bmatrix}}
+$$</p>
+<p>$$
+P_k^+=\begin{bmatrix}0.75&amp;0.25\\0.25&amp;1.75\end{bmatrix}
+$$</p>
+<p>注意：<strong>气压计只测量高度，但因为位置和速度误差存在相关性，垂直速度也从 $1$ 修正到 $1.25\,\mathrm{m/s}$。</strong></p>
+<p><strong>GPS 速度测量更新</strong></p>
+<p>假设 GPS 又给出垂直速度 $1.00\,\mathrm{m/s}$，测量方差 $R_v=0.25\,(\mathrm{m/s})^2$。</p>
+<p>此时不需要重新预测，可以直接在上一次更新结果上融合新的测量：</p>
+<p>$$
+H_v=\begin{bmatrix}0&amp;1\end{bmatrix},\qquad y_v=1.00-1.25=-0.25
+$$</p>
+<p>$$
+K_v=\frac1{1.75+0.25}\begin{bmatrix}0.25\\1.75\end{bmatrix}
+=\begin{bmatrix}0.125\\0.875\end{bmatrix}
+$$</p>
+<p>$$
+\hat{\mathbf x}_{\mathrm{new}}=\begin{bmatrix}11.75\\1.25\end{bmatrix}+\begin{bmatrix}0.125\\0.875\end{bmatrix}(-0.25)
+=\boxed{\begin{bmatrix}11.71875\\1.03125\end{bmatrix}}
+$$</p>
+<p>这次主要修正速度，同时略微修正高度。</p>
+<table>
+<thead>
+<tr>
+<th>时刻&#x2F;过程</th>
+<th align="right">高度</th>
+<th align="right">垂直速度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>运动模型预测</td>
+<td align="right">11.00 m</td>
+<td align="right">1.00 m&#x2F;s</td>
+</tr>
+<tr>
+<td>融合气压计</td>
+<td align="right">11.75 m</td>
+<td align="right">1.25 m&#x2F;s</td>
+</tr>
+<tr>
+<td>再融合 GPS 速度</td>
+<td align="right">11.72 m</td>
+<td align="right">1.03 m&#x2F;s</td>
+</tr>
+</tbody></table>
+<p>该例说明：<strong>同一套 $\hat{\mathbf x},P$ 可以先后被不同传感器更新</strong>。</p>
+<h3 id="异步融合与延迟补偿"><a href="#异步融合与延迟补偿" class="headerlink" title="异步融合与延迟补偿"></a>异步融合与延迟补偿</h3><p>实际无人机不会等待所有传感器“同时采样”。一个教学用的频率组合是：</p>
+<table>
+<thead>
+<tr>
+<th>传感器</th>
+<th align="right">假设频率</th>
+<th align="right">间隔</th>
+<th>在滤波器中的作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IMU</td>
+<td align="right">100 Hz</td>
+<td align="right">10 ms</td>
+<td>运动预测</td>
+</tr>
+<tr>
+<td>气压计</td>
+<td align="right">20 Hz</td>
+<td align="right">50 ms</td>
+<td>高度观测更新</td>
+</tr>
+<tr>
+<td>GPS</td>
+<td align="right">5 Hz</td>
+<td align="right">200 ms</td>
+<td>位置或速度观测更新</td>
+</tr>
+</tbody></table>
+<p>典型时间线：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">0 ms       初始化状态和 P<br>10 ms      IMU：预测<br>20 ms      IMU：预测<br>...<br>50 ms      IMU：预测；气压计：更新<br>...<br>100 ms     IMU：预测；气压计：更新<br>...<br>200 ms     IMU：预测；气压计：更新；GPS：更新<br></code></pre></td></tr></table></figure>
+
+<p>预测与更新<strong>不必一一对应</strong>。没有 GPS 的时间里可以连续预测；GPS 到来后，再融合它的观测。</p>
+<p>对于多种测量：</p>
+<ul>
+<li>每类传感器定义各自的观测模型 $H_i$ 和噪声协方差 $R_i$。</li>
+<li>传感器到来时，使用当前状态与协方差进行一次测量更新。</li>
+<li>同一时刻的多个独立测量可依次更新；在线性、测量噪声互不相关并且运算精确的条件下，与联合更新等价。</li>
+</ul>
+<p><strong>测量时间戳与延迟补偿</strong></p>
+<p>“数据到达时刻”不一定等于“测量发生时刻”。例如 GPS 在 200 ms 到达飞控，却对应 120 ms 的物理状态。若直接拿它修正 200 ms 的状态，便会引入时间错位。</p>
+<p>工程系统会使用时间戳、缓存和延迟补偿。PX4 EKF2 使用<strong>延迟融合时间线</strong>：在与测量对应的历史时间融合传感器，再使用缓存的 IMU 数据及输出预测机制提供当前状态估计。</p>
+<p>还必须考虑异常值检查：如果 GPS 瞬间跳变几十米，不能无条件按普通 $K$ 更新。实际 EKF 通常通过新息一致性检验等方式拒绝明显不合理的观测。</p>
+<h2 id="扩展卡尔曼滤波：非线性状态估计"><a href="#扩展卡尔曼滤波：非线性状态估计" class="headerlink" title="扩展卡尔曼滤波：非线性状态估计"></a>扩展卡尔曼滤波：非线性状态估计</h2><p>到目前为止，采用的是线性状态转移与线性观测模型。但真正的无人机涉及姿态旋转和非线性测量关系。EKF 保留 KF 的预测—更新框架，通过在当前估计附近线性化来处理误差与协方差的传播。</p>
+<p><strong>线性状态模型的适用范围</strong></p>
+<p>标准 KF 的两个模型对状态是线性的：</p>
+<p>$$
+\mathbf x_k=F\mathbf x_{k-1}+B\mathbf u+\mathbf w
+$$</p>
+<p>$$
+\mathbf z_k=H\mathbf x_k+\mathbf n
+$$</p>
+<p>但真实无人机的运动不仅是直线升降。姿态旋转、坐标变换、部分测距关系都可能引入非线性。</p>
+<h3 id="非线性运动与局部线性化"><a href="#非线性运动与局部线性化" class="headerlink" title="非线性运动与局部线性化"></a>非线性运动与局部线性化</h3><p>假设无人机在水平面内运动，状态为：</p>
+<p>$$
+\mathbf x=\begin{bmatrix}x\\y\\\theta\end{bmatrix}
+$$</p>
+<p>$\theta$ 为航向角（弧度），$v$ 和 $\omega$ 分别是给定的前进速度与角速度输入。为便于理解，暂时假设速度沿机头方向。</p>
+<p>采用短时间步长的离散近似：</p>
+<p>$$
+\begin{cases}
+x_k=x_{k-1}+v\Delta t\cos\theta_{k-1}\\
+y_k=y_{k-1}+v\Delta t\sin\theta_{k-1}\\
+\theta_k=\theta_{k-1}+\omega\Delta t
+\end{cases}
+$$</p>
+<p>其中出现了 $\sin\theta$、$\cos\theta$，且 $\theta$ 本身是状态，因此不能用一个与状态无关的常数矩阵 $F$ 精确描述整个过程。</p>
+<p>把非线性运动模型记为：</p>
+<p>$$
+\boxed{\mathbf x_k=f(\mathbf x_{k-1},\mathbf u_{k-1})+\mathbf w}
+$$</p>
+<p><strong>EKF 仍然直接使用非线性函数预测状态：</strong></p>
+<p>$$
+\boxed{\hat{\mathbf x}_k^-=f(\hat{\mathbf x}_{k-1}^+,\mathbf u_{k-1})}
+$$</p>
+<p>但计算误差如何传播时，需要在当前估计附近进行局部线性化。</p>
+<p><strong>局部线性化与雅可比矩阵</strong></p>
+<p><strong>一阶泰勒展开与局部近似</strong></p>
+<p>对一维可微函数：</p>
+<p>$$
+f(x_0+\delta x)\approx f(x_0)+f&#39;(x_0)\delta x
+$$</p>
+<p>意思是：在 $x_0$ 附近的小范围内，用切线描述函数的变化。推广到多输入、多输出的函数：</p>
+<p>$$
+f(\hat{\mathbf x}+\delta\mathbf x)\approx f(\hat{\mathbf x})+F\delta\mathbf x
+$$</p>
+<p>其中：</p>
+<p>$$
+\boxed{F=\left.\frac{\partial f}{\partial\mathbf x}\right|_{\hat{\mathbf x}}}
+$$</p>
+<p>这就是<strong>雅可比矩阵</strong>：每个元素是一个输出量对某个输入状态的偏导数。它告诉我们小的状态误差会如何影响预测结果。</p>
+<p><strong>运动模型的雅可比与误差传播</strong></p>
+<p>前面的运动函数为：</p>
+<p>$$
+f(\mathbf x)=\begin{bmatrix}
+x+v\Delta t\cos\theta\\
+y+v\Delta t\sin\theta\\
+\theta+\omega\Delta t
+\end{bmatrix}
+$$</p>
+<p>对 $x,y,\theta$ 求偏导：</p>
+<p>$$
+\boxed{
+F_k=\begin{bmatrix}
+1&amp;0&amp;-v\Delta t\sin\hat\theta\\
+0&amp;1&amp;v\Delta t\cos\hat\theta\\
+0&amp;0&amp;1
+\end{bmatrix}}
+$$</p>
+<p>例如 $v=2\,\mathrm{m/s}$、$\Delta t=1\,\mathrm s$、$\theta=0$，则：</p>
+<p>$$
+F_k=\begin{bmatrix}1&amp;0&amp;0\\0&amp;1&amp;2\\0&amp;0&amp;1\end{bmatrix}
+$$</p>
+<p>其中第二行第三列的 $2$ 表示：在该工作点附近，航向角有 $0.1$ rad 的小误差，大约会带来 $0.2$ m 的横向位移误差。这里的 $1$ 秒仅用于演示数值；真正的快速转弯应采用更短时间步长或更精确的积分方法。</p>
+<p>于是 EKF 中的误差传播近似为：</p>
+<p>$$
+\mathbf e_k^-\approx F_k\mathbf e_{k-1}^++\mathbf w_k
+$$</p>
+<p>协方差预测继续采用类似 KF 的形式：</p>
+<p>$$
+\boxed{P_k^-\approx F_kP_{k-1}^+F_k^T+Q_k}
+$$</p>
+<p>这里最容易混淆的一点：</p>
+<ul>
+<li><strong>EKF 预测状态</strong>：使用原来的非线性函数 $f$。</li>
+<li><strong>EKF 预测误差</strong>：使用函数在当前估计点附近的雅可比矩阵 $F_k$。</li>
+</ul>
+<p>EKF 不是把真实运动“强行改成线性运动”，而是<strong>在估计附近用线性关系近似小误差的传播</strong>。</p>
+<h3 id="非线性观测与-EKF-更新"><a href="#非线性观测与-EKF-更新" class="headerlink" title="非线性观测与 EKF 更新"></a>非线性观测与 EKF 更新</h3><p>不只是运动可能非线性，传感器如何观测状态也可能非线性。</p>
+<p><strong>线性观测示例</strong></p>
+<p>若状态为 $[x,y,\theta]^T$，GPS 测量水平位置：</p>
+<p>$$
+\mathbf z_{\mathrm{GPS}}=\begin{bmatrix}x\\y\end{bmatrix}+\mathbf n
+$$</p>
+<p>仍可以使用常数观测矩阵：</p>
+<p>$$
+H=\begin{bmatrix}1&amp;0&amp;0\\0&amp;1&amp;0\end{bmatrix}
+$$</p>
+<p><strong>倾斜测距的非线性观测模型</strong></p>
+<p>设无人机高度为 $h$，机身相对水平姿态倾斜 $\theta$，测距仪光束固定沿机身竖直向下。假设地面平坦，且仅考虑单轴倾斜，则测得的光束距离：</p>
+<p>$$
+\boxed{r=\frac{h}{\cos\theta}}
+$$</p>
+<p>可见测量既取决于高度，又取决于姿态，且关系非线性。</p>
+<p>记：</p>
+<p>$$
+\mathbf z=g(\mathbf x)+\mathbf n
+$$</p>
+<p>EKF 首先使用非线性测量模型计算<strong>预测的传感器读数</strong>：</p>
+<p>$$
+\hat{\mathbf z}=g(\hat{\mathbf x}^-)
+$$</p>
+<p>然后计算测量模型的雅可比矩阵：</p>
+<p>$$
+\boxed{H_k=\left.\frac{\partial g}{\partial\mathbf x}\right|_{\hat{\mathbf x}_k^-}}
+$$</p>
+<p>以状态 $[h,\theta]^T$ 为例：</p>
+<p>$$
+H_k=\begin{bmatrix}
+\frac{1}{\cos\hat\theta}&amp;\frac{\hat h\sin\hat\theta}{\cos^2\hat\theta}
+\end{bmatrix}
+$$</p>
+<p>这里 $H_k$ 描述<strong>测量值对状态中微小误差的敏感程度</strong>。当 $\cos\theta$ 接近零时，该简化测距模型也会变得不适合直接使用。</p>
+<p>接下来仍使用 KF 的增益结构：</p>
+<p>$$
+\boxed{K_k=P_k^-H_k^T(H_kP_k^-H_k^T+R_k)^{-1}}
+$$</p>
+<p>更新时的残差不是 $\mathbf z-H\hat{\mathbf x}^-$，而是：</p>
+<p>$$
+\mathbf y_k=\mathbf z_k-g(\hat{\mathbf x}_k^-)
+$$</p>
+<p>$$
+\boxed{\hat{\mathbf x}_k^+=\hat{\mathbf x}_k^-+K_k\mathbf y_k}
+$$</p>
+<p>$$
+\boxed{P_k^+\approx(I-K_kH_k)P_k^-}
+$$</p>
+<p>因此，EKF 与 KF 的结构非常接近：<strong>非线性模型负责预测状态和传感器读数，雅可比矩阵负责在局部近似误差传播。</strong></p>
+<p><strong>KF 与 EKF 的公式对照</strong></p>
+<table>
+<thead>
+<tr>
+<th>环节</th>
+<th>KF</th>
+<th>EKF</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>状态模型</td>
+<td>$F\mathbf x+B\mathbf u$</td>
+<td>$f(\mathbf x,\mathbf u)$</td>
+</tr>
+<tr>
+<td>状态预测</td>
+<td>$F\hat{\mathbf x}^++B\mathbf u$</td>
+<td>$f(\hat{\mathbf x}^+,\mathbf u)$</td>
+</tr>
+<tr>
+<td>协方差预测</td>
+<td>$FP^+F^T+Q$</td>
+<td>$F_kP^+F_k^T+Q_k$，$F_k$ 为雅可比</td>
+</tr>
+<tr>
+<td>测量模型</td>
+<td>$H\mathbf x$</td>
+<td>$g(\mathbf x)$</td>
+</tr>
+<tr>
+<td>测量残差</td>
+<td>$\mathbf z-H\hat{\mathbf x}^-$</td>
+<td>$\mathbf z-g(\hat{\mathbf x}^-)$</td>
+</tr>
+<tr>
+<td>测量增益</td>
+<td>$P^-H^T(HP^-H^T+R)^{-1}$</td>
+<td>同样的形式，但使用 $H_k$</td>
+</tr>
+<tr>
+<td>协方差更新</td>
+<td>$(I-KH)P^-$</td>
+<td>近似同形，使用 $H_k$</td>
+</tr>
+</tbody></table>
+<p>EKF 的基本运算流程：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs text">已知上一时刻 x_hat、P<br>    ↓<br>用非线性运动函数 f 预测 x_hat<br>    ↓<br>求运动模型雅可比 F_k，预测 P<br>    ↓<br>收到传感器数据，使用非线性测量模型 g 预测读数<br>    ↓<br>求测量模型雅可比 H_k，计算残差与 K<br>    ↓<br>更新 x_hat、P<br>    ↓<br>进入下一个时刻<br></code></pre></td></tr></table></figure>
+
+<p>EKF 使用一阶近似，因此当初始误差过大、系统非线性过强或模型错误时，可能出现估计不一致甚至发散。线性化不是无代价的。</p>
+<p><strong>实际无人机导航 EKF 的状态设计</strong></p>
+<p>前面的二维转弯模型只是帮助理解非线性的例子。实际飞控往往需要估计：</p>
+<p>$$
+\mathbf x_{\mathrm{nav}}=
+\begin{bmatrix}
+\mathbf p\\\mathbf v\\\mathbf q\\\mathbf b_a\\\mathbf b_g
+\end{bmatrix}
+$$</p>
+<p>其中：</p>
+<ul>
+<li>$\mathbf p$：三维位置。</li>
+<li>$\mathbf v$：三维速度。</li>
+<li>$\mathbf q$：用四元数表示的姿态。</li>
+<li>$\mathbf b_a$：加速度计偏置。</li>
+<li>$\mathbf b_g$：陀螺仪偏置。</li>
+</ul>
+<p>实际上加速度计给出的不是世界坐标系下的直接加速度，而是机体系比力。需要利用姿态旋转到世界坐标系，并正确处理重力。例如在某一种坐标系约定下：</p>
+<p>$$
+\mathbf a^{world}=R(\mathbf q)(\mathbf f_m-\mathbf b_a)+\mathbf g^{world}
+$$</p>
+<p>陀螺仪测得的角速度用于传播姿态；陀螺仪偏置和加速度计偏置也应估计，否则长期积分会严重漂移。</p>
+<p>真实 EKF 的设计还涉及：</p>
+<ul>
+<li><strong>误差状态（Error-State）</strong>：尤其是姿态使用四元数时，通常对三维小角度误差进行滤波，而不是把四元数的四个分量随意相加。</li>
+<li><strong>观测可用性</strong>：GPS 失效时，系统仍可惯性预测，但绝对位置误差可能不断积累。</li>
+<li><strong>坐标系一致性</strong>：机体系、导航系、ENU&#x2F;NED、重力方向和角度单位不能混淆。</li>
+<li><strong>时延和异常值</strong>：实际估计器依赖时间戳、缓冲、传感器健康检查及新息检验。</li>
+<li><strong>计算平台</strong>：状态估计通常运行在飞控 MCU 上，与飞行控制程序协同工作；复杂视觉处理可交由伴随计算机。</li>
+</ul>
+<p>在 PX4 中可以直接从 EKF2 的设计文档继续学习；ArduPilot 也有 EKF3 的状态估计说明。</p>
+<h2 id="核心概念总结"><a href="#核心概念总结" class="headerlink" title="核心概念总结"></a>核心概念总结</h2><table>
+<thead>
+<tr>
+<th>问题</th>
+<th>结论</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>误差均值为零是否代表估计准确？</td>
+<td>不代表。正负误差可能抵消；还需衡量均方误差。</td>
+</tr>
+<tr>
+<td>为什么最小化 P？</td>
+<td>在无偏条件下，最小化误差方差等价于最小化均方误差。</td>
+</tr>
+<tr>
+<td>Q 是 P 的一部分吗？</td>
+<td>可以理解为预测阶段 $P^-$ 的新增组成项；$Q\ne P$。</td>
+</tr>
+<tr>
+<td>之前的一维 KF 没有预测吗？</td>
+<td>有，采用的是“状态不变”的最简单预测模型。</td>
+</tr>
+<tr>
+<td>为什么加入速度？</td>
+<td>为了描述位置如何随时间变化，提高动态预测能力。</td>
+</tr>
+<tr>
+<td>为什么能用匀加速公式？</td>
+<td>假设相邻计算间隔内加速度近似恒定，而不是全程恒定。</td>
+</tr>
+<tr>
+<td>为什么 P 是矩阵？</td>
+<td>多个状态的估计误差既有各自方差，也有彼此协方差。</td>
+</tr>
+<tr>
+<td>为什么气压计能修正速度？</td>
+<td>高度、速度估计误差存在相关性，测量信息可沿相关性传播。</td>
+</tr>
+<tr>
+<td>为什么 K 是矩阵？</td>
+<td>不同状态需要不同修正权重；多个测量也可能同时作用于多个状态。</td>
+</tr>
+<tr>
+<td>所有传感器必须同时更新吗？</td>
+<td>不必。按时间戳融合，预测与更新可以交错进行。</td>
+</tr>
+<tr>
+<td>EKF 是否将非线性状态预测改成线性预测？</td>
+<td>不是。状态预测用非线性函数，误差传播用雅可比矩阵近似。</td>
+</tr>
+<tr>
+<td>EKF 是硬件芯片吗？</td>
+<td>通常不是，是在飞控处理器上运行的软件模块。</td>
+</tr>
+</tbody></table>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/n4XUN3pVRyahTU8PnrhOIQ">原始阅读：微信公众号文章</a>（学习起点；本文并非其逐段转写）</li>
+<li>Greg Welch, Gary Bishop, <em>An Introduction to the Kalman Filter</em>，University of North Carolina at Chapel Hill，TR 95-041。<a target="_blank" rel="noopener" href="https://www.cs.unc.edu/~welch/media/pdf/kalman_intro.pdf">原始教程 PDF</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.px4.io/main/en/advanced_config/tuning_the_ecl_ekf">PX4 官方文档：Using PX4’s Navigation Filter (EKF2)</a>——EKF2 状态量、传感器融合、延迟融合时间线、误差状态实现。</li>
+<li><a target="_blank" rel="noopener" href="https://docs.px4.io/main/zh/advanced_config/tuning_the_ecl_ekf">PX4 官方文档（中文版）：使用 PX4 的导航滤波器 EKF2</a></li>
+<li><a target="_blank" rel="noopener" href="https://ardupilot.org/copter/docs/common-apm-navigation-extended-kalman-filter-overview.html">ArduPilot 官方文档：Extended Kalman Filter (EKF)</a>——EKF3 的实际使用与多传感器支持。</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" class="category-chain-item">理论学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2/" class="print-no-link">#卡尔曼滤波</a>
+      
+        <a href="/tags/%E6%89%A9%E5%B1%95%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2/" class="print-no-link">#扩展卡尔曼滤波</a>
+      
+        <a href="/tags/KF/" class="print-no-link">#KF</a>
+      
+        <a href="/tags/EKF/" class="print-no-link">#EKF</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>从卡尔曼滤波到扩展卡尔曼滤波_无人机状态估计笔记</div>
+      <div>https://mian221.top/2026/10/09/从卡尔曼滤波到扩展卡尔曼滤波_无人机状态估计笔记/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年10月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/10/07/Ubuntu-20.04-%E4%BD%BF%E7%94%A8clash/" title="Ubuntu 20.04 使用clash">
+                        <span class="hidden-mobile">Ubuntu 20.04 使用clash</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/navbar-search.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
