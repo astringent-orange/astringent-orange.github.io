@@ -1,0 +1,116 @@
+/* Keep code dark in either Fluid color scheme, matching the reference. */
+.markdown-body .code-card {
+  --card-code-bg: #212121;
+  --card-code-text: #e9f1f1;
+  margin: 1.25rem 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background: var(--card-code-bg);
+  color: var(--card-code-text);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, .32);
+  text-align: left;
+  color-scheme: dark;
+}
+[data-user-color-scheme="dark"] .markdown-body .code-card { box-shadow: 0 5px 14px rgba(0, 0, 0, .5); }
+.code-card-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 38px;
+  padding: 0 10px 0 16px;
+  background: #1c1c1c;
+  color: #c4cece;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+  line-height: 1;
+}
+.code-card-dots { display: flex; flex: 0 0 auto; gap: 10px; margin-right: 10px; }
+.code-card-dots i { width: 14px; height: 14px; border-radius: 50%; background: #fc615d; }
+.code-card-dots i:nth-child(2) { background: #fdbc40; }
+.code-card-dots i:nth-child(3) { background: #35cd4b; }
+.code-card-language { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 18px; font-weight: 700; }
+.code-card-status { font-size: 12px; line-height: 1.3; }
+.code-card-toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 32px;
+  margin: 0;
+  padding: 4px;
+  border: 0;
+  border-radius: 4px;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  appearance: none;
+}
+.code-card-toolbar button:hover { background: rgba(255, 255, 255, .1); color: #fff; }
+.code-card-toolbar button:focus-visible,
+.markdown-body .code-card-body:focus-visible { outline: 2px solid #79cce8; outline-offset: -2px; }
+.code-card-toolbar svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.code-card-copy svg rect { fill: currentColor; stroke-width: 1; }
+.code-card-fold svg { transition: transform .18s ease; }
+.code-card.is-collapsed .code-card-fold svg { transform: rotate(-90deg); }
+
+.markdown-body .code-card > .code-card-body { margin: 0; overflow: auto; border: 0; border-radius: 0; background: var(--card-code-bg); }
+.markdown-body .code-card > .code-card-body[hidden] { display: none; }
+.markdown-body .code-card pre,
+.markdown-body .code-card figure.highlight pre {
+  margin: 0;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 0;
+  background: var(--card-code-bg);
+  color: var(--card-code-text);
+  /* Fluid sets pre font-size with !important; override only enhanced cards. */
+  font-size: 16px !important;
+  line-height: 1.75;
+  tab-size: 4;
+  overflow: visible;
+  text-align: left;
+}
+.markdown-body .code-card code.hljs,
+.markdown-body .code-card pre code {
+  display: block;
+  padding: 0;
+  background: transparent;
+  color: var(--card-code-text);
+  font-family: Consolas, "SFMono-Regular", "Liberation Mono", Menlo, "Microsoft YaHei", monospace;
+  font-size: inherit;
+  line-height: inherit;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+.markdown-body .code-card figure.highlight table { display: table; width: 100%; margin: 0; border: 0; border-radius: 0; overflow: visible; }
+.markdown-body .code-card figure.highlight tr { border: 0; background: transparent; }
+.markdown-body .code-card figure.highlight td { border: 0; padding: 0; }
+.markdown-body .code-card figure.highlight td.gutter { width: 1%; background: var(--card-code-bg); user-select: none; }
+.markdown-body .code-card figure.highlight td.gutter pre { padding: 10px 12px; border: 0; text-align: right; }
+.markdown-body .code-card figure.highlight td.gutter .line { color: #859090; }
+.markdown-body .code-card figure.highlight td.code pre { padding-left: 12px; }
+.markdown-body .code-card .code-widget { display: none; }
+.markdown-body .code-card .hljs-comment,
+.markdown-body .code-card .hljs-quote { color: #8b918b; font-style: normal; }
+.markdown-body .code-card .hljs-keyword,
+.markdown-body .code-card .hljs-selector-tag,
+.markdown-body .code-card .hljs-literal { color: #89ddff; }
+.markdown-body .code-card .hljs-string,
+.markdown-body .code-card .hljs-number { color: #c3e88d; }
+.markdown-body .code-card .hljs-built_in { color: #ffcb6b; }
+@media (max-width: 575.98px) {
+  .code-card-toolbar { padding-left: 12px; padding-right: 6px; min-height: 40px; }
+  .code-card-dots { gap: 7px; margin-right: 6px; }
+  .code-card-dots i { width: 11px; height: 11px; }
+  .code-card-language { font-size: 13px; }
+  .code-card-toolbar button { height: 40px; flex-basis: 32px; width: 32px; }
+  .markdown-body .code-card pre,
+  .markdown-body .code-card figure.highlight pre { font-size: 13px !important; }
+}
+@media (prefers-reduced-motion: reduce) { .code-card-fold svg { transition: none; } }
+@media print {
+  .markdown-body .code-card { box-shadow: none; }
+  .code-card-toolbar button, .code-card-status { display: none; }
+  .markdown-body .code-card > .code-card-body[hidden] { display: block; }
+}
