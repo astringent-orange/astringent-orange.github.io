@@ -7,56 +7,64 @@ code.hljs {
   padding: 3px 5px
 }
 /*
-
-Dark style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
-
+Monokai style - ported by Luigi Maselli - http://grigio.org
 */
 .hljs {
-  color: #ddd;
-  background: #303030
+  background: #272822;
+  color: #ddd
 }
+.hljs-tag,
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-literal,
-.hljs-section,
-.hljs-link {
-  color: white
+.hljs-strong,
+.hljs-number,
+.hljs-name {
+  color: #f92672
 }
-.hljs-subst {
-  /* default */
-  
+.hljs-code {
+  color: #66d9ef
+}
+.hljs-attribute,
+.hljs-attr,
+.hljs-symbol,
+.hljs-regexp,
+.hljs-link {
+  color: #bf79db
 }
 .hljs-string,
-.hljs-title,
-.hljs-name,
-.hljs-type,
-.hljs-attribute,
-.hljs-symbol,
 .hljs-bullet,
+.hljs-subst,
+.hljs-title,
+.hljs-section,
+.hljs-emphasis,
+.hljs-type,
 .hljs-built_in,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
 .hljs-addition,
 .hljs-variable,
 .hljs-template-tag,
 .hljs-template-variable {
-  color: #d88
+  color: #a6e22e
+}
+.hljs-title.class_,
+.hljs-class .hljs-title {
+  color: white
 }
 .hljs-comment,
 .hljs-quote,
 .hljs-deletion,
 .hljs-meta {
-  color: #979797
+  color: #75715e
 }
 .hljs-keyword,
 .hljs-selector-tag,
 .hljs-literal,
+.hljs-doctag,
 .hljs-title,
 .hljs-section,
-.hljs-doctag,
 .hljs-type,
-.hljs-name,
-.hljs-strong {
+.hljs-selector-id {
   font-weight: bold
-}
-.hljs-emphasis {
-  font-style: italic
 }

@@ -29,6 +29,35 @@
   
   
   <entry>
+    <title>11.2_无人机主动跟踪：idea-TRK场</title>
+    <link href="/2026/10/10/11.2_%E6%97%A0%E4%BA%BA%E6%9C%BA%E4%B8%BB%E5%8A%A8%E8%B7%9F%E8%B8%AA%EF%BC%9Aidea-TRK%E5%9C%BA/"/>
+    <url>/2026/10/10/11.2_%E6%97%A0%E4%BA%BA%E6%9C%BA%E4%B8%BB%E5%8A%A8%E8%B7%9F%E8%B8%AA%EF%BC%9Aidea-TRK%E5%9C%BA/</url>
+    
+    <content type="html"><![CDATA[<h2 id="研究问题"><a href="#研究问题" class="headerlink" title="研究问题"></a>研究问题</h2><p><strong>研究任务：</strong> 无人机单目标视觉主动跟踪（Visual Active Tracking）。</p><p><strong>核心问题：</strong> 当无人机当前仍能可靠观测目标，但未来可能因目标运动或环境遮挡而发生感知退化时，如何提前调整飞行行为，以维持连续、可靠的目标跟踪？</p><p>研究重点是<strong>目标丢失前的预测性主动感知</strong>，而非丢失后的搜索和恢复。</p><h2 id="现有方法及研究切入点"><a href="#现有方法及研究切入点" class="headerlink" title="现有方法及研究切入点"></a>现有方法及研究切入点</h2><p>现有可见性感知规划方法（如 VisPlanner、Elastic Tracker、UAST）已经考虑目标运动预测、障碍物遮挡和轨迹可见性，因此不能简单将“考虑未来目标位置”或“引入可见性代价”作为创新点。</p><p>但这类方法通常依赖显式几何模型或轨迹级可见性评价。</p><p><strong>潜在研究切入点：</strong></p><ul><li>传统轨迹级评价：生成候选轨迹，再依据环境与目标状态评价轨迹的可见性。</li><li>本研究：从历史观测中直接预测未来空间中的目标可观测性分布，再利用该分布指导轨迹决策。</li></ul><p>潜在优势在于，未来可观测性表征不必绑定于某条特定轨迹，可以为不同候选行为提供统一的空间信息。</p><p><strong>需要验证的核心假设：</strong> 与直接进行轨迹级可见性评价相比，基于历史信息学习未来目标可观测性区域，能否在部分可观测、运动不确定等条件下更有效地提前避免目标丢失？</p><p>这一优势目前仍属于研究假设，需要实验验证。</p><h2 id="核心-Idea"><a href="#核心-Idea" class="headerlink" title="核心 Idea"></a>核心 Idea</h2><p>提出一种 <strong>Predictive Target Observability Representation（预测性目标可观测性表征）</strong>。</p><p>网络根据无人机历史观测，预测未来不同时刻、不同候选空间位置对于目标的观测质量：</p><p>$$\hat O_t(x,\Delta t)$$</p><p>其中：</p><ul><li>$x$：无人机候选观察位置。</li><li>$\Delta t$：未来预测时间。</li><li>$\hat O$：预期目标可观测性。</li></ul><p>初期参考 YOPO 的空间网格结构，将候选位置组织为二维 $3\times5$ 网格，并预测多个未来时间点的可观测性。</p><p>需要注意，<strong>观察区域网格必须有独立的物理空间定义</strong>，不能仅仅是 15 条 YOPO 运动基元对应的评分，否则容易退化为普通轨迹 Score Map。</p><h2 id="网络结构设计"><a href="#网络结构设计" class="headerlink" title="网络结构设计"></a>网络结构设计</h2><h3 id="共享特征提取"><a href="#共享特征提取" class="headerlink" title="共享特征提取"></a>共享特征提取</h3><p>使用现成视觉感知模块，不对目标检测或跟踪网络进行创新。</p><p>输入包括：</p><ul><li>深度图；</li><li>目标 bbox、置信度及检测有效性；</li><li>UAV 自身运动状态；</li><li>必要的历史动作或位姿变化。</li></ul><p>网络结构：</p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">Depth → CNN → [C, 3, 5]<br>                   │<br>State → Normalize → Expand<br>                   │<br>                 Concat<br>                   │<br>              1×1 ConvGRU<br>                   │<br>             H: [T, 3, 5]<br></code></pre></td></tr></table></figure><p>状态量直接复制并拼接，不额外使用 MLP。</p><p>第一版使用 <strong>1×1 ConvGRU</strong>，在每个空间位置独立融合时间信息，不进行额外的邻域空间交互。后续可以比较 1×1 与 3×3 ConvGRU。这样的结果期望从过往的目标运动与场景历史，直接学习到预测未来视野中的目标可见性</p><h3 id="待定的三种输出结构"><a href="#待定的三种输出结构" class="headerlink" title="待定的三种输出结构"></a>待定的三种输出结构</h3><p><strong>方案 A：辅助监督型（MAD 思路）</strong></p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">H ── Obs Head（训练时使用）<br>│<br>└── YOPO Head → Trajectory + Score<br></code></pre></td></tr></table></figure><p>先通过 Obs Head 训练空间表征，再移除辅助头，使用隐变量训练轨迹网络。</p><p>优点：结构简单，部署开销小。<br>缺点：无法保证轨迹网络真正利用预测的可观测性信息。</p><p><strong>方案 B：并行预测与评分修正</strong></p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs text">        ┌── Obs Head → Obs Map ──┐<br>H ──────┤                       ├→ Final Score<br>        └── YOPO Head → Traj/Score<br></code></pre></td></tr></table></figure><p>直接利用预测的可观测性区域修正候选轨迹评分。</p><p>优点：观测区域显式参与决策，额外推理开销较小。<br>缺点：如果只是对原有 Score 加权修正，可能限制观测区域对轨迹生成过程的影响。</p><p><strong>方案 C：显式特征融合（当前重点候选）</strong></p><figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs text">        ┌── Obs Head → Obs Map<br>H ──────┤                │<br>        └────────────────┤<br>                       Concat<br>                         │<br>                    1×1 Conv<br>                         │<br>                      YOPO Head<br>                         │<br>                  Trajectory + Score<br></code></pre></td></tr></table></figure><p>预测的 Obs Map 与隐变量融合，再生成候选轨迹及其评分。</p><p>优点：观测区域信息能够同时影响轨迹生成和轨迹评价。<br>缺点：增加网络复杂度，且可能出现网络忽略 Obs Map 的情况。</p><p><strong>当前不直接确定最终结构，而是通过 A&#x2F;B&#x2F;C 消融实验判断显式可观测性信息是否有效，以及哪种使用方式更合适。</strong></p><h2 id="训练方法"><a href="#训练方法" class="headerlink" title="训练方法"></a>训练方法</h2><p>采用两阶段训练，必要时增加联合微调。</p><h3 id="Stage-1：预测性可观测性表征学习"><a href="#Stage-1：预测性可观测性表征学习" class="headerlink" title="Stage 1：预测性可观测性表征学习"></a>Stage 1：预测性可观测性表征学习</h3><p>目标：使 CNN + ConvGRU 学习未来目标可观测区域。</p><p>使用 Aerial Gym 自动生成训练数据：</p><ul><li>静态障碍环境；</li><li>程序化动态目标；</li><li>程序化 UAV 运动；</li><li>目标未来轨迹与仿真几何真值。</li></ul><p>根据未来目标位置、候选观察位置、障碍物及相机模型，自动生成 Observability GT。</p><p>训练：</p><p>$$L_{obs}=\ell(\hat O,O^{GT})$$</p><p>可以先使用静态目标学习基本空间可见性，再加入动态目标序列训练未来可观测性预测。</p><p>该过程属于<strong>仿真特权信息监督学习</strong>，而不是严格意义上的自监督学习。</p><h3 id="Stage-2：轨迹生成与评分学习"><a href="#Stage-2：轨迹生成与评分学习" class="headerlink" title="Stage 2：轨迹生成与评分学习"></a>Stage 2：轨迹生成与评分学习</h3><p>参考 YOPO&#x2F;UAST 的引导式训练方法。<br>利用可微轨迹代价训练 YOPO Head：</p><p>$$L_{safe}+L_{smooth}+L_{track}$$</p><p>同时，使 Score Head 对齐设计的综合轨迹代价：</p><p>$$J_i=\lambda_sJ_{safe}+\lambda_tJ_{track}+\lambda_mJ_{smooth}+\lambda_oJ_{obs}$$</p><p>其中 $J_{obs}$ 应当评价预测时域内的目标可观测性，而不是只计算轨迹终点的当前几何可见性。<br>训练过程中可先冻结预训练表征，再逐渐解冻，进行联合优化：</p><p>$$L=L_{traj}+\lambda_1L_{score}+\lambda_2L_{obs}$$</p><p>训练仿真器本身不需要可微，但用于反向传播优化轨迹的代价需要具备可微形式或可替代的监督信号。</p><h2 id="实验与消融"><a href="#实验与消融" class="headerlink" title="实验与消融"></a>实验与消融</h2><p>主要在自建 Aerial Gym 环境中开展连续主动跟踪实验。</p><p><strong>计划对比方法：</strong><br>D-VAT、GC-VAT、Elastic Tracker、VisPlanner、OA-VAT、UAST，以及公开实现条件允许时的 YOPOv2-Tracker。</p><p><strong>主要评价指标：</strong></p><ul><li>连续跟踪时长；</li><li>跟踪成功率；</li><li>目标可见率；</li><li>跟踪距离误差；</li><li>碰撞率；</li><li>推理延迟。</li></ul><p><strong>关键消融实验：</strong></p><ol><li>无时序记忆 vs ConvGRU；</li><li>1×1 ConvGRU vs 3×3 ConvGRU；</li><li>无 Obs Head vs 辅助监督 vs 显式融合；</li><li>当前可观测性 vs 未来可观测性；</li><li>不同预测时间跨度与网格分辨率；</li><li>与传统几何可见性规划在相同感知条件下的对比。</li></ol><h2 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h2><p>在尝试定义TRK场的GT时发现设想中的TRK场过于理想，”可跟踪性“包含了太多含义，需要对于场景结构存在了解、对目标运动存在预测、一个区域的性质也让GT非常难以定义。而一旦将TRK场的设计简化，例如不是元语一个区域的性质而是元语一个点的性质，则又会落入到对于YOPO的增量改进过程中。同时，visplanner与elastic tracker其实在一定程度上实现了TRK场预计的效果，后续如果从卷点的角度去推进，边际价值实际不高。</p><p>但是在之前的分析过程中，发现各论文好像都已经达成非常好的效果，是因为我们通常默认了其前提条件的存在，所以可以从先决条件的角度去分析目前方法的缺陷。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>无人机实验</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>跟踪</tag>
+      
+      <tag>VAT</tag>
+      
+      <tag>TRK场</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>从卡尔曼滤波到扩展卡尔曼滤波_无人机状态估计笔记</title>
     <link href="/2026/10/09/%E4%BB%8E%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%88%B0%E6%89%A9%E5%B1%95%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2_%E6%97%A0%E4%BA%BA%E6%9C%BA%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1%E7%AC%94%E8%AE%B0/"/>
     <url>/2026/10/09/%E4%BB%8E%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2%E5%88%B0%E6%89%A9%E5%B1%95%E5%8D%A1%E5%B0%94%E6%9B%BC%E6%BB%A4%E6%B3%A2_%E6%97%A0%E4%BA%BA%E6%9C%BA%E7%8A%B6%E6%80%81%E4%BC%B0%E8%AE%A1%E7%AC%94%E8%AE%B0/</url>
@@ -87,6 +116,45 @@
   
   
   <entry>
+    <title>11.1_无人机主动跟踪：baseline讨论</title>
+    <link href="/2026/09/28/11.1_%E6%97%A0%E4%BA%BA%E6%9C%BA%E4%B8%BB%E5%8A%A8%E8%B7%9F%E8%B8%AA%EF%BC%9Abaseline%E8%AE%A8%E8%AE%BA/"/>
+    <url>/2026/09/28/11.1_%E6%97%A0%E4%BA%BA%E6%9C%BA%E4%B8%BB%E5%8A%A8%E8%B7%9F%E8%B8%AA%EF%BC%9Abaseline%E8%AE%A8%E8%AE%BA/</url>
+    
+    <content type="html"><![CDATA[<blockquote><p>以主动预测未来最佳观测区域的主动跟踪为出发点</p></blockquote><h2 id="对比实验"><a href="#对比实验" class="headerlink" title="对比实验"></a>对比实验</h2><h3 id="Baseline"><a href="#Baseline" class="headerlink" title="Baseline"></a>Baseline</h3><p>用于对比的基础方法</p><table><thead><tr><th>方法</th><th>方法类型</th><th>主要工作</th><th>年份</th><th>发表会议&#x2F;期刊</th><th>代码公开情况</th><th>官方代码</th></tr></thead><tbody><tr><td><strong>D-VAT</strong></td><td>端到端深度强化学习（DRL）</td><td>通过单目视觉直接预测无人机推力与角速度，实现端到端视觉主动跟踪</td><td>2024</td><td>IEEE RA-L</td><td>✅ 已公开：训练、测试代码及预训练模型入口</td><td><a href="https://github.com/isarlab-department-engineering/d-vat">GitHub</a></td></tr><tr><td><strong>GC-VAT</strong></td><td>深度强化学习、课程学习</td><td>提出目标中心奖励与课程训练策略，提高复杂开放环境中的无人机对地目标跟踪能力，并发布 DAT Benchmark</td><td>2025</td><td>NeurIPS</td><td>✅ 已公开：算法代码与 DAT Benchmark</td><td><a href="https://github.com/SHWplus/DAT_Benchmark">GitHub</a></td></tr><tr><td><strong>YOPOv2-Tracker</strong></td><td>学习式轨迹规划、端到端控制</td><td>通过运动基元与轨迹代价学习，联合实现目标跟踪、避障和敏捷飞行控制</td><td>2026</td><td>IEEE T-RO</td><td>⏳ 部分公开：基础 YOPO 已开源，官方 Tracker 完整代码待发布</td><td><a href="https://github.com/TJU-Aerial-Robotics/YOPO-Tracker">Tracker</a> &#x2F; <a href="https://github.com/TJU-Aerial-Robotics/YOPO">YOPO</a></td></tr><tr><td><strong>Elastic Tracker</strong></td><td>传统优化式轨迹规划</td><td>通过时空轨迹规划联合优化目标可见性、运动安全性与轨迹动态可行性</td><td>2022</td><td>ICRA</td><td>✅ 已公开：ROS 仿真、跟踪及可见性消融实验代码</td><td><a href="https://github.com/ZJU-FAST-Lab/Elastic-Tracker">GitHub</a></td></tr><tr><td><strong>OA-VAT</strong></td><td>混合式：视觉跟踪、状态估计、扩散规划</td><td>结合实例级目标识别、置信度感知状态估计与遮挡感知轨迹规划，实现遮挡情况下的目标跟踪恢复</td><td>2026</td><td>CVPR</td><td>✅ 已公开：主程序、评估脚本及扩散规划相关代码</td><td><a href="https://github.com/SHWplus/OA-VAT">GitHub</a></td></tr><tr><td><strong>UAST</strong></td><td>混合式：视觉感知、规则搜索、学习式控制</td><td>融合 RGB-D 感知、规则搜索与学习式控制，实现无地图环境中的主动搜索、持续跟踪及丢失恢复</td><td>2026</td><td>CVPR</td><td>⚠️ 部分公开：目前提供简化版仿真实现</td><td><a href="https://github.com/qinliangql/UAST">GitHub</a></td></tr><tr><td><strong>VisPlanner</strong></td><td>传统可见性感知轨迹优化</td><td>构建可微分的可见性代价，考虑目标观测距离、视角及障碍物遮挡，联合优化飞行轨迹和偏航角</td><td>2021</td><td>IROS</td><td>✅ 已公开：ROS 仿真及轨迹规划代码</td><td><a href="https://github.com/ZJU-FAST-Lab/visPlanner">GitHub</a></td></tr></tbody></table><h4 id="端到端结构"><a href="#端到端结构" class="headerlink" title="端到端结构"></a>端到端结构</h4><p>端到端结构直接输入RGB图像不经过中间表示输出飞行轨迹&#x2F;控制。YOPOv2在v1的基础上，对于每一个元语加入目标是否在该处的置信度以及位置、深度偏差信息。而D-VAT更为简单直接，拼接滑动窗口三帧的特征以实现时序感知，然后直接输入三层MLP输出推力与角速度。纯端到端的网络结构的确看起来非常简洁且原理也不复杂，但是除了常见的黑箱问题之外，还因为训练时便确定了目标种类而无法随意修改目标，并且越是端到端其泛化性越差，因为模型会隐式学习到一些例如无人机的配置的额外信息。而从实际使用的角度，无人机作为边缘设备更应该优先考虑鲁棒性与可替换性，完全端到端的设计不符合该逻辑<br>而GC-VAT与D-VAT通过滑动窗口多帧输入来获取时序信息不同，通使用GRU来处理时序信息。具体而言RGB通过两层CNN直接传入GRU，然后输出7种离散动作。其关键创新有两点：归一化距离奖励函数，分阶段的强化学习（课程学习）。</p><blockquote><p><strong>能修改跟踪目标是否是必要的需求？</strong><br>不一定，以大疆neo为例，升空后自动跟拍。以产品的角度来说在设计之初便已经确定了使用场景，即跟拍人像，所以纯端到端无法替换跟踪目标的方法其实不无道理。但是从入手的角度来说，个人认为还是从分阶段的方法入手会更好，因为对于各部分的了解会更加深刻，而端到端的方法虽然看起来简单却隐含了很多潜在知识</p></blockquote><h4 id="分阶段结构"><a href="#分阶段结构" class="headerlink" title="分阶段结构"></a>分阶段结构</h4><p>UAST为YOPOv1基础上进行修改得到，主要创新在于将搜索-跟踪-再发现融合到一个框架中。使用引导学习的分阶段方法，通过模板匹配来确定目标，对于跟踪提出了两个关键点，分阶段结构将感知结果的目标所在作为目标点输入YOPO网络，和将网络输出的score进行监督。<br>OA-VAT瞄准两个问题：相似目标干扰与遮挡导致的跟踪失败，使用了更为庞大与复杂的结构。首先对于给定参考图像会通过视角增强、图像分割和 DINOv3 特征提取，构建用于识别目标身份的视觉原型。同时利用YOLO-E分割候选物体，然后使用DINOv3提取特征，然后与目标原型进行余弦相似度匹配，此外还通过在线特征更新和置信度感知卡尔曼滤波器处理外观与运动变化。最后使用当前图像和预测的目标位置作为条件，由扩散模型生成绕障恢复轨迹，主动移动相机，尝试重新发现目标。</p><h4 id="传统算法"><a href="#传统算法" class="headerlink" title="传统算法"></a>传统算法</h4><p>Elastic Tracker预测目标未来的位置，先确定空间中哪些位置安全、哪些位置适合观察目标，再求解一条满足时空条件的轨迹。弹性主要体现在两个地方：允许跟踪距离在适当范围内变化，以及允许轨迹各段的执行时间随着目标运动和环境约束进行调整。而VisPlanner显示针对可见性（目标距离，观察角度，遮挡）进行建模优化。</p><h3 id="Benchmark"><a href="#Benchmark" class="headerlink" title="Benchmark"></a>Benchmark</h3><p>DAT-Benchmark</p><h3 id="Metric"><a href="#Metric" class="headerlink" title="Metric"></a>Metric</h3><ul><li>连续跟踪时长 CTT</li><li>跟踪成功率 TSR</li><li>目标距离 OD</li><li>视场中心误差 CE</li><li>推理延迟 CT</li></ul><h2 id="Jev启发"><a href="#Jev启发" class="headerlink" title="Jev启发"></a>Jev启发</h2><h3 id="Jev-like-结构"><a href="#Jev-like-结构" class="headerlink" title="Jev-like 结构"></a>Jev-like 结构</h3><p>虽然YOPO结构本身最后也会输出每条元语的概率，但是这个概率是没有现实语义的，而jev的概率是有确定语义的。可以仿照这一点，将YOPO语义对齐到一个确定的值，例如未来若干秒内跟踪的成功率。而这一点其实已经在UAST中有初步体现，将score对齐到损失函数中</p><h3 id="Jev门控快慢思考"><a href="#Jev门控快慢思考" class="headerlink" title="Jev门控快慢思考"></a>Jev门控快慢思考</h3><p>在不同的置信度下选择不同的网络，例如当物体接近遮挡或者失踪风险高时调用慢网络。而重点在于网络结构的复用以减少重复编码，例如<br>$$\text{Shared Backbone}\rightarrow\begin{cases}\text{Fast Policy}\\\text{Slow Policy}\\\text{Fast/Slow Gating Head}\end{cases}$$<br>或者说可以根据不同的跟踪失败原因选择不同的恢复方法。但是近期已经有相关工作CMW-Track</p><h2 id="实验构思"><a href="#实验构思" class="headerlink" title="实验构思"></a>实验构思</h2><p>看到OA-VAT的工作量非常巨大，结构复杂的同时对比了12种方法，虽然完成的任务并不是特别惊讶，但是仍然是CVPR。不过对于自己的起步论文，并不一定需要做的如此复杂和堆积工作量，重点在于形成标准的工作流程以及搭建可复现与拓展的仿真环境与代码。<br>回到“以主动预测未来最佳观测位置的主动跟踪”的出发点，首先创新点一是提出了一种方法，第二是在实机上进行了验证，第三则有待商榷。如果说是搭建benchmark则工作量会非常大，所以改为自己的场景即可，而这无法形成创新点但是工作量也是存在的</p><p>目前的思路是借鉴MAD的训练思路，在YOPO输出头的基础上额外增加一个最佳观测区域预测，然后让score对齐到该区域评分。然而在输入部分有了分歧，一种思路是采用“感知-融合-行为”的系统，一种思路是采用“感知-行为”的系统，将行为网络中加入一部分时序预测能力，这样会让系统更加简单更加偏向端到端的结构，但是这会让网络的训练更加复杂。</p><p>使用GRU来替代显示融合模块，存在一些问题：1.GRU不保证一定能够学习目标运动预测 2. 历史图像特征必须考虑无人机自身运动 3. GRU 能记忆，并不意味着它拥有正确的空间理解</p><p>关于输出头的部分，类MAD表征学习和类YOPO头</p><p>Q 以可观测性进行约束，这不是和visplanner的想法一样？<br>Q 全都是融合别人的机制，是否合适</p><p>预期观测到的结果是，提前进行落位，目标不一定一直在视野中心</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>无人机实验</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>跟踪</tag>
+      
+      <tag>VAT</tag>
+      
+      <tag>D-VAT</tag>
+      
+      <tag>GC-VAT</tag>
+      
+      <tag>YOPOv2</tag>
+      
+      <tag>UAST</tag>
+      
+      <tag>VisPlanner</tag>
+      
+      <tag>ElasticTracker</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>MoE理论学习</title>
     <link href="/2026/09/21/MoE%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/"/>
     <url>/2026/09/21/MoE%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/</url>
@@ -106,6 +174,33 @@
       <tag>大模型</tag>
       
       <tag>MoE</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>11_无人机主动跟踪：idea-主动更新模板</title>
+    <link href="/2026/08/15/11_%E6%97%A0%E4%BA%BA%E6%9C%BA%E4%B8%BB%E5%8A%A8%E8%B7%9F%E8%B8%AA%EF%BC%9Aidea-%E4%B8%BB%E5%8A%A8%E6%9B%B4%E6%96%B0%E6%A8%A1%E6%9D%BF/"/>
+    <url>/2026/08/15/11_%E6%97%A0%E4%BA%BA%E6%9C%BA%E4%B8%BB%E5%8A%A8%E8%B7%9F%E8%B8%AA%EF%BC%9Aidea-%E4%B8%BB%E5%8A%A8%E6%9B%B4%E6%96%B0%E6%A8%A1%E6%9D%BF/</url>
+    
+    <content type="html"><![CDATA[<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>可跟踪性感知的任意目标无人机主动跟踪，基础思想为解决使用模板进行无人机跟踪中，单模板鲁棒性差的问题。主要贡献有两点，可在线学习的目标模板匹配，以及可跟踪性的感知以更好利用模板信息</p><h2 id="研究思路"><a href="#研究思路" class="headerlink" title="研究思路"></a>研究思路</h2><p>在学习<a href="https://openaccess.thecvf.com/content/CVPR2026/papers/Qin_UAST_Unified_Active_Search_and_Tracking_for_Arbitrary_Targets_with_CVPR_2026_paper.pdf">UAST</a>时对于单模板的无人机主动跟踪感到疑问，即一旦目标外观存与模板不一致，系统是否还能识别出来或者说根据惯性判定出来。于是思考增加模板的在线学习，而此处又引出了新的问题。第一，模板何时与如何更新；第二，无人机是否需要主动去获取多视角信息以获取模板，例如现在已知目标正面与右侧的信息，无人机主动去获取左侧的信息；第三，无人机是否需要去主动获取多视角信息以使用模板，例如现在已知目标正面与右侧的信息，无人机更偏向于这两个视角的信息。思考后认为后两点如果放在一起可能会太过复杂，一次最好实现一点，于是决定先从更加基础的第三点做起。即无人机在跟踪的过程中被动地去获取模板，然后主动地去使用。</p><p>故提出新的思路，无人机如何根据已知的模板去主动地去规划更好的飞行路线？自然地想到让系统预测空间中目标存在的信念值，例如使用模板与RGB作互相关获取目标存在性热力图。但是这里又引出跟踪中另一个问题：<strong>目标存在的点并不一定是最佳观测点</strong>。UAST中通过规则计算出了目标存在的点与无人机前往的点，<a href="http://arxiv.org/pdf/2505.06923v1">YOPOv2</a>通过网络预测目标点，发现类YOPO的网络结构都显示给出了目标点<br>（待补充）<br>于是提出不让系统预测目标存在的点，而是预测最佳的目标观测点。从而可以参考<a href="http://arxiv.org/abs/2606.04534">MAD</a>中的思路，在训练时添加一个输出头让系统除了预测轨迹之外，再预测一个“可跟踪性场”。</p><p>而在复现UAST的<a href="https://github.com/qinliangql/UAST/tree/main">演示代码</a>时，发现其在仿真中其实没有</p><h2 id="实验测试"><a href="#实验测试" class="headerlink" title="实验测试"></a>实验测试</h2><p>在进入具体实验之前，测试最基础的动态模板方法：静态模板+动态模板 平均。具体而言，在flightmare中使用多个物体组成一个复杂障碍物，录制bag包然后用siamfc++模型进行测试。</p><p>最终结果发现静态模板会因为物体视角改变而出现成功率下降的问题，但是目前的动态模板方法效果更不好</p><ul><li>两个模板平均会得到一个不存在的外观</li><li>更新条件中看的是sigmoid值，导致很容易用错误的外观进行更新</li></ul><p>调查常见的方法后发现，其实单模板的方法中不更新模板才是主流操作，依靠强表征与时序上下文来进行识别才是主流，即使有动态更新模板，也有非常严格的更新机制，避免错误信息的流入。——预测当前idea大概不成立，需要重新思考“问题”，回到更高的角度去看无人机跟踪。</p><h2 id="后续思考"><a href="#后续思考" class="headerlink" title="后续思考"></a>后续思考</h2><p>回到更高的角度去建立对于跟踪更加全面的了解，阅读了相关综述后了解到无人机跟踪可以从多个角度来划分，例如主动&#x2F;被动、单目标&#x2F;多目标、模板驱动&#x2F;识别驱动&#x2F;语言驱动等，且跟踪目前没有例如ego-planner级别的共识方案，而自己目前研究的大致方向可以视为单目标无人机主动跟踪。</p><p>而单目标的VAT还可以分为”感知“+“融合”+”行为“等多个阶段，为了尽量贴合之前的研究方向，可将感知的部分拆分出来作为单独的模块，而仅针对后续的行为进行改进。在这样的角度下，后续可以继续从”感知结果较差时，主动行为改进感知“的角度出发。</p><h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="http://arxiv.org/pdf/2505.06923v1">YOPOv2</a><br><a href="https://github.com/qinliangql/UAST/tree/main">UAST</a><br><a href="http://arxiv.org/abs/2606.04534">MAD</a><br><a href="https://link.springer.com/10.1007/s10462-025-11348-x">UAV target tracking: a survey</a><br><a href="https://ieeexplore.ieee.org/abstract/document/10445025">Moving Target Tracking by Unmanned Aerial Vehicle: A Survey and Taxonomy</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>无人机实验</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>跟踪</tag>
+      
+      <tag>VAT</tag>
       
     </tags>
     

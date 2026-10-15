@@ -1,0 +1,1155 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="以主动预测未来最佳观测区域的主动跟踪为出发点  对比实验Baseline用于对比的基础方法    方法 方法类型 主要工作 年份 发表会议&#x2F;期刊 代码公开情况 官方代码    D-VAT 端到端深度强化学习（DRL） 通过单目视觉直接预测无人机推力与角速度，实现端到端视觉主动跟踪 2024 IEEE RA-L ✅ 已公开：训练、测试代码及预训练模型入口 GitHub   GC-VAT">
+<meta property="og:type" content="article">
+<meta property="og:title" content="11.1_无人机主动跟踪：baseline讨论">
+<meta property="og:url" content="https://mian221.top/2026/09/28/11.1_%E6%97%A0%E4%BA%BA%E6%9C%BA%E4%B8%BB%E5%8A%A8%E8%B7%9F%E8%B8%AA%EF%BC%9Abaseline%E8%AE%A8%E8%AE%BA/index.html">
+<meta property="og:site_name" content="Mian的笔记">
+<meta property="og:description" content="以主动预测未来最佳观测区域的主动跟踪为出发点  对比实验Baseline用于对比的基础方法    方法 方法类型 主要工作 年份 发表会议&#x2F;期刊 代码公开情况 官方代码    D-VAT 端到端深度强化学习（DRL） 通过单目视觉直接预测无人机推力与角速度，实现端到端视觉主动跟踪 2024 IEEE RA-L ✅ 已公开：训练、测试代码及预训练模型入口 GitHub   GC-VAT">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-09-27T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-27T16:00:00.000Z">
+<meta property="article:author" content="Mian">
+<meta property="article:tag" content="跟踪">
+<meta property="article:tag" content="VAT">
+<meta property="article:tag" content="D-VAT">
+<meta property="article:tag" content="GC-VAT">
+<meta property="article:tag" content="YOPOv2">
+<meta property="article:tag" content="UAST">
+<meta property="article:tag" content="VisPlanner">
+<meta property="article:tag" content="ElasticTracker">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>11.1_无人机主动跟踪：baseline讨论 - Mian的笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css">
+<link rel="stylesheet" href="/css/code-blocks.css?v=98216c7.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":false,"default":"TEXT"},"copy_btn":false,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Mian的笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" target="_self">
+                    
+                    <span>理论学习</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
+            </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>理论学习</span>
+                  </div>
+                </a>
+              </div>
+            
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="11.1_无人机主动跟踪：baseline讨论"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-09-28 00:00" pubdate>
+          2026年9月28日
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          25 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">11.1_无人机主动跟踪：baseline讨论</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>以主动预测未来最佳观测区域的主动跟踪为出发点</p>
+</blockquote>
+<h2 id="对比实验"><a href="#对比实验" class="headerlink" title="对比实验"></a>对比实验</h2><h3 id="Baseline"><a href="#Baseline" class="headerlink" title="Baseline"></a>Baseline</h3><p>用于对比的基础方法</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>方法类型</th>
+<th>主要工作</th>
+<th>年份</th>
+<th>发表会议&#x2F;期刊</th>
+<th>代码公开情况</th>
+<th>官方代码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>D-VAT</strong></td>
+<td>端到端深度强化学习（DRL）</td>
+<td>通过单目视觉直接预测无人机推力与角速度，实现端到端视觉主动跟踪</td>
+<td>2024</td>
+<td>IEEE RA-L</td>
+<td>✅ 已公开：训练、测试代码及预训练模型入口</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/isarlab-department-engineering/d-vat">GitHub</a></td>
+</tr>
+<tr>
+<td><strong>GC-VAT</strong></td>
+<td>深度强化学习、课程学习</td>
+<td>提出目标中心奖励与课程训练策略，提高复杂开放环境中的无人机对地目标跟踪能力，并发布 DAT Benchmark</td>
+<td>2025</td>
+<td>NeurIPS</td>
+<td>✅ 已公开：算法代码与 DAT Benchmark</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/SHWplus/DAT_Benchmark">GitHub</a></td>
+</tr>
+<tr>
+<td><strong>YOPOv2-Tracker</strong></td>
+<td>学习式轨迹规划、端到端控制</td>
+<td>通过运动基元与轨迹代价学习，联合实现目标跟踪、避障和敏捷飞行控制</td>
+<td>2026</td>
+<td>IEEE T-RO</td>
+<td>⏳ 部分公开：基础 YOPO 已开源，官方 Tracker 完整代码待发布</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/TJU-Aerial-Robotics/YOPO-Tracker">Tracker</a> &#x2F; <a target="_blank" rel="noopener" href="https://github.com/TJU-Aerial-Robotics/YOPO">YOPO</a></td>
+</tr>
+<tr>
+<td><strong>Elastic Tracker</strong></td>
+<td>传统优化式轨迹规划</td>
+<td>通过时空轨迹规划联合优化目标可见性、运动安全性与轨迹动态可行性</td>
+<td>2022</td>
+<td>ICRA</td>
+<td>✅ 已公开：ROS 仿真、跟踪及可见性消融实验代码</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/ZJU-FAST-Lab/Elastic-Tracker">GitHub</a></td>
+</tr>
+<tr>
+<td><strong>OA-VAT</strong></td>
+<td>混合式：视觉跟踪、状态估计、扩散规划</td>
+<td>结合实例级目标识别、置信度感知状态估计与遮挡感知轨迹规划，实现遮挡情况下的目标跟踪恢复</td>
+<td>2026</td>
+<td>CVPR</td>
+<td>✅ 已公开：主程序、评估脚本及扩散规划相关代码</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/SHWplus/OA-VAT">GitHub</a></td>
+</tr>
+<tr>
+<td><strong>UAST</strong></td>
+<td>混合式：视觉感知、规则搜索、学习式控制</td>
+<td>融合 RGB-D 感知、规则搜索与学习式控制，实现无地图环境中的主动搜索、持续跟踪及丢失恢复</td>
+<td>2026</td>
+<td>CVPR</td>
+<td>⚠️ 部分公开：目前提供简化版仿真实现</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/qinliangql/UAST">GitHub</a></td>
+</tr>
+<tr>
+<td><strong>VisPlanner</strong></td>
+<td>传统可见性感知轨迹优化</td>
+<td>构建可微分的可见性代价，考虑目标观测距离、视角及障碍物遮挡，联合优化飞行轨迹和偏航角</td>
+<td>2021</td>
+<td>IROS</td>
+<td>✅ 已公开：ROS 仿真及轨迹规划代码</td>
+<td><a target="_blank" rel="noopener" href="https://github.com/ZJU-FAST-Lab/visPlanner">GitHub</a></td>
+</tr>
+</tbody></table>
+<h4 id="端到端结构"><a href="#端到端结构" class="headerlink" title="端到端结构"></a>端到端结构</h4><p>端到端结构直接输入RGB图像不经过中间表示输出飞行轨迹&#x2F;控制。YOPOv2在v1的基础上，对于每一个元语加入目标是否在该处的置信度以及位置、深度偏差信息。而D-VAT更为简单直接，拼接滑动窗口三帧的特征以实现时序感知，然后直接输入三层MLP输出推力与角速度。纯端到端的网络结构的确看起来非常简洁且原理也不复杂，但是除了常见的黑箱问题之外，还因为训练时便确定了目标种类而无法随意修改目标，并且越是端到端其泛化性越差，因为模型会隐式学习到一些例如无人机的配置的额外信息。而从实际使用的角度，无人机作为边缘设备更应该优先考虑鲁棒性与可替换性，完全端到端的设计不符合该逻辑<br>而GC-VAT与D-VAT通过滑动窗口多帧输入来获取时序信息不同，通使用GRU来处理时序信息。具体而言RGB通过两层CNN直接传入GRU，然后输出7种离散动作。其关键创新有两点：归一化距离奖励函数，分阶段的强化学习（课程学习）。</p>
+<blockquote>
+<p><strong>能修改跟踪目标是否是必要的需求？</strong><br>不一定，以大疆neo为例，升空后自动跟拍。以产品的角度来说在设计之初便已经确定了使用场景，即跟拍人像，所以纯端到端无法替换跟踪目标的方法其实不无道理。但是从入手的角度来说，个人认为还是从分阶段的方法入手会更好，因为对于各部分的了解会更加深刻，而端到端的方法虽然看起来简单却隐含了很多潜在知识</p>
+</blockquote>
+<h4 id="分阶段结构"><a href="#分阶段结构" class="headerlink" title="分阶段结构"></a>分阶段结构</h4><p>UAST为YOPOv1基础上进行修改得到，主要创新在于将搜索-跟踪-再发现融合到一个框架中。使用引导学习的分阶段方法，通过模板匹配来确定目标，对于跟踪提出了两个关键点，分阶段结构将感知结果的目标所在作为目标点输入YOPO网络，和将网络输出的score进行监督。<br>OA-VAT瞄准两个问题：相似目标干扰与遮挡导致的跟踪失败，使用了更为庞大与复杂的结构。首先对于给定参考图像会通过视角增强、图像分割和 DINOv3 特征提取，构建用于识别目标身份的视觉原型。同时利用YOLO-E分割候选物体，然后使用DINOv3提取特征，然后与目标原型进行余弦相似度匹配，此外还通过在线特征更新和置信度感知卡尔曼滤波器处理外观与运动变化。最后使用当前图像和预测的目标位置作为条件，由扩散模型生成绕障恢复轨迹，主动移动相机，尝试重新发现目标。</p>
+<h4 id="传统算法"><a href="#传统算法" class="headerlink" title="传统算法"></a>传统算法</h4><p>Elastic Tracker预测目标未来的位置，先确定空间中哪些位置安全、哪些位置适合观察目标，再求解一条满足时空条件的轨迹。弹性主要体现在两个地方：允许跟踪距离在适当范围内变化，以及允许轨迹各段的执行时间随着目标运动和环境约束进行调整。而VisPlanner显示针对可见性（目标距离，观察角度，遮挡）进行建模优化。</p>
+<h3 id="Benchmark"><a href="#Benchmark" class="headerlink" title="Benchmark"></a>Benchmark</h3><p>DAT-Benchmark</p>
+<h3 id="Metric"><a href="#Metric" class="headerlink" title="Metric"></a>Metric</h3><ul>
+<li>连续跟踪时长 CTT</li>
+<li>跟踪成功率 TSR</li>
+<li>目标距离 OD</li>
+<li>视场中心误差 CE</li>
+<li>推理延迟 CT</li>
+</ul>
+<h2 id="Jev启发"><a href="#Jev启发" class="headerlink" title="Jev启发"></a>Jev启发</h2><h3 id="Jev-like-结构"><a href="#Jev-like-结构" class="headerlink" title="Jev-like 结构"></a>Jev-like 结构</h3><p>虽然YOPO结构本身最后也会输出每条元语的概率，但是这个概率是没有现实语义的，而jev的概率是有确定语义的。可以仿照这一点，将YOPO语义对齐到一个确定的值，例如未来若干秒内跟踪的成功率。而这一点其实已经在UAST中有初步体现，将score对齐到损失函数中</p>
+<h3 id="Jev门控快慢思考"><a href="#Jev门控快慢思考" class="headerlink" title="Jev门控快慢思考"></a>Jev门控快慢思考</h3><p>在不同的置信度下选择不同的网络，例如当物体接近遮挡或者失踪风险高时调用慢网络。而重点在于网络结构的复用以减少重复编码，例如<br>$$
+\text{Shared Backbone}
+\rightarrow
+\begin{cases}
+\text{Fast Policy}\\
+\text{Slow Policy}\\
+\text{Fast/Slow Gating Head}
+\end{cases}
+$$<br>或者说可以根据不同的跟踪失败原因选择不同的恢复方法。但是近期已经有相关工作CMW-Track</p>
+<h2 id="实验构思"><a href="#实验构思" class="headerlink" title="实验构思"></a>实验构思</h2><p>看到OA-VAT的工作量非常巨大，结构复杂的同时对比了12种方法，虽然完成的任务并不是特别惊讶，但是仍然是CVPR。不过对于自己的起步论文，并不一定需要做的如此复杂和堆积工作量，重点在于形成标准的工作流程以及搭建可复现与拓展的仿真环境与代码。<br>回到“以主动预测未来最佳观测位置的主动跟踪”的出发点，首先创新点一是提出了一种方法，第二是在实机上进行了验证，第三则有待商榷。如果说是搭建benchmark则工作量会非常大，所以改为自己的场景即可，而这无法形成创新点但是工作量也是存在的</p>
+<p>目前的思路是借鉴MAD的训练思路，在YOPO输出头的基础上额外增加一个最佳观测区域预测，然后让score对齐到该区域评分。然而在输入部分有了分歧，一种思路是采用“感知-融合-行为”的系统，一种思路是采用“感知-行为”的系统，将行为网络中加入一部分时序预测能力，这样会让系统更加简单更加偏向端到端的结构，但是这会让网络的训练更加复杂。</p>
+<p>使用GRU来替代显示融合模块，存在一些问题：1.GRU不保证一定能够学习目标运动预测 2. 历史图像特征必须考虑无人机自身运动 3. GRU 能记忆，并不意味着它拥有正确的空间理解</p>
+<p>关于输出头的部分，类MAD表征学习和类YOPO头</p>
+<p>Q 以可观测性进行约束，这不是和visplanner的想法一样？<br>Q 全都是融合别人的机制，是否合适</p>
+<p>预期观测到的结果是，提前进行落位，目标不一定一直在视野中心</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" class="category-chain-item">无人机实验</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E8%B7%9F%E8%B8%AA/" class="print-no-link">#跟踪</a>
+      
+        <a href="/tags/VAT/" class="print-no-link">#VAT</a>
+      
+        <a href="/tags/D-VAT/" class="print-no-link">#D-VAT</a>
+      
+        <a href="/tags/GC-VAT/" class="print-no-link">#GC-VAT</a>
+      
+        <a href="/tags/YOPOv2/" class="print-no-link">#YOPOv2</a>
+      
+        <a href="/tags/UAST/" class="print-no-link">#UAST</a>
+      
+        <a href="/tags/VisPlanner/" class="print-no-link">#VisPlanner</a>
+      
+        <a href="/tags/ElasticTracker/" class="print-no-link">#ElasticTracker</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>11.1_无人机主动跟踪：baseline讨论</div>
+      <div>https://mian221.top/2026/09/28/11.1_无人机主动跟踪：baseline讨论/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年9月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/10/07/Ubuntu-20.04-%E4%BD%BF%E7%94%A8clash/" title="Ubuntu 20.04 使用clash">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Ubuntu 20.04 使用clash</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/09/21/MoE%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" title="MoE理论学习">
+                        <span class="hidden-mobile">MoE理论学习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/navbar-search.js"></script>
+<script src="/js/code-blocks.js?v=98216c7.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
