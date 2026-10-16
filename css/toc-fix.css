@@ -31,3 +31,38 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
+
+/* 按目录实际层级编号，折叠只改变可见性，不改变序号。 */
+#toc-body > ol {
+  counter-reset: toc-primary;
+}
+#toc-body > ol > li {
+  counter-increment: toc-primary;
+}
+#toc-body > ol > li > a::before {
+  content: counter(toc-primary, simp-chinese-informal) "、";
+}
+#toc-body > ol > li > ol {
+  counter-reset: toc-secondary;
+}
+#toc-body > ol > li > ol > li {
+  counter-increment: toc-secondary;
+}
+#toc-body > ol > li > ol > li > a::before {
+  content: counter(toc-secondary) ".";
+  margin-right: .3em;
+}
+#toc-body > ol > li > ol > li > ol {
+  counter-reset: toc-tertiary;
+}
+#toc-body > ol > li > ol > li > ol > li {
+  counter-increment: toc-tertiary;
+}
+#toc-body > ol > li > ol > li > ol > li > a::before {
+  content: counter(toc-secondary) "." counter(toc-tertiary);
+  margin-right: .3em;
+}
+#toc-body .tocbot-link::before {
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+}
