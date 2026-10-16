@@ -26,24 +26,24 @@
 <meta property="og:site_name" content="Mian的笔记">
 <meta property="og:description" content="本文部分内容由AI生成  引言多数机器学习模型擅长从数据中提取相关性，却未必擅长回答“我采取某个动作以后，环境会怎样改变”。对于机器人来说，识别桌上有一个杯子，只完成了感知任务；它还需要判断夹爪应该在哪里接触杯子、抬起杯子后是否会滑落、怎样移动才能到达目标位置。世界模型（World Model）的目标，正是在系统内部学习环境状态及其变化规律，使智能体能够在行动前进行预测，并将预测用于规划或决策。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_01_ijepa.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_02_mask-samples-4.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_03_flowchart.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_04_training2.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_05_teaser_screenshot_5dice_onlyimg_OLD.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_06_vjepa2-abstract-new.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_07_vjepa2-ac-abstract-new.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_08_vjepa2-ac-detail.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_09_vjepa2-ac-detail-ar.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_10_vjepa2-mpc.png">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_11_regret-x-start.jpg">
-<meta property="og:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_12_regret-x-goal.jpg">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_01_ijepa-110a7d371ebd.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_02_mask-samples-4-5b4357ec2ce5.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_03_flowchart-81c51224e94a.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_04_training2-1b89dc8e75a4.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_05_teaser_screenshot_5dice_onlyimg_OLD-10b3710e97f4.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_06_vjepa2-abstract-new-95b8bd921e18.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_07_vjepa2-ac-abstract-new-db8dfe2297db.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_08_vjepa2-ac-detail-9bf2a1756ae7.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_09_vjepa2-ac-detail-ar-46fc2d6e4fa0.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_10_vjepa2-mpc-4bdf86fcfce4.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_11_regret-x-start-38b0f3560503.jpg">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_12_regret-x-goal-3138683b239e.jpg">
 <meta property="article:published_time" content="2026-10-15T16:00:00.000Z">
 <meta property="article:modified_time" content="2026-10-15T16:00:00.000Z">
 <meta property="article:author" content="Mian">
 <meta property="article:tag" content="JEPA">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://mian221.top/%E5%9B%BE%E7%89%87/fig_01_ijepa.png">
+<meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_01_ijepa-110a7d371ebd.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
@@ -587,7 +587,7 @@ $$</p>
 </tbody></table>
 <p>两种路线不是绝对对立：生成式模型也会使用潜在空间，也可能只在压缩表示中预测；JEPA 学到的特征也可以与生成器结合。真正需要比较的是<strong>训练时要求保留什么信息、推理时需要计算什么、以及最终能否改善行动决策</strong>。V-JEPA 2 的机器人实验曾将其与动作条件视频生成模型 Cosmos 进行比较，在特定单卡、采样数量不同的规划设置下，前者推算一个动作约需 16 秒，后者约需 4 分钟；这支持了特征空间规划可能降低计算成本的判断，但不是对所有生成模型的普遍速度结论。[7][13]</p>
 <h3 id="典型-JEPA-网络结构"><a href="#典型-JEPA-网络结构" class="headerlink" title="典型 JEPA 网络结构"></a>典型 JEPA 网络结构</h3><p>经典 I-JEPA &#x2F; V-JEPA 通常包含 <strong>Context Encoder、Target Encoder、Predictor</strong> 三个模块。Context Encoder 读取被遮挡的观测；Target Encoder 读取更完整的观测，并输出训练监督使用的目标特征；Predictor 根据前者的输出与遮挡位置，预测后者在目标位置上的特征。视觉实现常使用 ViT（Vision Transformer），但 JEPA 并不要求编码器或预测器必须是 Transformer。</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_01_ijepa.png" srcset="/img/loading.gif" lazyload alt="I-JEPA 原论文的模型架构"><br><em>图 1｜I-JEPA 原论文 Figure 3。上方为 Context Encoder 与 Predictor，下方为 Target Encoder；彩色块代表不同的目标区域，训练对齐的是特征而不是图像像素。来源：[2]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_01_ijepa-110a7d371ebd.png" srcset="/img/loading.gif" lazyload alt="I-JEPA 原论文的模型架构"><br><em>图 1｜I-JEPA 原论文 Figure 3。上方为 Context Encoder 与 Predictor，下方为 Target Encoder；彩色块代表不同的目标区域，训练对齐的是特征而不是图像像素。来源：[2]。</em></p>
 <p>目标分支通常通过 Stop-Gradient 和指数移动平均（EMA）来保持学习目标相对稳定：</p>
 <p>$$
 \bar\theta\leftarrow m\bar\theta+(1-m)\theta
@@ -595,7 +595,7 @@ $$</p>
 <p>其中 $\theta$ 为在线编码器参数，$\bar\theta$ 为目标编码器参数，$m$ 是接近 1 的动量系数。这样做有助于减少表征坍塌（Representation Collapse）的风险，即所有输入被编码为同一个向量、损失虽小却没有学到信息。应注意，EMA、Stop-Gradient 是一些具体 JEPA 实现的设计，不是 JEPA 的唯一定义；后来的 LeJEPA 就研究了不依赖这类教师—学生启发式结构的训练目标。[2][8]</p>
 <h2 id="基本发展历程：代表性论文与研究问题"><a href="#基本发展历程：代表性论文与研究问题" class="headerlink" title="基本发展历程：代表性论文与研究问题"></a>基本发展历程：代表性论文与研究问题</h2><h3 id="2022：从世界模型蓝图提出-JEPA"><a href="#2022：从世界模型蓝图提出-JEPA" class="headerlink" title="2022：从世界模型蓝图提出 JEPA"></a>2022：从世界模型蓝图提出 JEPA</h3><p><strong>A Path Towards Autonomous Machine Intelligence，Yann LeCun，2022 年 6 月。</strong> 这是一篇立场与架构论文，重点不是报告某个训练好的模型，而是提出如何让机器主要依靠观察形成内部世界模型，并把感知、短期与长期预测、目标评价、记忆和行动规划连接起来。文中提出可配置的预测式世界模型，以及在不同抽象层级运行的 H-JEPA 设想。[1]<br>这份蓝图的一项基本判断是：复杂世界存在大量难以预测且对行动无关的细节。若要求模型精确生成所有未来像素，部分能力就会用于表示这些细节；若把预测放在经过学习的抽象空间中，则有可能更加集中地捕获对任务有用的变化。这里的“可能”很重要，因为抽象表示到底应该保留什么，还需要后续实验验证。2022 年的论文奠定了研究目标，但既没有证明完整 H-JEPA 可以训练出来，也没有完成通用机器人控制。</p>
 <h3 id="2023：I-JEPA-验证图像特征预测的可行性"><a href="#2023：I-JEPA-验证图像特征预测的可行性" class="headerlink" title="2023：I-JEPA 验证图像特征预测的可行性"></a>2023：I-JEPA 验证图像特征预测的可行性</h3><p><strong>Self-Supervised Learning from Images with a Joint-Embedding Predictive Architecture，Assran 等，2023 年 1 月。</strong> I-JEPA 将 2022 年的思路落实到静态图像：从一张图片中抽取可见上下文块，预测被遮挡的大块区域的<strong>特征表示</strong>，不需要重建原始像素。论文强调遮挡策略：目标块需要足够大，避免任务沦为局部纹理插值；上下文块又必须保留足够的信息，才能支持有意义的预测。[2]</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_02_mask-samples-4.png" srcset="/img/loading.gif" lazyload alt="I-JEPA 的多块遮挡策略示例"><br><em>图 2｜I-JEPA 原论文 Figure 4。左侧为原图和可见上下文，后面展示不同的目标区域；该设计促使模型利用较大范围的结构信息完成预测。来源：[2]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_02_mask-samples-4-5b4357ec2ce5.png" srcset="/img/loading.gif" lazyload alt="I-JEPA 的多块遮挡策略示例"><br><em>图 2｜I-JEPA 原论文 Figure 4。左侧为原图和可见上下文，后面展示不同的目标区域；该设计促使模型利用较大范围的结构信息完成预测。来源：[2]。</em></p>
 <p>实验表明，I-JEPA 在冻结特征评估和多种迁移任务中学到了有效的视觉表示，并展示了较好的训练效率；例如论文报告在 16 张 A100 上、不到 72 小时训练 ViT-Huge&#x2F;14。它证明了“预测表示而不生成像素”能够成为有效的自监督目标，但尚不能据此推出模型理解了时间动力学，更谈不上已经拥有机器人动作规划能力。</p>
 <p><strong>MC-JEPA，Bardes、Ponce、LeCun，2023 年 7 月。</strong> I-JEPA 更关注图像中的语义与空间结构，而动态场景需要识别物体“正在怎样运动”。MC-JEPA 尝试联合学习视觉内容特征与光流（Optical Flow），在共享编码器上让静态内容理解和运动估计相互促进。它说明 JEPA 可以与运动相关学习目标相结合，不过光流描述的是图像平面上的运动，并不等于三维物理状态或动作因果效应。[3]</p>
 <h3 id="2024：V-JEPA-把图像块预测扩展到视频时空预测"><a href="#2024：V-JEPA-把图像块预测扩展到视频时空预测" class="headerlink" title="2024：V-JEPA 把图像块预测扩展到视频时空预测"></a>2024：V-JEPA 把图像块预测扩展到视频时空预测</h3><p><strong>Revisiting Feature Prediction for Learning Visual Representations from Video，Bardes 等，首次公开于 2024 年 2 月，提出 V-JEPA。</strong> 核心变化是训练数据从单张图片变成视频片段。模型将视频切为时空 Token（Tubelet），对一部分时空区域进行遮挡；Context Encoder 处理可见部分，Predictor 推测被遮挡时空块的表示，Target Encoder 提供对应的目标特征。论文采用较大范围的连续时空遮挡，以减少通过邻近帧直接复制信息的捷径。[4]</p>
@@ -603,17 +603,17 @@ $$</p>
 <p><strong>Learning and Leveraging World Models in Visual Representation Learning（IWM），Garrido 等，2024 年 3 月。</strong> 这是与 V-JEPA 并行的分支。IWM 把“仅预测被遮挡区域”扩展为“预测已知变换对潜在表示的影响”，例如给定图像和光度变换条件，预测变化后的特征。它特别强调条件化、预测难度和模型容量，帮助厘清表示的“不变性”（变化前后特征尽量相同）与“等变性”（特征以可预测方式变化）的关系。论文中的变换主要是图像层面的操作，不等价于机器人真实施力或接触动作。[5]</p>
 <h3 id="2025：从视觉表示走向机器人行动，随后扩展训练范式"><a href="#2025：从视觉表示走向机器人行动，随后扩展训练范式" class="headerlink" title="2025：从视觉表示走向机器人行动，随后扩展训练范式"></a>2025：从视觉表示走向机器人行动，随后扩展训练范式</h3><p><strong>ACT-JEPA，Vujinovic 与 Kovacevic，2025 年 1 月。</strong> 这篇论文探索把 JEPA 世界建模损失直接并入模仿学习策略：网络同时学习预测动作片段和未来观察的抽象表示，使动作学习获得额外的时序环境监督。它代表一条不同于在线 CEM 搜索的路线——<strong>使用 JEPA 改善策略的表示，最后由策略网络直接输出动作</strong>。这也证明“使用 JEPA 控制机器人”并不等于每次都搜索与目标图片最接近的 Embedding。[6]</p>
 <p><strong>V-JEPA 2: Self-Supervised Video Models Enable Understanding, Prediction and Planning，Assran 等，2025 年 6 月。</strong> 这是 JEPA 与世界模型关系最值得精读的节点。论文首先对视频表示学习做大规模扩展，利用超过 100 万小时互联网视频和图像预训练 V-JEPA 2；然后冻结视觉编码器，再用不足 62 小时的 DROID 机器人交互视频训练新的动作条件 Predictor，得到 V-JEPA 2-AC。最后，系统在潜在空间中预测动作后果，通过 CEM + MPC 在新实验室的 Franka 机械臂上完成到达、抓取和取放任务。它把观察学习、动作条件预测和真实规划连接了起来，但机器人实验仍依赖图像目标及部分人工设置的中间目标。[7]</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_03_flowchart.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2 整体研究路径"><br><em>图 3｜V-JEPA 2 原论文 Figure 1。上半部分展示预训练表示如何服务于视频理解和问答，下半部分展示用机器人交互数据训练动作条件世界模型，再用于规划。来源：[7]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_03_flowchart-81c51224e94a.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2 整体研究路径"><br><em>图 3｜V-JEPA 2 原论文 Figure 1。上半部分展示预训练表示如何服务于视频理解和问答，下半部分展示用机器人交互数据训练动作条件世界模型，再用于规划。来源：[7]。</em></p>
 <p><strong>LeJEPA，Balestriero 与 LeCun，2025 年 11 月。</strong> 研究重心转向训练理论：如果 JEPA 的目标是得到信息丰富、可用于预测的特征，那么是否存在更简洁、可分析的正则化方法来防止坍塌？论文提出 SIGReg（Sketched Isotropic Gaussian Regularization），通过约束特征分布来构建简化的 JEPA 训练目标，减少对 EMA 教师、Stop-Gradient 等经验设计的依赖。它体现 JEPA 并非单一固定网络结构，而是一个不断发展的表示学习范式。[8]</p>
 <p><strong>VL-JEPA，Chen 等，2025 年 12 月。</strong> 这篇工作将表示预测扩展到视觉语言模型：与逐 Token 生成答案不同，训练时预测目标文本在连续语义空间中的 Embedding，必要时再经解码器得到文本。这一方向说明 JEPA 不局限于视频物理预测，也可用于跨模态语义表示学习。不过它并不直接解决机器人控制问题。[9]</p>
 <h3 id="2026：对象结构、细粒度空间表示与世界—动作模型"><a href="#2026：对象结构、细粒度空间表示与世界—动作模型" class="headerlink" title="2026：对象结构、细粒度空间表示与世界—动作模型"></a>2026：对象结构、细粒度空间表示与世界—动作模型</h3><p><strong>Causal-JEPA &#x2F; C-JEPA，Nam 等，2026 年 2 月。</strong> 之前的 JEPA 主要以图像块或视频块为基本预测单位。C-JEPA 将遮挡移到物体级潜在表示上：部分物体的历史状态被隐藏，模型必须结合其他物体的状态与可用条件推断被遮挡物体的状态，从而减少只依赖局部时序延续的捷径。论文在特定反事实推理和控制实验中得到提升，说明世界模型除了学习单个物体怎样运动，还需要学习<strong>物体间如何相互影响</strong>。这里的“因果”主要是通过训练任务施加有利于交互推理的归纳偏置，不意味着模型已经在开放世界中掌握一般因果推断。[10]</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_04_training2.png" srcset="/img/loading.gif" lazyload alt="Causal-JEPA 的原始训练架构图"><br><em>图 4｜Causal-JEPA 原论文 Figure 1。基于物体中心表示进行选择性遮挡，并结合历史状态恢复和未来状态预测进行训练。来源：[10]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_04_training2-1b89dc8e75a4.png" srcset="/img/loading.gif" lazyload alt="Causal-JEPA 的原始训练架构图"><br><em>图 4｜Causal-JEPA 原论文 Figure 1。基于物体中心表示进行选择性遮挡，并结合历史状态恢复和未来状态预测进行训练。来源：[10]。</em></p>
 <p><strong>V-JEPA 2.1，Mur-Labadia 等，2026 年 3 月。</strong> 这一研究针对 V-JEPA 2 的另一项实际限制：全局语义和动作识别表现不错，并不意味着每个局部区域都具备足够清晰的空间结构。机器人抓取需要位置、边界、接触区域等精细信息，而视觉表示若丢失这些细节，规划器再好也无法弥补。V-JEPA 2.1 引入 Dense Predictive Loss（可见与被遮挡 Token 都参与训练）、多层自监督、统一图像&#x2F;视频 Tokenizer，并扩大训练规模，以改善稠密特征质量；论文报告多个细粒度任务提升，以及特定真实机器人抓取实验中相对 V-JEPA 2-AC 的成功率提高约 20 个百分点。[11]</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_05_teaser_screenshot_5dice_onlyimg_OLD.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2.1 与 V-JEPA 2 的原始密集特征可视化"><br><em>图 5｜V-JEPA 2.1 原论文 Figure 1 的视觉特征对比：上行为输入，中间与下方是通过 PCA 将特征映射到 RGB 的结果。原论文用此展示局部表示的空间一致性差异。来源：[11]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_05_teaser_screenshot_5dice_onlyimg_OLD-10b3710e97f4.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2.1 与 V-JEPA 2 的原始密集特征可视化"><br><em>图 5｜V-JEPA 2.1 原论文 Figure 1 的视觉特征对比：上行为输入，中间与下方是通过 PCA 将特征映射到 RGB 的结果。原论文用此展示局部表示的空间一致性差异。来源：[11]。</em></p>
 <p><strong>V-JEPA Policy，2026 年 9 月。</strong> 这是后续将预测性视觉潜在空间与动作生成结合的一条研究路线：使用冻结的 V-JEPA 2.1 编码器作为视觉基础，再训练能够预测未来视觉状态并生成动作的世界—动作模型。它与 ACT-JEPA 一样提醒我们，JEPA 学到的表示可以为策略学习服务，不必全部通过在线目标距离优化转化为动作。[12]<br>总体而言，发展路线不是简单地从“静态图片”升级为“视频生成”。更准确的变化是：<strong>从表示能否预测未知内容，走向表示能否支持动态建模、实际控制、精细空间交互和可迁移的动作策略。</strong></p>
 <h2 id="V-JEPA-2-精读"><a href="#V-JEPA-2-精读" class="headerlink" title="V-JEPA 2 精读"></a>V-JEPA 2 精读</h2><h3 id="整体架构：为什么要分两阶段训练"><a href="#整体架构：为什么要分两阶段训练" class="headerlink" title="整体架构：为什么要分两阶段训练"></a>整体架构：为什么要分两阶段训练</h3><p>V-JEPA 2 试图利用互联网视频丰富但动作标签稀缺、机器人状态与动作数据准确但昂贵的特点，先学习通用视觉表示，再学习动作条件动力学。论文 Figure 2 将这两阶段放在同一张图中：左侧是 Action-free Pretraining，右侧是 Action-conditioned Post-training。它们使用不同的预测目标和不同的 Predictor，不能把两个阶段混成一个“直接通过视频学习机器人动作”的过程。[7]</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_06_vjepa2-abstract-new.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2 原论文第一阶段架构图"><br><em>图 6｜V-JEPA 2 原论文 Figure 2 左图。遮挡后的视频经在线 Encoder 产生特征，Predictor 预测缺失位置；未遮挡视频经 EMA Encoder 产生监督目标，两侧在特征空间计算 L1 损失。来源：[7]。</em></p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_07_vjepa2-ac-abstract-new.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2-AC 原论文第二阶段架构图"><br><em>图 7｜V-JEPA 2 原论文 Figure 2 右图。冻结预训练 Encoder，另外训练一个接收机器人动作与末端状态的 Predictor，预测未来帧的视觉特征。来源：[7]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_06_vjepa2-abstract-new-95b8bd921e18.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2 原论文第一阶段架构图"><br><em>图 6｜V-JEPA 2 原论文 Figure 2 左图。遮挡后的视频经在线 Encoder 产生特征，Predictor 预测缺失位置；未遮挡视频经 EMA Encoder 产生监督目标，两侧在特征空间计算 L1 损失。来源：[7]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_07_vjepa2-ac-abstract-new-db8dfe2297db.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2-AC 原论文第二阶段架构图"><br><em>图 7｜V-JEPA 2 原论文 Figure 2 右图。冻结预训练 Encoder，另外训练一个接收机器人动作与末端状态的 Predictor，预测未来帧的视觉特征。来源：[7]。</em></p>
 <p>第一阶段解决“什么是好的视觉状态表示”；第二阶段解决“当机器人执行某个动作，状态如何变化”。两者分离还可以避免在不足 62 小时的机器人数据上重新训练全部视觉参数。冻结视觉编码器并非理论上的必然选择，而是论文采用的一种有效工程设计。</p>
 <h3 id="第一阶段：视频特征预测与大规模预训练"><a href="#第一阶段：视频特征预测与大规模预训练" class="headerlink" title="第一阶段：视频特征预测与大规模预训练"></a>第一阶段：视频特征预测与大规模预训练</h3><p>模型的输入是一段视频 $y$，经过空间与时间分块后随机去除部分 Token，得到上下文输入 $x$。在线 Encoder $E_\theta$ 处理可见 Token，Predictor $P_\phi$ 根据可见特征及 Mask Token 的时空位置，预测被遮挡部分的表示。EMA Target Encoder $E_{\bar\theta}$ 处理完整视频，其输出在目标位置上作为监督信号。论文的基本训练目标为：</p>
 <p>$$
@@ -633,13 +633,13 @@ $$</p>
 \frac1T\sum_{t=1}^{T}
 \|\hat z_{t+1}-z_{t+1}\|_1
 $$</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_08_vjepa2-ac-detail.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2-AC 论文的 Teacher Forcing 训练图"><br><em>图 8｜V-JEPA 2 原论文 Figure 6 左图。模型使用真实历史帧表示作为下一帧预测的上下文；每个预测与相应目标特征计算损失。来源：[7]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_08_vjepa2-ac-detail-9bf2a1756ae7.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2-AC 论文的 Teacher Forcing 训练图"><br><em>图 8｜V-JEPA 2 原论文 Figure 6 左图。模型使用真实历史帧表示作为下一帧预测的上下文；每个预测与相应目标特征计算损失。来源：[7]。</em></p>
 <p>Rollout 则把预测的未来状态继续送回模型，尝试向前展开多步，并将最终预测与真实状态比较：</p>
 <p>$$
 \mathcal L_{\mathrm{rollout}}=
 \|F_\phi^{(T)}(z_1,s_1,a_{1:T})-z_{T+1}\|_1
 $$</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_09_vjepa2-ac-detail-ar.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2-AC 论文的 Rollout 训练图"><br><em>图 9｜V-JEPA 2 原论文 Figure 6 右图。紫色特征表示预测结果被反馈到后续预测中。原图用于示意多步 Rollout；论文实际训练的 Rollout 时域为 2 步。来源：[7]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_09_vjepa2-ac-detail-ar-46fc2d6e4fa0.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2-AC 论文的 Rollout 训练图"><br><em>图 9｜V-JEPA 2 原论文 Figure 6 右图。紫色特征表示预测结果被反馈到后续预测中。原图用于示意多步 Rollout；论文实际训练的 Rollout 时域为 2 步。来源：[7]。</em></p>
 <p>因此，总损失写作：</p>
 <p>$$
 \mathcal L=\mathcal L_{\mathrm{TF}}+\mathcal L_{\mathrm{rollout}}
@@ -653,10 +653,10 @@ $$</p>
 <p>$$
 A^*=\arg\min_A\mathcal E(A;z_k,s_k,z_g)
 $$</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_10_vjepa2-mpc.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2-AC 的原始潜在空间规划架构"><br><em>图 10｜V-JEPA 2 原论文 Figure 7。左侧当前观察经 Encoder，候选动作进入预测器，右侧目标图片也经 Encoder；以预测表示与目标表示的距离评价动作。来源：[7]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_10_vjepa2-mpc-4bdf86fcfce4.png" srcset="/img/loading.gif" lazyload alt="V-JEPA 2-AC 的原始潜在空间规划架构"><br><em>图 10｜V-JEPA 2 原论文 Figure 7。左侧当前观察经 Encoder，候选动作进入预测器，右侧目标图片也经 Encoder；以预测表示与目标表示的距离评价动作。来源：[7]。</em></p>
 <p>论文使用 CEM（Cross-Entropy Method）对这个代价函数做采样优化：从若干动作分布中采样候选序列，用世界模型预测各自后果，选择代价低的样本更新动作分布，重复后得到动作建议。这里的 CEM 是一种采样式优化算法，而不是模型自行通过“理解任务”生成策略。具体实验使用 800 个候选样本、10 次优化迭代、规划时域为一个动作步，并通过 MPC（模型预测控制）只执行当前规划的第一个动作，随后重新观察、重新规划。[7]<br>规划采用滚动闭环，是因为特征动力学模型不可能毫无误差。例如模型预测夹爪移动后杯子会平移 5 厘米，真实结果却只有 3 厘米，那么重新观察可修正下一次规划，避免一直执行基于错误状态的动作序列。取放任务中，论文还使用两张中间目标图像及最终目标图像，并按预设步骤切换；这不是已经实现了开放式指令下的自动任务分解。</p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_11_regret-x-start.jpg" srcset="/img/loading.gif" lazyload alt="V-JEPA 2 论文中真实机器人的开始帧"><br><em>图 11｜V-JEPA 2 原论文 Figure 8 的机器人单目标到达任务开始帧。来源：[7]。</em></p>
-<p><img src="/%E5%9B%BE%E7%89%87/fig_12_regret-x-goal.jpg" srcset="/img/loading.gif" lazyload alt="V-JEPA 2 论文中对应的目标帧"><br><em>图 12｜同一任务的目标图像；论文在规划中比较预测未来特征与目标图像特征。来源：[7]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_11_regret-x-start-38b0f3560503.jpg" srcset="/img/loading.gif" lazyload alt="V-JEPA 2 论文中真实机器人的开始帧"><br><em>图 11｜V-JEPA 2 原论文 Figure 8 的机器人单目标到达任务开始帧。来源：[7]。</em></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/fig_12_regret-x-goal-3138683b239e.jpg" srcset="/img/loading.gif" lazyload alt="V-JEPA 2 论文中对应的目标帧"><br><em>图 12｜同一任务的目标图像；论文在规划中比较预测未来特征与目标图像特征。来源：[7]。</em></p>
 <h3 id="实验结果与能力边界"><a href="#实验结果与能力边界" class="headerlink" title="实验结果与能力边界"></a>实验结果与能力边界</h3><p>V-JEPA 2 的评估覆盖三个不同层面：冻结视觉 Encoder 后加分类探针检验视频理解能力，利用 Predictor 的未来特征配合探针检验动作预判能力，再使用 V-JEPA 2-AC 完成真实机器人任务。论文报告 V-JEPA 2 ViT-g 在 Something-Something v2 冻结评估中达到 77.3% Top-1；在 EPIC-KITCHENS-100 动作预判中获得 39.7 Mean-class Recall@5。上述数字是具体探针评估协议下的结果，不应当视为世界模型在任何环境中的直接预测准确率。[7]</p>
 <table>
 <thead>
