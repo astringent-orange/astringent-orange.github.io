@@ -1,0 +1,47 @@
+/* Scope to archive URLs (including yearly/monthly archives) using Hexo's
+   generated page metadata. Other list pages keep their original spacing. */
+html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group {
+  --archive-row-padding: .3rem .75rem;
+}
+
+html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group-item {
+  align-items: flex-start;
+  gap: .5rem;
+  margin: 0;
+  padding: var(--archive-row-padding);
+  border-radius: 4px;
+  line-height: 1.5;
+}
+
+html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group-item time {
+  flex: 0 0 4.25rem;
+  font-variant-numeric: tabular-nums;
+  opacity: .8;
+}
+
+html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group-item-title {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group > .h5 {
+  margin: .75rem 0 .35rem;
+}
+
+html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group > hr {
+  margin: .75rem 0;
+}
+
+@media (max-width: 575.98px) {
+  html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group {
+    --archive-row-padding: .35rem .25rem;
+  }
+  html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group-item {
+    font-size: .9rem;
+  }
+  html:has(meta[property="og:url"][content*="/archives/"]) #board .list-group-item time {
+    flex-basis: 3.25rem;
+  }
+}
