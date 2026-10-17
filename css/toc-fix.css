@@ -31,3 +31,9 @@
   -webkit-line-clamp: 2;
   overflow: hidden;
 }
+
+/* 当前条目换行、字体变粗时，不让浏览器额外调整目录滚动锚点。 */
+#toc-body {
+  overflow-anchor: none;
+  scroll-behavior: auto;
+}
