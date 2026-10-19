@@ -1,0 +1,1434 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="引言扩散模型最初常通过图像生成进入大家的视野：给一张图片不断添加噪声，再让神经网络学习如何把噪声逐步去掉。这个思路也能用在机器人上。只要把机器人的一段动作表示成数值张量，就可以训练模型从随机噪声生成动作序列。这类方法通常称为扩散策略（Diffusion Policy）。 全文用一个任务串起主要概念：桌上放着一个红色杯子，杯子前面有障碍物。机器人接收到“绕过障碍物，抓起红色杯子”的指令。它需要判断杯">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Diffusion Policy理论学习">
+<meta property="og:url" content="https://mian221.top/2026/10/17/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Mian的笔记">
+<meta property="og:description" content="引言扩散模型最初常通过图像生成进入大家的视野：给一张图片不断添加噪声，再让神经网络学习如何把噪声逐步去掉。这个思路也能用在机器人上。只要把机器人的一段动作表示成数值张量，就可以训练模型从随机噪声生成动作序列。这类方法通常称为扩散策略（Diffusion Policy）。 全文用一个任务串起主要概念：桌上放着一个红色杯子，杯子前面有障碍物。机器人接收到“绕过障碍物，抓起红色杯子”的指令。它需要判断杯">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/01_image_diffusion_basics-3d84c754dc74.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/02_multimodal_condition-81e0fffa7c9d.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/03_bimodal_obstacle-f0e8d8f97c95.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/04_diffusion_process-720667f028cc.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/05_bimodal_noise_scales-f315388f92bd.png">
+<meta property="article:published_time" content="2026-10-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-10-16T16:00:00.000Z">
+<meta property="article:author" content="Mian">
+<meta property="article:tag" content="Diffusion">
+<meta property="article:tag" content="Policy">
+<meta property="article:tag" content="扩散模型">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/01_image_diffusion_basics-3d84c754dc74.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Diffusion Policy理论学习 - Mian的笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css?v=20261017-scroll.css">
+<link rel="stylesheet" href="/css/code-blocks.css?v=98216c7.css">
+<link rel="stylesheet" href="/css/archive-compact.css?v=20261016.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":false,"default":"TEXT"},"copy_btn":false,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0,"ignoreSelector":".js-toc-ignore, [data-toc-excluded]","hasInnerContainers":true,"headingsOffset":80,"scrollSmoothOffset":-80,"disableTocScrollSync":true},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Mian的笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                    
+                    <span>无人机实验</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                    
+                    <span>无人机工程</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" target="_self">
+                    
+                    <span>理论学习</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
+            </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%AE%9E%E9%AA%8C/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机实验</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%97%A0%E4%BA%BA%E6%9C%BA%E5%B7%A5%E7%A8%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>无人机工程</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>理论学习</span>
+                  </div>
+                </a>
+              </div>
+            
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Diffusion Policy理论学习"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-10-17 00:00" pubdate>
+          2026年10月17日
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          14k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          118 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Diffusion Policy理论学习</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>扩散模型最初常通过图像生成进入大家的视野：给一张图片不断添加噪声，再让神经网络学习如何把噪声逐步去掉。这个思路也能用在机器人上。只要把机器人的一段动作表示成数值张量，就可以训练模型从随机噪声生成动作序列。这类方法通常称为<strong>扩散策略（Diffusion Policy）</strong>。</p>
+<p>全文用一个任务串起主要概念：桌上放着一个红色杯子，杯子前面有障碍物。机器人接收到“绕过障碍物，抓起红色杯子”的指令。它需要判断杯子的位置，选择一条绕障路线，再控制机械臂接近、抓取和抬起。完成任务的路线可能不止一条：从左边绕和从右边绕都可能成功。</p>
+<p>从工程角度看，系统分为两个阶段。<strong>训练时</strong>，收集人类或其他专家的操作示范，把正确动作加上已知噪声，让网络练习预测噪声；<strong>运行时</strong>，机器人读取摄像头图像、任务指令和自身状态，再从随机噪声逐步生成一段新的动作计划。每轮只执行其中一部分动作，然后重新观察环境。下面先介绍一般的扩散模型，再把它放到机器人任务中。</p>
+<h2 id="从图像生成理解扩散模型"><a href="#从图像生成理解扩散模型" class="headerlink" title="从图像生成理解扩散模型"></a>从图像生成理解扩散模型</h2><p>先考虑普通图片。假设手里有许多杯子的照片，模型希望学到这些照片中常见的结构：杯口在杯身上方，把手与杯身相连，物体轮廓、光照和背景具有一定规律。用 $p_{\mathrm{data}}(\mathbf y)$ 表示真实图片的数据分布，$\mathbf y$ 就是一张用数字表示的图片。训练生成模型的目标，可以理解为让模型掌握这个分布，然后从中生成新的样本。</p>
+<p>如果把一张图片的像素全部随机赋值，通常只能得到雪花状噪声。扩散模型采用一个比较容易训练的办法：<strong>先学习怎样识别人为添加的噪声，再利用学到的规律反过来生成图片</strong>。在最常见的 DDPM 中，整体过程可以画成下图。</p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/01_image_diffusion_basics-3d84c754dc74.png" srcset="/img/loading.gif" lazyload alt="图像扩散：从清晰图像逐步加噪，再从噪声生成图像"></p>
+<p>图中有两条方向相反的路径。</p>
+<ul>
+<li><strong>正向扩散（加噪）</strong>：从真实图片开始，逐渐增加高斯噪声。噪声加得足够多时，原始内容基本消失。这个过程由数学公式规定，通常无须训练一个专门的“加噪网络”。</li>
+<li><strong>反向扩散（生成）</strong>：从随机噪声开始，反复调用已经训练好的神经网络，逐步得到清晰图像。模型每次只需把当前样本向噪声更小的方向更新一点。</li>
+</ul>
+<p>DDPM 是 <strong>Denoising Diffusion Probabilistic Models</strong> 的缩写，中文为“去噪扩散概率模型”[1]。它代表一种概率生成方法：人为规定正向加噪过程，训练网络学习反向过程，再通过采样生成新数据。U-Net、Transformer 等是可以放进这套方法里的<strong>去噪网络结构</strong>。换一套网络结构，扩散的基本公式仍然可以保持不变。</p>
+<p>先不纠结细节，记住一个图像加噪公式即可：</p>
+<p>$$
+\mathbf y^k=\sqrt{\bar\alpha_k}\,\mathbf y^0+\sqrt{1-\bar\alpha_k}\,\boldsymbol\epsilon,
+\qquad \boldsymbol\epsilon\sim\mathcal N(\mathbf0,\mathbf I_d)
+$$</p>
+<p>$\mathbf y^0$ 是干净图片，$\mathbf y^k$ 是加噪后的图片；$k$ 表示噪声等级，$\bar\alpha_k$ 决定保留多少原图信息；$\boldsymbol\epsilon$ 是高斯噪声。这里把图片展平为 $d$ 维向量，$\mathbf I_d$ 表示 $d\times d$ 单位矩阵。随着噪声等级提高，原图所占比例逐渐减小。生成阶段会反复估计和去除噪声，具体公式后面结合动作来推导。</p>
+<p>为什么同样的方法能够迁移到机器人？图片在计算机中是一组数字，机器人动作同样是一组数字。扩散过程中被处理的数据可以换成未来动作序列；摄像头图像和语言指令则用来告诉模型“现在希望生成什么动作”。因此，图像生成和动作生成的主要区别可以简单记为：<strong>生成对象变了，任务条件也变了</strong>。</p>
+<table>
+<thead>
+<tr>
+<th>对比</th>
+<th>图像扩散</th>
+<th>机器人动作扩散</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>要生成的内容</td>
+<td>一张图片的像素或潜变量</td>
+<td>未来若干步动作</td>
+</tr>
+<tr>
+<td>加噪对象</td>
+<td>图像张量</td>
+<td>动作张量</td>
+</tr>
+<tr>
+<td>典型条件</td>
+<td>文字提示、图片等</td>
+<td>摄像头图像、语言、机器人状态</td>
+</tr>
+<tr>
+<td>生成结果</td>
+<td>图像</td>
+<td>一段可交给控制系统的动作计划</td>
+</tr>
+</tbody></table>
+<h2 id="从机器人任务到条件动作分布"><a href="#从机器人任务到条件动作分布" class="headerlink" title="从机器人任务到条件动作分布"></a>从机器人任务到条件动作分布</h2><p>先看动作如何表示。假设机械臂每个时刻的控制量包含末端执行器在三维空间中的相对位移，以及夹爪的开合指令：</p>
+<p>$$
+\mathbf a_t=(\Delta x_t,\Delta y_t,\Delta z_t,g_t)\in\mathbb R^4
+$$</p>
+<p>例如 $(0.02,-0.01,0.03,0)$ 可以代表沿三个轴移动一定距离并保持夹爪打开。具体数值的单位以及 $g_t$ 的含义由机器人控制接口决定。为了让动作前后连贯，我们常让模型一次生成未来 $H$ 步：</p>
+<p>$$
+\mathbf A_t^0=[\mathbf a_t,\mathbf a_{t+1},\ldots,\mathbf a_{t+H-1}]
+\in\mathbb R^{H\times D_a}
+$$</p>
+<p>$D_a$ 是单步动作的维度。如果 $H=8$、$D_a=4$，那么模型需要生成的是一个 $8\times4$ 的矩阵，也就是 32 个数。上标 $0$ 表示<strong>干净、未加扩散噪声的动作</strong>。图像里的像素位置通常有空间关系；动作矩阵的各行也有关系，不过这里对应的是<strong>时间先后顺序</strong>。例如，机械臂先抬起、再侧移、最后靠近杯子，整个序列才能形成一条连贯的路线。</p>
+<p>机器人还需要知道自己要去哪儿。令 $\mathbf X_t$ 表示摄像头图像，$L_t$ 表示语言指令，$\mathbf s_t$ 表示机器人当前状态（关节角、末端位置等）。一种常见做法是分别使用编码器，将它们变成神经网络便于使用的特征：</p>
+<p>$$
+\mathbf f_X=E_X(\mathbf X_t),\quad
+\mathbf f_L=E_L(L_t),\quad
+\mathbf f_s=E_s(\mathbf s_t)
+$$</p>
+<p>再用一个融合模块得到条件向量：</p>
+<p>$$
+\boxed{\mathbf c_t=F(\mathbf f_X,\mathbf f_L,\mathbf f_s)}
+$$</p>
+<p>融合可以只是拼接与线性映射，也可以借助 Attention，让语言特征和图像里的不同位置建立联系。虽然图像、文字、动作都能转换成数值张量，模型仍需通过数据和训练学会它们之间的语义关系。例如，“红色杯子”与画面中哪个物体对应，就需要视觉语言编码器、配对数据或预训练来帮助建立联系。</p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/02_multimodal_condition-81e0fffa7c9d.png" srcset="/img/loading.gif" lazyload alt="视觉、语言与机器人状态如何提供动作去噪条件"></p>
+<p>后面的扩散过程主要处理动作矩阵 $\mathbf A$。图像、语言与机器人状态在每一次去噪中提供条件 $\mathbf c_t$。因此，要学习的概率分布可以写成：</p>
+<p>$$
+\boxed{p_\theta(\mathbf A\mid\mathbf X_t,L_t,\mathbf s_t)
+=p_\theta(\mathbf A\mid\mathbf c_t)}
+$$</p>
+<p>读起来就是：<strong>看到当前环境、听到这条指令、知道机械臂在哪里之后，哪些动作序列更有可能成功？</strong> 原始 Diffusion Policy [3] 主要研究视觉和机器人状态条件；加入自然语言编码器后，就能扩展到视觉-语言-动作（VLA）任务。这里语言不会自动理解成运动指令，它需要通过训练数据中的任务与动作对应关系发挥作用。</p>
+<h3 id="为什么学习“分布”很重要"><a href="#为什么学习“分布”很重要" class="headerlink" title="为什么学习“分布”很重要"></a>为什么学习“分布”很重要</h3><p>回到障碍物前的抓取任务。假设专家操作的成功案例中，一半从障碍物上方绕行，另一半从下方绕行。两种动作序列都有可能成功。如果只用一个神经网络直接预测确定的动作 $f_\theta(\mathbf c)$，再用均方误差（MSE）训练：</p>
+<p>$$
+\mathcal L_{\mathrm{BC}}=\mathbb E\left[\|\mathbf A-f_\theta(\mathbf c)\|_2^2\right]
+$$</p>
+<p>理论上的最优输出为：</p>
+<p>$$
+\boxed{f_\theta^*(\mathbf c)=\mathbb E[\mathbf A\mid\mathbf c]}
+$$</p>
+<p>也就是专家动作的条件均值。两条轨迹逐点平均后，可能正好穿过障碍物。图中的绿色、蓝色曲线都是合理的绕行路线，红色虚线则代表可能出现的平均路线。</p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/03_bimodal_obstacle-f0e8d8f97c95.png" srcset="/img/loading.gif" lazyload alt="两条合理绕障轨迹和可能产生碰撞的平均轨迹"></p>
+<p>为此，希望模型学到两种方案同时存在的分布。例如，简化写成：</p>
+<p>$$
+ p(\mathbf A\mid\mathbf c)
+ =0.5p_{\mathrm{upper}}(\mathbf A\mid\mathbf c)
+ +0.5p_{\mathrm{lower}}(\mathbf A\mid\mathbf c)
+$$</p>
+<p>每次生成时，都有机会得到一条<strong>完整的上绕路线</strong>或者<strong>完整的下绕路线</strong>。上面的 50% 来自假设的专家数据，实际分布可以是 80% 对 20%，也可以更加复杂。随机初始化只负责引入不同采样结果；要让结果有意义，模型必须先学到哪些完整轨迹合理。</p>
+<p>这种多模态能力并非扩散模型独有。LLM 会预测下一个 Token 的概率分布，通过采样给出不同回答。机器人也可以把动作离散化成 Token，用自回归 Transformer 逐个生成：</p>
+<p>$$
+ p_\theta(\mathbf A\mid\mathbf c)
+ =\prod_{i=1}^{H}p_\theta(\mathbf a_i\mid\mathbf a_{&lt;i},\mathbf c)
+$$</p>
+<p>两类方法都能建模多种可能。自回归方法通常按顺序生成动作，动作扩散则经常在每次去噪时<strong>一起更新整段连续动作</strong>。扩散模型的优势与代价，需要结合动作维度、数据规模、训练稳定性和推理耗时评估。</p>
+<p>在正式推导前，约定后文使用的符号。尤其区分机器人时间 $t$ 和扩散时间 $k$，并始终用 $\mathbf X_t$ 表示图像、$\mathbf I_d$ 表示单位矩阵。</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$t$、$k$</td>
+<td>机器人真实时间、扩散内部时间</td>
+</tr>
+<tr>
+<td>$\mathbf X_t,L_t,\mathbf s_t$</td>
+<td>图像、语言指令、机器人状态</td>
+</tr>
+<tr>
+<td>$\mathbf c_t$</td>
+<td>融合后的环境与任务条件</td>
+</tr>
+<tr>
+<td>$\mathbf A^0,\mathbf A^k$</td>
+<td>干净动作、加噪到第 $k$ 步的动作</td>
+</tr>
+<tr>
+<td>$H,D_a,d$</td>
+<td>动作序列长度、单步动作维数、展平后总维数 $d=HD_a$</td>
+</tr>
+<tr>
+<td>$K$</td>
+<td>扩散的总步数，与机器人执行多少步无关</td>
+</tr>
+<tr>
+<td>$\mathbf I_d$</td>
+<td>$d\times d$ 单位矩阵</td>
+</tr>
+<tr>
+<td>$\alpha_k,\beta_k,\bar\alpha_k$</td>
+<td>噪声调度参数，下节定义</td>
+</tr>
+<tr>
+<td>$q,p_\theta$</td>
+<td>预先定义的正向过程、学到的反向过程</td>
+</tr>
+</tbody></table>
+<h2 id="正向扩散与去噪网络的训练"><a href="#正向扩散与去噪网络的训练" class="headerlink" title="正向扩散与去噪网络的训练"></a>正向扩散与去噪网络的训练</h2><p>训练数据来自专家示范。每条示范记录了一段时间内的图像、机器人状态、任务指令和专家动作，训练时从中截取成对样本 $(\mathbf c,\mathbf A^0)$。专家演示告诉模型：在这个条件下，机械臂曾经怎样成功执行任务。接下来就可以自动构造去噪训练题目。</p>
+<h3 id="加噪公式是怎样得到的"><a href="#加噪公式是怎样得到的" class="headerlink" title="加噪公式是怎样得到的"></a>加噪公式是怎样得到的</h3><p>设 $\beta_k$ 表示第 $k$ 步新加噪声的方差，定义 $\alpha_k=1-\beta_k$。标准 DDPM 的一次正向转移为：</p>
+<p>$$
+q(\mathbf A^k\mid\mathbf A^{k-1})=
+\mathcal N\!\left(\sqrt{\alpha_k}\mathbf A^{k-1},\beta_k\mathbf I_d\right)
+$$</p>
+<p>等价地，可以用下面的式子采样：</p>
+<p>$$
+\boxed{\mathbf A^k=\sqrt{\alpha_k}\mathbf A^{k-1}+\sqrt{\beta_k}\boldsymbol\xi_k},
+\qquad\boldsymbol\xi_k\sim\mathcal N(\mathbf0,\mathbf I_d)
+$$</p>
+<p>$\boldsymbol\xi_k$ 表示<strong>当前这一步新加的高斯噪声</strong>。随着多次加噪，前几步的噪声也会保留下来。例如连续两步：</p>
+<p>$$
+\begin{aligned}
+\mathbf A^1&amp;=\sqrt{\alpha_1}\mathbf A^0+\sqrt{\beta_1}\boldsymbol\xi_1,\\
+\mathbf A^2&amp;=\sqrt{\alpha_2}\mathbf A^1+\sqrt{\beta_2}\boldsymbol\xi_2\\
+&amp;=\sqrt{\alpha_1\alpha_2}\mathbf A^0
++\sqrt{\alpha_2\beta_1}\boldsymbol\xi_1
++\sqrt{\beta_2}\boldsymbol\xi_2.
+\end{aligned}
+$$</p>
+<p>最后两项都是独立高斯噪声的线性组合，因此可以合成一份等效高斯噪声。记 $\bar\alpha_k=\prod_{j=1}^{k}\alpha_j$，连续 $k$ 步的结果可直接写成：</p>
+<p>$$
+\boxed{\mathbf A^k=\sqrt{\bar\alpha_k}\mathbf A^0+
+\sqrt{1-\bar\alpha_k}\boldsymbol\epsilon^{(k)}}
+$$</p>
+<p>$$
+\boldsymbol\epsilon^{(k)}\sim\mathcal N(\mathbf0,\mathbf I_d)
+$$</p>
+<p>这里的 $\boldsymbol\epsilon^{(k)}$ 叫作<strong>累计等效噪声</strong>。它汇总了从 $\mathbf A^0$ 到 $\mathbf A^k$ 的全部随机扰动。以两步为例：</p>
+<p>$$
+\boldsymbol\epsilon^{(2)}=
+\frac{\sqrt{\alpha_2\beta_1}\boldsymbol\xi_1+
+\sqrt{\beta_2}\boldsymbol\xi_2}{\sqrt{1-\bar\alpha_2}}
+$$</p>
+<p>这就解释了正向扩散为什么能够跳步：训练时知道原始动作 $\mathbf A^0$，也能自己采样高斯噪声，只要指定噪声等级 $k$，就可以通过上面的闭式公式<strong>一次算出 $\mathbf A^k$</strong>。实际训练时通常每轮随机选择 $k$，现算带噪动作，无须提前准备一份包含所有噪声版本的庞大数据集。</p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/04_diffusion_process-720667f028cc.png" srcset="/img/loading.gif" lazyload alt="动作正向加噪与反向采样的流程"></p>
+<p>举个只有一个动作分量的例子。原始动作 $A^0=0.5$，某个噪声等级满足 $\sqrt{\bar\alpha_k}=0.8$、$\sqrt{1-\bar\alpha_k}=0.6$，抽到累计噪声 $\epsilon^{(k)}=-1$，带噪动作就是：</p>
+<p>$$
+A^k=0.8\times0.5+0.6\times(-1)=-0.2
+$$</p>
+<p>一个原本为正的动作分量变成了负数。训练数据中的这些“错误动作”完全存在于计算机内存中，不会让机械臂实际执行。</p>
+<h3 id="网络怎样利用这些数据学习"><a href="#网络怎样利用这些数据学习" class="headerlink" title="网络怎样利用这些数据学习"></a>网络怎样利用这些数据学习</h3><p>去噪网络需要三个输入：带噪动作 $\mathbf A^k$、当前噪声等级 $k$、环境任务条件 $\mathbf c$。输出是它预测的累计等效噪声：</p>
+<p>$$
+\boxed{\hat{\boldsymbol\epsilon}^{(k)}=
+\boldsymbol\epsilon_\theta(\mathbf A^k,k,\mathbf c)}
+$$</p>
+<p>模型可以使用 1D U-Net、Transformer 或其他结构实现。为了训练它，直接比较预测噪声与程序采样的真实噪声：</p>
+<p>$$
+\boxed{
+\mathcal L_{\mathrm{noise}}=
+\mathbb E\left[
+\left\|\boldsymbol\epsilon^{(k)}-
+\boldsymbol\epsilon_\theta(\mathbf A^k,k,\mathbf c)\right\|_2^2
+\right]
+}
+$$</p>
+<p>延续刚才的数值例子，如果真实噪声是 $-1$，网络预测 $-0.9$，那么这个标量样本的平方损失就是 $(-1+0.9)^2=0.01$。通过大量示范和不同噪声等级的训练，网络逐渐学会：<strong>在当前环境与任务条件下，一段动作所受到的扰动可能是什么</strong>。</p>
+<p>这里也涉及自监督学习。真实噪声标签由程序自动生成，因此噪声预测任务具有自监督性质。机器人策略仍然依赖专家示范提供的“观测—正确动作”对应关系，整体通常属于模仿学习。添加一万次不同噪声，也不会凭空产生一万条新的专家成功经验。</p>
+<p>用伪代码表示，训练一次大致如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># action: 专家动作 [B, H, Da]</span><br><span class="hljs-comment"># image, language, state: 与动作对应的观测条件</span><br>cond = condition_encoder(image, language, state)<br>noise = torch.randn_like(action)<br>k = sample_timesteps(B)<br>noisy_action = scheduler.add_noise(action, noise, k)<br>pred_noise = denoiser(noisy_action, k, cond)<br>loss = torch.nn.functional.mse_loss(pred_noise, noise)<br>optimizer.zero_grad()<br>loss.backward()<br>optimizer.step()<br></code></pre></td></tr></table></figure>
+
+<p>这段代码对应两个学习对象：条件编码器负责从图像、语言和机器人状态中提取有用信息，去噪网络负责根据条件预测动作噪声。是否一起训练、是否冻结视觉语言编码器，需要根据具体系统决定。</p>
+<h2 id="反向扩散：怎样从噪声得到完整动作"><a href="#反向扩散：怎样从噪声得到完整动作" class="headerlink" title="反向扩散：怎样从噪声得到完整动作"></a>反向扩散：怎样从噪声得到完整动作</h2><p>现在进入实际生成阶段。机器人已经观察到当前场景，算出了条件 $\mathbf c$，但没有人提前提供“下一段正确动作”。因此先生成一个随机动作张量：</p>
+<p>$$
+\boxed{\mathbf A^K\sim\mathcal N(\mathbf0,\mathbf I_d)}
+$$</p>
+<p>它的形状仍然是 $H\times D_a$。此时里面的值相当于随机数，<strong>不会直接发送给机器人执行</strong>。接下来从 $k=K$ 逐步减小到 $k=1$，每一步都重新调用网络：</p>
+<p>$$
+\mathbf A^K\rightarrow\mathbf A^{K-1}\rightarrow\cdots
+\rightarrow\mathbf A^1\rightarrow\mathbf A^0
+$$</p>
+<h3 id="为什么不能一步把噪声减干净"><a href="#为什么不能一步把噪声减干净" class="headerlink" title="为什么不能一步把噪声减干净"></a>为什么不能一步把噪声减干净</h3><p>这个问题最容易让人困惑。上节已经有闭式加噪公式：</p>
+<p>$$
+\mathbf A^k=\sqrt{\bar\alpha_k}\mathbf A^0+
+\sqrt{1-\bar\alpha_k}\boldsymbol\epsilon^{(k)}
+$$</p>
+<p>如果已知<strong>精确的累计等效噪声</strong>，确实能把它移项，直接还原干净动作：</p>
+<p>$$
+\boxed{
+\mathbf A^0=
+\frac{\mathbf A^k-\sqrt{1-\bar\alpha_k}\boldsymbol\epsilon^{(k)}}
+{\sqrt{\bar\alpha_k}}
+}
+$$</p>
+<p>困难出在生成时：我们不知道原始动作，也不知道随机样本背后的那一份精确累计噪声。更麻烦的是，<strong>同一个带噪数值可能由多条不同的合理动作加噪得到</strong>。例如，在一个极简的一维绕障例子中，左绕用 $A^0=-1$ 表示，右绕用 $A^0=+1$ 表示。加噪到较高等级后，两种动作产生的带噪分布会重叠。假设当前带噪值恰好为 $A^k=0$，那么它可能来自左绕加正方向噪声，也可能来自右绕加负方向噪声。</p>
+<p>在两种路径等概率、条件完全对称时，当前噪声等级下对干净动作的条件均值是 $0$。用 MSE 训练的最优噪声预测器，也只能给出条件期望意义上的噪声估计：</p>
+<p>$$
+\boldsymbol\epsilon_\theta^*(\mathbf A^k,k,\mathbf c)
+=\mathbb E[\boldsymbol\epsilon^{(k)}\mid\mathbf A^k,\mathbf c]
+$$</p>
+<p>直接把它代入干净动作公式得到 $\hat{\mathbf A}^0$，在理想情况下就是 $\mathbb E[\mathbf A^0\mid\mathbf A^k,\mathbf c]$，可能仍然落在两条路线的中间。标准 DDPM 因而选择多步概率采样，让当前样本逐渐从高噪声分布走向低噪声分布，最终形成某个具体的动作模式。多步采样的作用，可以结合下图理解：噪声较大时，两种动作分布容易重叠；噪声降低后，两个高概率区域逐渐显现。</p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/Diffusion-Policy%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/05_bimodal_noise_scales-f315388f92bd.png" srcset="/img/loading.gif" lazyload alt="多模态分布在不同噪声等级下的变化"></p>
+<h3 id="反向的一步实际怎么算"><a href="#反向的一步实际怎么算" class="headerlink" title="反向的一步实际怎么算"></a>反向的一步实际怎么算</h3><p>记住一个核心区别：<strong>网络预测的是截至当前 $k$ 的累计等效噪声</strong>，记作 $\hat{\boldsymbol\epsilon}^{(k)}$；反向采样会使用这个估计，计算当前 $\mathbf A^k$ 应该怎样更新成噪声少一点的 $\mathbf A^{k-1}$。它每走一步就重新预测一次，因此预测结果会随着当前动作和 $k$ 的变化而改变。</p>
+<p>标准 DDPM 将每一步反向转移写成高斯分布：</p>
+<p>$$
+p_\theta(\mathbf A^{k-1}\mid\mathbf A^k,\mathbf c)
+=\mathcal N\!\left(\boldsymbol\mu_\theta(\mathbf A^k,k,\mathbf c),
+\sigma_k^2\mathbf I_d\right)
+$$</p>
+<p>也就是先求更新后的<strong>均值</strong> $\boldsymbol\mu_\theta$，再根据设定的方差决定是否加入一份新噪声。均值的经典公式为：</p>
+<p>$$
+\boxed{
+\boldsymbol\mu_\theta(\mathbf A^k,k,\mathbf c)
+=\frac{1}{\sqrt{\alpha_k}}
+\left(
+\mathbf A^k-
+\frac{\beta_k}{\sqrt{1-\bar\alpha_k}}
+\boldsymbol\epsilon_\theta(\mathbf A^k,k,\mathbf c)
+\right)
+}
+$$</p>
+<p>再采样得到前一步：</p>
+<p>$$
+\boxed{
+\mathbf A^{k-1}=\boldsymbol\mu_\theta(\mathbf A^k,k,\mathbf c)
++\sigma_k\mathbf z_k,
+\qquad \mathbf z_k\sim\mathcal N(\mathbf0,\mathbf I_d)
+}
+$$</p>
+<p>这里出现了三种名字很接近的噪声，建议单独记一下：$\boldsymbol\xi_k$ 是<strong>正向第 $k$ 步新加入的噪声</strong>；$\boldsymbol\epsilon^{(k)}$ 是<strong>正向加到第 $k$ 级时的累计等效噪声</strong>，也是网络训练时的预测目标；$\mathbf z_k$ 是<strong>反向采样中可能额外加入的随机噪声</strong>。常见 DDPM 采样在最后一步不再加入新的随机项。</p>
+<p>上面的反向均值公式从哪里来？先假设我们知道干净动作 $\mathbf A^0$。由正向高斯过程和贝叶斯公式可推导出：</p>
+<p>$$
+q(\mathbf A^{k-1}\mid\mathbf A^k,\mathbf A^0)
+\propto q(\mathbf A^k\mid\mathbf A^{k-1})
+q(\mathbf A^{k-1}\mid\mathbf A^0)
+$$</p>
+<p>两个高斯密度相乘，得到的后验仍然是高斯分布：</p>
+<p>$$
+q(\mathbf A^{k-1}\mid\mathbf A^k,\mathbf A^0)
+=\mathcal N(\tilde{\boldsymbol\mu}_k,\tilde\beta_k\mathbf I_d)
+$$</p>
+<p>其均值与方差为：</p>
+<p>$$
+\tilde{\boldsymbol\mu}_k
+=\frac{\sqrt{\bar\alpha_{k-1}}\beta_k}{1-\bar\alpha_k}\mathbf A^0
++\frac{\sqrt{\alpha_k}(1-\bar\alpha_{k-1})}{1-\bar\alpha_k}\mathbf A^k,
+\qquad
+\tilde\beta_k=\frac{1-\bar\alpha_{k-1}}{1-\bar\alpha_k}\beta_k
+$$</p>
+<p>实际生成时 $\mathbf A^0$ 未知，可以先用网络预测的累计噪声估计它：</p>
+<p>$$
+\hat{\mathbf A}^0=
+\frac{\mathbf A^k-\sqrt{1-\bar\alpha_k}
+\boldsymbol\epsilon_\theta(\mathbf A^k,k,\mathbf c)}{\sqrt{\bar\alpha_k}}
+$$</p>
+<p>将 $\hat{\mathbf A}^0$ 代入后验均值并整理，就得到前面的 $\boldsymbol\mu_\theta$ 公式。公式看上去较长，实际计算顺序非常清楚：<strong>输入当前带噪动作 → 预测当前累计噪声 → 算出反向均值 → 采样下一个更低噪声等级的动作</strong>。真正未知的是复杂的整体反向分布；标准 DDPM 用多次参数化高斯转移逐渐逼近它。[1]</p>
+<h3 id="用两次去噪把计算过程走一遍"><a href="#用两次去噪把计算过程走一遍" class="headerlink" title="用两次去噪把计算过程走一遍"></a>用两次去噪把计算过程走一遍</h3><p>为了看清每一步在做什么，只考虑一个动作标量，假设 $K=2$，取 $\alpha_1=\alpha_2=0.8$、$\beta_1=\beta_2=0.2$。因此：</p>
+<p>$$
+\bar\alpha_1=0.8,\qquad \bar\alpha_2=0.64
+$$</p>
+<p>起点为 $A^2=-0.2$。第一次调用网络，假设它在 $k=2$ 时预测 $\hat\epsilon^{(2)}=-0.9$，且演示中恰好取到反向随机项 $z_2=0$：</p>
+<p>$$
+A^1=\frac{1}{\sqrt{0.8}}
+\left(-0.2-\frac{0.2}{\sqrt{0.36}}(-0.9)\right)
+\approx0.1118
+$$</p>
+<p>然后将新的 $A^1=0.1118$ 和 $k=1$ 再送进<strong>同一个网络</strong>。假设第二次预测为 $\hat\epsilon^{(1)}=-0.7$，最后一步不再添加随机项：</p>
+<p>$$
+A^0=\frac{1}{\sqrt{0.8}}
+\left(0.1118-\frac{0.2}{\sqrt{0.2}}(-0.7)\right)
+\approx0.475
+$$</p>
+<table>
+<thead>
+<tr>
+<th>更新</th>
+<th align="right">当前样本</th>
+<th align="right">本次网络预测</th>
+<th align="right">更新后的样本</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$k=2\rightarrow1$</td>
+<td align="right">$-0.2000$</td>
+<td align="right">$-0.9000$</td>
+<td align="right">$0.1118$</td>
+</tr>
+<tr>
+<td>$k=1\rightarrow0$</td>
+<td align="right">$0.1118$</td>
+<td align="right">$-0.7000$</td>
+<td align="right">$0.4750$</td>
+</tr>
+</tbody></table>
+<p>这两个预测值是人为假设的，只用于演示公式。$K=2$ 配上这里的噪声参数也不足以得到真正接近标准高斯的末端分布，所以不能把这组数当作完整训练配置。实际机器人会同时更新整个 $H\times D_a$ 动作张量。最需要观察的点是：<strong>每次都用新的 $\mathbf A^k$ 和新的 $k$ 重新算噪声</strong>，反复进行，直到 $k=0$。</p>
+<p>如果希望进一步理解“预测噪声为什么能学到概率分布”，可以看 Score Function。将第 $k$ 级带噪动作的条件密度记作 $p_k(\mathbf A^k\mid\mathbf c)$，Score 就是它的对数梯度：</p>
+<p>$$
+\mathbf s_k(\mathbf A^k,\mathbf c)
+=\nabla_{\mathbf A^k}\log p_k(\mathbf A^k\mid\mathbf c)
+$$</p>
+<p>对高斯加噪分布求导，并对可能的干净动作取条件期望，可以得到：</p>
+<p>$$
+\boxed{
+\nabla_{\mathbf A^k}\log p_k(\mathbf A^k\mid\mathbf c)
+=-\frac{\mathbb E[\boldsymbol\epsilon^{(k)}\mid\mathbf A^k,\mathbf c]}
+{\sqrt{1-\bar\alpha_k}}
+\approx-\frac{\boldsymbol\epsilon_\theta(\mathbf A^k,k,\mathbf c)}
+{\sqrt{1-\bar\alpha_k}}
+}
+$$</p>
+<p>可以把 Score 理解为<strong>当前动作附近，概率密度朝哪个方向增加</strong>。网络学到的噪声估计与这个方向密切相关，因此多次反向采样能逐渐构造出复杂的动作分布。这个关系解释了扩散模型学习到的内容，但不能由此推出生成轨迹一定碰撞安全。</p>
+<p>标准 DDPM 通常使用多个去噪步骤。DDIM [2] 可以通过修改采样过程减少步数；此外还有蒸馏和少步生成方法。一次性使用 $\hat{\mathbf A}^0$ 当作最终动作，通常不能直接代替这些专门设计的采样过程。</p>
+<h2 id="去噪网络与机器人实际运行"><a href="#去噪网络与机器人实际运行" class="headerlink" title="去噪网络与机器人实际运行"></a>去噪网络与机器人实际运行</h2><p>前面的公式里，真正需要学习的函数只有一个：</p>
+<p>$$
+\boxed{\boldsymbol\epsilon_\theta(\mathbf A^k,k,\mathbf c)}
+$$</p>
+<p>它接收当前带噪动作、噪声等级和环境条件，输出与动作形状相同的噪声估计。至于内部使用哪一种网络，可以根据任务决定。常见的三种选择如下。</p>
+<table>
+<thead>
+<tr>
+<th>结构</th>
+<th>怎样处理动作</th>
+<th>适用直觉</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MLP</td>
+<td>将整段动作展平，连接条件后预测</td>
+<td>最容易实现，可作为小任务的基线</td>
+</tr>
+<tr>
+<td>Conditional 1D U-Net</td>
+<td>沿动作序列的时间方向做卷积，并进行多尺度编码和解码</td>
+<td>容易利用相邻动作之间的联系</td>
+</tr>
+<tr>
+<td>Diffusion Transformer</td>
+<td>将每个动作时刻映射成 Token，通过 Attention 交互</td>
+<td>适合灵活建立多个动作时间步之间的联系</td>
+</tr>
+</tbody></table>
+<p>例如，Push-T 任务中机器人推动一个 T 形块，目标是把它推到指定位置和角度。若一次预测 16 步二维动作，数据形状为 $[B,16,2]$。使用 <code>Conv1d</code> 时，常调整成 $[B,2,16]$，让卷积核沿着 16 个时间位置移动。这样，网络可以学习“先接触物体、再连续推动、最后调整方向”这类局部动作变化。U-Net 通过下采样扩大时间感受野，再通过上采样恢复到原序列长度，跳跃连接保留较细的动作信息。</p>
+<p>视觉和语言条件可以通过 FiLM 注入 U-Net。设某层动作特征为 $\mathbf h$，条件与噪声时间步生成缩放、偏移参数，得到：</p>
+<p>$$
+\mathbf h&#39;=\boldsymbol\gamma(\mathbf c,k)\odot\mathbf h
++\boldsymbol\delta(\mathbf c,k)
+$$</p>
+<p>当桌面物体位置或任务指令变化时，$\boldsymbol\gamma$ 和 $\boldsymbol\delta$ 也会变化，因此同样的带噪动作可以得到不同的噪声预测。</p>
+<p>Transformer 则把动作序列处理为 Token：$\mathbf z_i=W_a\mathbf a_i^k+\mathbf p_i$，其中 $\mathbf p_i$ 是位置编码。Self-Attention 用于建立不同动作时间步的联系；Cross-Attention 可以让动作特征读取视觉、语言特征。Attention 的基本计算式为：</p>
+<p>$$
+\operatorname{Attention}(Q,K,V)=
+\operatorname{softmax}\!\left(\frac{QK^\top}{\sqrt{d_h}}\right)V
+$$</p>
+<p>两类去噪网络的最终输出都是与 $\mathbf A^k$ 同形状的噪声张量，继续交给相同类型的反向采样调度器即可。经典 Diffusion Policy [3][4] 同时研究了 CNN 与 Transformer 去噪器；3D Diffusion Policy [5] 把三维点云加入观测建模；RDT-1B [6] 则结合视觉、语言和机器人状态进行双臂动作生成。</p>
+<p>训练完成后，机器人运行可以写成一段循环：观察当前画面，编码条件；从高斯噪声初始化整段动作；逐步去噪得到动作计划；执行其中几步；重新观察。如果杯子在机器人接近时被移动了，下一次生成就能使用新的图像重新规划。</p>
+<p>$$
+\boxed{\text{观察}\longrightarrow\text{生成动作块}\longrightarrow
+\text{执行部分动作}\longrightarrow\text{重新观察}}
+$$</p>
+<p>这种做法称为<strong>滚动时域控制（Receding Horizon Control）</strong>。例如设 $T_o=2$、$T_p=8$、$T_a=3$，分别表示使用最近两次观测、一次预测未来八步、每轮只执行三步。实际代码还需要按观测时刻对齐动作块的起始位置。它有助于在运动过程中响应环境变化，也能让模型一起考虑一段连续的动作。</p>
+<p>下面的推理伪代码把各个模块接在一起：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">while</span> <span class="hljs-keyword">not</span> task_finished:<br>    obs = robot.get_observation()              <span class="hljs-comment"># 图像、指令、状态</span><br>    cond = condition_encoder(obs)<br>    action = torch.randn(<span class="hljs-number">1</span>, H, Da, device=device)<br><br>    <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> scheduler.timesteps:               <span class="hljs-comment"># 从高噪声到低噪声</span><br>        pred_noise = denoiser(action, k, cond)<br>        action = scheduler.step(pred_noise, k, action).prev_sample<br><br>    action = denormalize(action)<br>    action_chunk = select_aligned_chunk(action, Ta)<br>    robot.execute(action_chunk)<br></code></pre></td></tr></table></figure>
+
+<p>训练和推理过程中需要注意动作归一化。末端位移、角度、夹爪状态可能有不同的数值尺度；训练前通常将它们整理到合适范围，生成后再恢复为实际控制单位。此外，生成动作属于学习到的策略输出，依然需要机械臂控制器、速度与关节限位、必要的碰撞检查等安全约束。随机生成的中间动作 $\mathbf A^k$ 只在网络内部流转，真正交给执行器的是最终生成并经过处理的动作块。</p>
+<p>回头看本文的抓杯子任务，完整运行过程可以归纳为一条链：先用成功示范建立 $(\mathbf X_t,L_t,\mathbf s_t,\mathbf A_t^0)$ 数据；训练时随机加噪，并让条件去噪网络预测噪声；部署时给出“抓红杯子”的条件，模型从随机动作张量生成一段绕障和抓取计划；机械臂执行其中一部分，再读取新画面继续规划。两条绕障路线都可能出现，前提是训练数据和模型已经学会这些合理模式。</p>
+<p>理解整套方法时，抓住四个式子基本就够了：条件动作分布 $p_\theta(\mathbf A\mid\mathbf c)$ 定义要学什么；正向公式 $\mathbf A^k=\sqrt{\bar\alpha_k}\mathbf A^0+\sqrt{1-\bar\alpha_k}\boldsymbol\epsilon^{(k)}$ 负责生成训练样本；噪声预测 $\boldsymbol\epsilon_\theta(\mathbf A^k,k,\mathbf c)$ 是网络的实际工作；反向更新 $\mathbf A^{k-1}=\boldsymbol\mu_\theta+\sigma_k\mathbf z_k$ 负责逐步生成动作。与普通确定性回归相比，扩散策略能够建模并采样多种动作模式；相比传统图像扩散，它生成的是动作序列，还要与实时观测和机器人控制系统配合。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>1.<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2006.11239">Denoising Diffusion Probabilistic Models</a><br>2.<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2010.02502">Denoising Diffusion Implicit Models</a><br>3.<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2303.04137">Diffusion Policy: Visuomotor Policy Learning via Action Diffusion</a><br>4.<a target="_blank" rel="noopener" href="https://github.com/real-stanford/diffusion_policy">Diffusion Policy 官方代码</a><br>5.<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2403.03954">3D Diffusion Policy: Generalizable Visuomotor Policy Learning via Simple 3D Representations</a><br>6.<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2410.07864">RDT-1B: a Diffusion Foundation Model for Bimanual Manipulation</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="category-chain-item">大模型</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Diffusion/" class="print-no-link">#Diffusion</a>
+      
+        <a href="/tags/Policy/" class="print-no-link">#Policy</a>
+      
+        <a href="/tags/%E6%89%A9%E6%95%A3%E6%A8%A1%E5%9E%8B/" class="print-no-link">#扩散模型</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Diffusion Policy理论学习</div>
+      <div>https://mian221.top/2026/10/17/Diffusion-Policy理论学习/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年10月17日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/10/16/JEPA%EF%BC%9A%E4%BB%8E%E8%A1%A8%E7%A4%BA%E5%AD%A6%E4%B9%A0%E5%88%B0%E4%B8%96%E7%95%8C%E6%A8%A1%E5%9E%8B/" title="JEPA：从表示学习到世界模型">
+                        <span class="hidden-mobile">JEPA：从表示学习到世界模型</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/navbar-search.js"></script>
+<script src="/js/code-blocks.js?v=98216c7.js"></script>
+<script src="/js/toc-scroll.js?v=20261017.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
