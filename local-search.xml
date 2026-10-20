@@ -117,7 +117,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -204,7 +204,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -270,7 +270,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -297,7 +297,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -324,7 +324,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -409,7 +409,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -444,7 +444,7 @@
     
     <categories>
       
-      <category>无人机工程</category>
+      <category>工程知识</category>
       
     </categories>
     
@@ -469,7 +469,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -502,7 +502,7 @@
     
     <categories>
       
-      <category>无人机工程</category>
+      <category>工程知识</category>
       
     </categories>
     
@@ -531,7 +531,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -570,7 +570,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -607,7 +607,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -636,7 +636,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -669,7 +669,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -702,7 +702,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -731,7 +731,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -758,16 +758,16 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>ROS1</tag>
-      
       <tag>px4</tag>
+      
+      <tag>ROS1</tag>
       
       <tag>仿真</tag>
       
@@ -795,7 +795,7 @@
     
     <categories>
       
-      <category>无人机工程</category>
+      <category>工程知识</category>
       
     </categories>
     
@@ -822,16 +822,16 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>ROS1</tag>
-      
       <tag>px4</tag>
+      
+      <tag>ROS1</tag>
       
       <tag>仿真</tag>
       
@@ -859,7 +859,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -892,16 +892,16 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>ROS1</tag>
-      
       <tag>px4</tag>
+      
+      <tag>ROS1</tag>
       
       <tag>实机</tag>
       
@@ -925,7 +925,7 @@
     
     <categories>
       
-      <category>无人机工程</category>
+      <category>工程知识</category>
       
     </categories>
     
@@ -956,7 +956,7 @@
     
     <categories>
       
-      <category>无人机工程</category>
+      <category>工程知识</category>
       
     </categories>
     
@@ -985,18 +985,18 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
     
     <tags>
       
+      <tag>px4</tag>
+      
       <tag>NUC13</tag>
       
       <tag>ROS1</tag>
-      
-      <tag>px4</tag>
       
       <tag>实机</tag>
       
@@ -1018,7 +1018,7 @@
     
     <categories>
       
-      <category>无人机工程</category>
+      <category>工程知识</category>
       
     </categories>
     
@@ -1047,7 +1047,7 @@
     
     <categories>
       
-      <category>无人机工程</category>
+      <category>工程知识</category>
       
     </categories>
     
@@ -1074,24 +1074,24 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
     
     <tags>
       
+      <tag>MAVROS</tag>
+      
+      <tag>px4</tag>
+      
+      <tag>vins</tag>
+      
       <tag>NUC13</tag>
       
       <tag>ROS1</tag>
       
-      <tag>vins</tag>
-      
-      <tag>px4</tag>
-      
       <tag>实机</tag>
-      
-      <tag>MAVROS</tag>
       
     </tags>
     
@@ -1109,7 +1109,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -1118,15 +1118,15 @@
       
       <tag>Ubuntu20-04</tag>
       
-      <tag>ROS1</tag>
+      <tag>px4</tag>
       
       <tag>vins</tag>
       
-      <tag>IntelRealsenseD435</tag>
-      
-      <tag>px4</tag>
+      <tag>ROS1</tag>
       
       <tag>实机</tag>
+      
+      <tag>IntelRealsenseD435</tag>
       
     </tags>
     
@@ -1144,7 +1144,7 @@
     
     <categories>
       
-      <category>无人机实验</category>
+      <category>实验日志</category>
       
     </categories>
     
@@ -1173,7 +1173,7 @@
     
     <categories>
       
-      <category>无人机工程</category>
+      <category>工程知识</category>
       
     </categories>
     
