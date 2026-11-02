@@ -53,7 +53,7 @@
       }
       var container = document.getElementById('busuanzi_container_site_uv');
       if (container) Array.from(container.childNodes).forEach(function (node) {
-        if (node.nodeType === 3 && node.textContent.includes('访客')) node.textContent = '累计访客估算：';
+        if (node.nodeType === 3 && node.textContent.includes('访客')) node.textContent = '累计访客：';
       });
       display(resultValues);
     });
