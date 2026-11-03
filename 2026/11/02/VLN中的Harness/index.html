@@ -1,0 +1,1438 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=light>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/favicon.ico">
+  <link rel="icon" href="/favicon.ico">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Mian">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="本文部分内容由AI生成  引言假设让一个大语言模型修复代码仓库中的 Bug：它需要读取文件、搜索代码、修改实现、运行测试，再根据报错继续调整，最后确认问题是否解决。模型可以负责理解问题和提出下一步操作，但文件访问、命令执行、结果回传、任务进度记录和失败恢复，都需要额外的程序来协调。这层围绕模型构建的运行与控制系统，通常称为 Agent Harness。 Harness 基础概念定义与运行循环Ha">
+<meta property="og:type" content="article">
+<meta property="og:title" content="VLN中的Harness">
+<meta property="og:url" content="https://mian221.top/2026/11/02/VLN%E4%B8%AD%E7%9A%84Harness/index.html">
+<meta property="og:site_name" content="Mian的笔记">
+<meta property="og:description" content="本文部分内容由AI生成  引言假设让一个大语言模型修复代码仓库中的 Bug：它需要读取文件、搜索代码、修改实现、运行测试，再根据报错继续调整，最后确认问题是否解决。模型可以负责理解问题和提出下一步操作，但文件访问、命令执行、结果回传、任务进度记录和失败恢复，都需要额外的程序来协调。这层围绕模型构建的运行与控制系统，通常称为 Agent Harness。 Harness 基础概念定义与运行循环Ha">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/VLN%E4%B8%AD%E7%9A%84Harness/eee2b6c5-ef23-4a66-953a-2e3f15fb654e-273782d33cd8.png">
+<meta property="og:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/VLN%E4%B8%AD%E7%9A%84Harness/886629ae-69d3-4a09-aa1f-ce2c11806f16-0f28cc7951d6.png">
+<meta property="article:published_time" content="2026-11-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-01T16:00:00.000Z">
+<meta property="article:author" content="Mian">
+<meta property="article:tag" content="Harness">
+<meta property="article:tag" content="VLN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/VLN%E4%B8%AD%E7%9A%84Harness/eee2b6c5-ef23-4a66-953a-2e3f15fb654e-273782d33cd8.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>VLN中的Harness - Mian的笔记</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/navbar-search.css">
+<link rel="stylesheet" href="/css/navbar-dropdown.css">
+<link rel="stylesheet" href="/css/toc-fix.css?v=20261017-scroll.css">
+<link rel="stylesheet" href="/css/code-blocks.css?v=98216c7.css">
+<link rel="stylesheet" href="/css/archive-compact.css?v=20261016.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"mian221.top","root":"/","version":"1.9.9","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":false,"default":"TEXT"},"copy_btn":false,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0,"ignoreSelector":".js-toc-ignore, [data-toc-excluded]","hasInnerContainers":true,"headingsOffset":80,"scrollSmoothOffset":-80,"disableTocScrollSync":true},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Mian的笔记</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" target="_self" href="javascript:;" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+              <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/" target="_self">
+                    
+                    <span>全部分类</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                    
+                    <span>大模型</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%AE%9E%E9%AA%8C%E6%97%A5%E5%BF%97/" target="_self">
+                    
+                    <span>实验日志</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E5%B7%A5%E7%A8%8B%E7%9F%A5%E8%AF%86/" target="_self">
+                    
+                    <span>工程知识</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                    
+                    <span>杂记</span>
+                  </a>
+                
+                  
+                  
+                  
+                  <a class="dropdown-item" href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" target="_self">
+                    
+                    <span>理论学习</span>
+                  </a>
+                
+              </div>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/astringent-orange" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            
+            <div class="col-12 mobile-grid-group-header">
+              <i class="iconfont icon-category-fill"></i>
+              <span>分类</span>
+            </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>全部分类</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>大模型</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%AE%9E%E9%AA%8C%E6%97%A5%E5%BF%97/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>实验日志</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E5%B7%A5%E7%A8%8B%E7%9F%A5%E8%AF%86/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>工程知识</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E6%9D%82%E8%AE%B0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>杂记</span>
+                  </div>
+                </a>
+              </div>
+            
+              
+              
+              
+              <div class="col-4 mobile-grid-cell">
+                <a href="/categories/%E7%90%86%E8%AE%BA%E5%AD%A6%E4%B9%A0/" target="_self">
+                  <div class="mobile-grid-item">
+                    <i class="iconfont icon-link-fill"></i>
+                    <span>理论学习</span>
+                  </div>
+                </a>
+              </div>
+            
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="https://github.com/astringent-orange" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/banner.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="VLN中的Harness"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-11-02 00:00" pubdate>
+          2026年11月2日
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          63 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">VLN中的Harness</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <blockquote>
+<p>本文部分内容由AI生成</p>
+</blockquote>
+<h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>假设让一个大语言模型修复代码仓库中的 Bug：它需要读取文件、搜索代码、修改实现、运行测试，再根据报错继续调整，最后确认问题是否解决。<br>模型可以负责理解问题和提出下一步操作，但文件访问、命令执行、结果回传、任务进度记录和失败恢复，都需要额外的程序来协调。这层围绕模型构建的运行与控制系统，通常称为 <strong>Agent Harness</strong>。</p>
+<h2 id="Harness-基础概念"><a href="#Harness-基础概念" class="headerlink" title="Harness 基础概念"></a>Harness 基础概念</h2><h3 id="定义与运行循环"><a href="#定义与运行循环" class="headerlink" title="定义与运行循环"></a>定义与运行循环</h3><p>Harness 可以理解为围绕 AI 模型构建的运行时支架。它连接模型、上下文、工具和执行环境，负责组织模型调用与工具执行，并管理任务状态和生命周期。</p>
+<p>目前 Harness 没有完全统一的行业定义，不同论文和开发框架的模块边界可能不同。微软和 VS Code 的相关文档都将模型调用、工具协调、上下文管理、审批和会话状态视为 Harness 的重要职责。[1][2]</p>
+<p>可以用下面的概念式理解一个 Agent 系统：</p>
+<p>$$
+\text{Agent System} \approx \text{Model} + \text{Harness} + \text{Tools} + \text{Environment}
+$$</p>
+<ul>
+<li><strong>Model</strong>：提供语言理解、视觉理解、知识、推理和决策能力。</li>
+<li><strong>Harness</strong>：管理模型调用、上下文、任务循环、工具执行、状态更新和权限。</li>
+<li><strong>Tools</strong>：提供外部能力，例如搜索文件、运行代码、查询数据库或控制机器人。</li>
+<li><strong>Environment</strong>：工具实际运行的环境，例如本地计算机、容器、云主机、仿真器或真实机器人。<br>这是一种便于理解的划分，并非严格的行业标准。实际系统中，Harness、Tools 和 Environment 的边界可能有所重叠。</li>
+</ul>
+<p><strong>为什么需要 Harness</strong></p>
+<p>一次普通模型调用可以表示为：</p>
+<p>$$
+y = f_\theta(x)
+$$</p>
+<p>模型根据输入 $x$ 生成输出 $y$。对于多步骤任务，系统还需要解析工具调用、检查参数和权限、执行工具、返回结果，并决定是否继续调用模型。</p>
+<p>这些步骤通常由 Agent Loop（智能体循环）组织：</p>
+<pre><code class=" mermaid">flowchart TD
+    A[接收任务与当前状态] --&gt; B[组织上下文]
+    B --&gt; C[调用模型]
+    C --&gt; D&#123;模型输出类型&#125;
+    D --&gt;|最终结果| G[检查完成条件并结束]
+    D --&gt;|工具调用| E[检查参数和权限]
+    E --&gt; F[执行工具]
+    F --&gt; H[收集反馈]
+    H --&gt; I[更新记忆与任务状态]
+    I --&gt; B
+</code></pre>
+
+
+
+<h3 id="Harness-的核心组成"><a href="#Harness-的核心组成" class="headerlink" title="Harness 的核心组成"></a>Harness 的核心组成</h3><p>不同 Harness 的实现不完全相同，常见能力如下。</p>
+<table>
+<thead>
+<tr>
+<th>组成部分</th>
+<th>主要职责</th>
+<th>常见实现</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Model Interface</td>
+<td>接入模型、解析返回结果</td>
+<td>API Client、模型路由、结构化输出</td>
+</tr>
+<tr>
+<td>Agent Control Loop</td>
+<td>管理任务循环和生命周期</td>
+<td>Planning、Tool Calling、Retry、Stop</td>
+</tr>
+<tr>
+<td>Tool Management</td>
+<td>注册、分发和执行工具</td>
+<td>Function Calling、MCP Client、API</td>
+</tr>
+<tr>
+<td>Context Management</td>
+<td>组织每轮模型需要的信息</td>
+<td>Prompt、历史消息、检索、上下文压缩</td>
+</tr>
+<tr>
+<td>Memory &amp; State</td>
+<td>保存任务进度和可复用信息</td>
+<td>Working Memory、长期记忆、Checkpoint</td>
+</tr>
+<tr>
+<td>Safety &amp; Policy</td>
+<td>限制危险操作和资源使用</td>
+<td>权限、审批、沙箱、超时、预算</td>
+</tr>
+<tr>
+<td>Observability</td>
+<td>记录执行过程并定位问题</td>
+<td>Logs、Traces、Metrics、评估记录</td>
+</tr>
+</tbody></table>
+<p>Model Interface 负责屏蔽不同模型 API 的差异，也可以根据任务选择不同模型。Agent Control Loop 管理模型调用、工具执行、重试和终止。Tool Management 处理工具注册、参数校验、调用分发和结果返回。Context Management 决定模型每轮能看到哪些信息。Memory &amp; State 保存任务进度和历史经验。Safety &amp; Policy 管理权限与风险。Observability 记录执行轨迹，便于调试和评估。</p>
+<h3 id="与相关概念的区别"><a href="#与相关概念的区别" class="headerlink" title="与相关概念的区别"></a>与相关概念的区别</h3><table>
+<thead>
+<tr>
+<th>概念</th>
+<th>关注点</th>
+<th>与 Harness 的关系</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Agent</td>
+<td>围绕目标持续采取行动的系统或行为模式</td>
+<td>Harness 为 Agent 提供运行机制</td>
+</tr>
+<tr>
+<td>Agent Framework</td>
+<td>开发 Agent 的 SDK、抽象和组件库</td>
+<td>可用于构建 Harness，也可能内置 Harness</td>
+</tr>
+<tr>
+<td>Workflow</td>
+<td>按预先定义的步骤组织任务</td>
+<td>Harness 可以执行固定 Workflow</td>
+</tr>
+<tr>
+<td>MCP</td>
+<td>连接 AI 应用与外部工具、数据的协议</td>
+<td>Harness 可以通过 MCP 接入工具</td>
+</tr>
+<tr>
+<td>Tool</td>
+<td>可被调用的具体能力</td>
+<td>Harness 负责管理和调度</td>
+</tr>
+<tr>
+<td>Skill</td>
+<td>某类任务的可复用指导</td>
+<td>Harness 可按需将 Skill 加入上下文</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>信息保存和检索机制</td>
+<td>是 Harness 可以管理的子系统</td>
+</tr>
+<tr>
+<td>Environment</td>
+<td>工具实际运行的地方</td>
+<td>Harness 将调用路由到执行环境</td>
+</tr>
+</tbody></table>
+<p>Workflow 通常沿预先定义的代码路径执行；Agent 可以根据中间结果动态选择下一步。[3] Harness 可以支持两种模式。MCP 解决工具和数据如何暴露给应用的问题，Harness 则管理何时调用、如何执行以及如何处理结果。[4]</p>
+<p>Tool 通常是可执行函数，例如 <code>search_files()</code>；Skill 通常是说明适用条件、操作步骤和注意事项的指导文件。Skill 可以影响模型决策，但本身不一定执行动作。</p>
+<p><strong>Harness 与模型训练</strong></p>
+<p>Harness 和 Fine-tuning 是两个不同维度：Harness 关注模型如何运行和使用工具；Fine-tuning 关注是否利用任务数据更新模型参数。</p>
+<table>
+<thead>
+<tr>
+<th>组合</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Training-free + Harness</td>
+<td>使用预训练模型，通过工具和运行时逻辑完成任务</td>
+</tr>
+<tr>
+<td>Fine-tuned Model + Harness</td>
+<td>微调模型，同时用 Harness 管理执行过程</td>
+</tr>
+<tr>
+<td>Training-free + Workflow</td>
+<td>使用预训练模型执行预定义流程</td>
+</tr>
+<tr>
+<td>Fine-tuned End-to-End Policy</td>
+<td>模型直接学习输入到动作的映射</td>
+</tr>
+</tbody></table>
+<p>论文中的 Training-free 需要结合具体定义理解。它可能只表示主 MLLM 没有针对当前任务微调；系统中的检测器、分割器或运动执行器仍可能是训练得到的模型。</p>
+<h2 id="Harness-的设计与开发"><a href="#Harness-的设计与开发" class="headerlink" title="Harness 的设计与开发"></a>Harness 的设计与开发</h2><p><strong>设计工具接口</strong></p>
+<p>每个 Tool 应有明确的名称、用途、输入输出 Schema 和错误类型。例如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">search_files</span>(<span class="hljs-params">query: <span class="hljs-built_in">str</span>, root: <span class="hljs-built_in">str</span></span>) -&gt; <span class="hljs-built_in">dict</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;搜索目录中的相关文件，返回路径和匹配片段。&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> &#123;<br>        <span class="hljs-string">&quot;status&quot;</span>: <span class="hljs-string">&quot;success&quot;</span>,<br>        <span class="hljs-string">&quot;matches&quot;</span>: [<br>            &#123;<span class="hljs-string">&quot;path&quot;</span>: <span class="hljs-string">&quot;src/login.py&quot;</span>, <span class="hljs-string">&quot;snippet&quot;</span>: <span class="hljs-string">&quot;...&quot;</span>&#125;<br>        ]<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+<p>工具设计时应注意：</p>
+<ul>
+<li>参数含义清晰，返回结构稳定。</li>
+<li>只返回下一步决策需要的信息，避免结果过长。</li>
+<li>设置超时、错误码和必要的重试机制。</li>
+<li>对有副作用的操作增加权限检查和审批。</li>
+<li>对可能重复执行的操作考虑幂等性。</li>
+<li>在工具说明中写清适用范围和限制。</li>
+</ul>
+<p>接口稳定后，可以替换工具的底层实现，而不必大幅修改上层决策逻辑。</p>
+<h3 id="上下文、记忆与状态管理"><a href="#上下文、记忆与状态管理" class="headerlink" title="上下文、记忆与状态管理"></a>上下文、记忆与状态管理</h3><p>三者可以共享存储，但用途不同。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>保存内容</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Context</td>
+<td>当前轮模型需要看到的信息</td>
+<td>指令、相关文件片段、最近工具结果</td>
+</tr>
+<tr>
+<td>Working Memory</td>
+<td>当前任务的短期信息</td>
+<td>当前目标、最近发现、待办事项</td>
+</tr>
+<tr>
+<td>Long-term Memory</td>
+<td>后续任务可能复用的信息</td>
+<td>项目约定、历史经验</td>
+</tr>
+<tr>
+<td>Task State</td>
+<td>任务执行进度</td>
+<td>已完成步骤、待处理步骤、当前状态</td>
+</tr>
+<tr>
+<td>Execution Trace</td>
+<td>实际发生的调用和结果</td>
+<td>工具参数、返回值、错误、时间戳</td>
+</tr>
+</tbody></table>
+<p>Context 是模型当前输入的信息视图；Memory 负责保存和检索信息；State 表示任务当前处于什么阶段。</p>
+<p>长任务不宜无限累积历史消息。常见做法是保留近期对话，将已完成步骤压缩成摘要，把重要决策和外部证据单独保存，并按当前子任务检索相关信息。证据最好带有来源和时间，避免使用过时信息。</p>
+<p><strong>Skill、Workflow 与动态规划</strong></p>
+<p>Workflow 适合步骤稳定的任务，例如读取数据、检查字段、清洗数据、生成统计结果并导出报告。Skill 适合封装可复用经验，例如代码审查步骤或故障排查指南。动态规划适合中间结果会改变后续操作的任务，例如测试失败后重新定位问题。</p>
+<p>一个 Harness 可以同时使用固定 Workflow、按需加载的 Skill 和模型驱动的动态决策。</p>
+<h3 id="评估与-Harness-Engineering"><a href="#评估与-Harness-Engineering" class="headerlink" title="评估与 Harness Engineering"></a>评估与 Harness Engineering</h3><p>只看最终回答很难定位 Agent 的问题。建议记录模型调用、工具参数、工具结果、耗时、Token 消耗和异常，并分别评估三个层次：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>评估内容</th>
+<th>指标示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Model</td>
+<td>是否理解任务、选择正确工具</td>
+<td>工具选择准确率、参数正确率</td>
+</tr>
+<tr>
+<td>Harness</td>
+<td>是否正确管理任务和执行</td>
+<td>状态恢复率、错误处理率、审批执行率</td>
+</tr>
+<tr>
+<td>End-to-End</td>
+<td>是否完成用户目标</td>
+<td>成功率、总耗时、Token 成本、人工介入次数</td>
+</tr>
+</tbody></table>
+<p>失败原因也应分类，例如模型推理错误、工具接口错误、上下文遗漏、状态更新错误或环境执行失败。这样才能判断问题应该由模型还是 Harness 来解决。</p>
+<p><strong>Harness Engineering</strong> 指设计、维护和持续改进 Harness 的工程实践。OpenAI 的 Agent-first 开发实践强调：让 Agent 能读取项目文档、理解代码结构、运行测试、查询日志，并根据反馈迭代修改。[5] 常见做法包括维护清晰的项目文档、提供可检索的知识入口、把架构约束写入测试和 Lint，并将重复出现的问题沉淀为工具或自动化检查。</p>
+<h2 id="Harness-在-VLN-中的应用"><a href="#Harness-在-VLN-中的应用" class="headerlink" title="Harness 在 VLN 中的应用"></a>Harness 在 VLN 中的应用</h2><h3 id="从传统-VLN-到-Agentic-VLN"><a href="#从传统-VLN-到-Agentic-VLN" class="headerlink" title="从传统 VLN 到 Agentic VLN"></a>从传统 VLN 到 Agentic VLN</h3><p>传统端到端 VLN 通常学习视觉观测、语言指令和历史信息到导航动作的映射：</p>
+<p>$$
+a_t = \pi_\theta(o_t, l, h_t)
+$$</p>
+<p>其中 $o_t$ 是当前观测，$l$ 是语言指令，$h_t$ 是历史信息，$a_t$ 是导航动作或 Waypoint。模型通过导航轨迹训练，学习指令理解和运动策略。</p>
+<p>Agentic VLN 将导航组织成持续的决策循环：MLLM 理解任务、分析场景并选择操作；Harness 管理记忆、工具、任务状态和反馈；导航执行器将目标转换成实际运动。高层 MLLM 可以低频决定子目标，局部规划器和控制器则高频处理路径跟踪和避障。</p>
+<h3 id="HarnessVLN"><a href="#HarnessVLN" class="headerlink" title="HarnessVLN"></a>HarnessVLN</h3><p>论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.15195">HarnessVLN: Unifying Training-Free Embodied Navigation through an Agent Harness</a></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/VLN%E4%B8%AD%E7%9A%84Harness/eee2b6c5-ef23-4a66-953a-2e3f15fb654e-273782d33cd8.png" srcset="/img/loading.gif" lazyload><br>HarnessVLN 将感知、检索、目标定位、导航、恢复和终止组织在统一工具接口中，有三大创新点：</p>
+<ul>
+<li><strong>分层事件记忆</strong>：Working Memory 保存当前观测和近期反馈；Progress Memory 记录子目标状态；Reflection Memory 保存碰撞、不可达、定位不一致和无进展等事件。</li>
+<li><strong>时空图</strong>：记录地点、实体、空间关系、观测时间和失败信息，用于检索历史证据、回退和重新规划。</li>
+<li><strong>工具与执行验证</strong>：通过 <code>observe</code>、<code>retrieve_memory</code>、<code>ground_target</code>、<code>query_depth</code>、<code>navigate_to</code>、<code>backtrack</code> 和 <code>request_stop</code> 等工具完成交互。</li>
+</ul>
+<p>Harness 在执行前检查目标证据、几何可达性和子目标一致性。停止请求也需要经过验证，可以概括为：</p>
+<p>$$
+F_{\text{stop}} =
+F_{\text{semantic}}
+\land F_{\text{geometric}}
+\land F_{\text{progress}}
+$$</p>
+<p>HarnessVLN 采用 Training-free 路线，不针对当前导航任务对主 MLLM 进行专门微调。系统仍使用预训练的 GroundingDINO、SAM 等感知模型，并结合 FMM 等几何规划方法；部分场景还会调用已有的学习型 NavDP 执行器。因此，Training-free 不代表系统中所有模块都未经训练。</p>
+<h3 id="SuperNav"><a href="#SuperNav" class="headerlink" title="SuperNav"></a>SuperNav</h3><p>论文：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.12126">SuperNav: An Agentic Navigation System for Any Task in Any Scene</a></p>
+<p><img src="https://mian221-top-img.oss-cn-chengdu.aliyuncs.com/blog-assets/VLN%E4%B8%AD%E7%9A%84Harness/886629ae-69d3-4a09-aa1f-ce2c11806f16-0f28cc7951d6.png" srcset="/img/loading.gif" lazyload><br>SuperNav 为预训练 MLLM 配置 Agent Harness，重点包括 Agent Loop、Navigation Skills、工具接口、任务进度管理和 Visual-Point Interface。</p>
+<ul>
+<li><strong>Navigation Skills</strong>：以 Markdown 形式的Skill文件组织探索、目标搜索、入口搜索、失败恢复和任务完成检查等能力。MLLM 根据任务按需读取 Skill，从而执行不同的操作。</li>
+<li><strong>Visual-Point Interface</strong>：模型不直接生成复杂的底层控制动作，而是转为在图像中指定目标点，形式可表示为：</li>
+</ul>
+<p>$$
+\operatorname{PointNav}(d,[u,v])
+$$</p>
+<p>其中 $d$ 表示观测视角，$u,v$ 表示归一化图像坐标。导航工具负责将图像点转换成实际目标并执行移动。</p>
+<ul>
+<li><strong>运动执行后端</strong>：Geo-based Executor 使用深度、相机标定、位姿和导航网格进行几何规划；Learned Executor 使用训练得到的局部运动策略预测位移。</li>
+</ul>
+<p>SuperNav 不对主 MLLM 进行导航专用微调，但 Learned Executor 本身仍是经过训练的运动模块。</p>
+<p><strong>两种方法的侧重点</strong></p>
+<table>
+<thead>
+<tr>
+<th>维度</th>
+<th>HarnessVLN</th>
+<th>SuperNav</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主要关注</td>
+<td>记忆、空间证据、执行验证</td>
+<td>Skills、工具接口、任务泛化</td>
+</tr>
+<tr>
+<td>记忆组织</td>
+<td>分层事件记忆与时空图</td>
+<td>任务进度和交互历史</td>
+</tr>
+<tr>
+<td>导航接口</td>
+<td>语义 Grounding、深度查询、导航工具</td>
+<td>图像视角与 Visual Point</td>
+</tr>
+<tr>
+<td>失败处理</td>
+<td>失败记录、空间检索、回退和验证</td>
+<td>Skill 指导重新搜索和恢复</td>
+</tr>
+<tr>
+<td>运动执行</td>
+<td>可替换 Navigation Executor</td>
+<td>Geo-based &#x2F; Learned Executor</td>
+</tr>
+</tbody></table>
+<p>两者都采用 Harness 思路，但任务终止机制有所区别。HarnessVLN 对停止请求设置明确的证据检查；SuperNav 的终止工具主要记录 MLLM 对完成或受阻的判断，工具关闭会话本身不等于任务已被独立验证为成功。</p>
+<h3 id="Harness-与端到端模型的关系"><a href="#Harness-与端到端模型的关系" class="headerlink" title="Harness 与端到端模型的关系"></a>Harness 与端到端模型的关系</h3><p>Harness 是系统架构，Training-free 是训练策略，两者可以自由组合。</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>高层 Planner</th>
+<th>低层 Executor</th>
+<th>Harness 职责</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Training-free Harness</td>
+<td>预训练 MLLM</td>
+<td>几何规划或已有策略</td>
+<td>工具管理、记忆和任务控制</td>
+</tr>
+<tr>
+<td>Fine-tuned Harness</td>
+<td>微调 VLM &#x2F; MLLM</td>
+<td>几何或学习型策略</td>
+<td>管理执行和反馈</td>
+</tr>
+<tr>
+<td>Hybrid Harness</td>
+<td>通用 MLLM 负责任务级推理</td>
+<td>专用小模型负责 Waypoint 和局部运动</td>
+<td>管理长程任务、记忆和恢复</td>
+</tr>
+</tbody></table>
+<p>HarnessVLN 的 R2R-CE、RxR-CE 对比表中，ABot-N0 和 HarnessVLN 的结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>模型&#x2F;训练路线</th>
+<th align="right">R2R SR</th>
+<th align="right">R2R SPL</th>
+<th align="right">RxR SR</th>
+<th align="right">RxR SPL</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ABot-N0</td>
+<td>4B，导航任务训练</td>
+<td align="right">66.4</td>
+<td align="right">63.9</td>
+<td align="right">69.3</td>
+<td align="right">60.0</td>
+</tr>
+<tr>
+<td>HarnessVLN</td>
+<td>Training-free Harness</td>
+<td align="right">60.8</td>
+<td align="right">43.5</td>
+<td align="right">53.9</td>
+<td align="right">38.0</td>
+</tr>
+</tbody></table>
+<p>数据来自 HarnessVLN 论文的 R2R&#x2F;RxR Val-Unseen 对比表。[6] 这组结果说明，通用 MLLM 的语义推理能力不会自动转化为高效运动能力。经过导航轨迹训练的专用模型可以学习更适合导航的动作分布；Harness 的记忆和验证机制有助于任务管理，但无法自动补足底层运动精度。SR 关注任务是否成功，SPL 还考虑路径效率，增加观察和回退可能改善成功率，也可能增加路径长度。</p>
+<p>这不是严格的计算效率对比。若要比较系统成本，还需统计模型调用次数、Token、感知模型耗时、执行器耗时、总任务时间和部署成本。</p>
+<h3 id="对室内连续环境-VLN-的启发"><a href="#对室内连续环境-VLN-的启发" class="headerlink" title="对室内连续环境 VLN 的启发"></a>对室内连续环境 VLN 的启发</h3><p>在传统VLN模型中也存在一定的如对记忆进行管理，语义分割以及拓扑图等类似结构，但是harness框架将其规范化修改为可拓展性更强的方法，可以理解为VLN模型在工程上的落地实现。<br>一个可研究的方向是 Hybrid Harness-VLN：Harness 管理长程任务，小型导航模型处理局部运动。</p>
+<pre><code class=" mermaid">flowchart TD
+    A[语言指令与环境观测] --&gt; B[High-level Harness]
+    B --&gt; C[&quot;MLLM：任务理解与子目标规划&quot;]
+    C --&gt; D[&quot;记忆检索、进度管理、失败恢复&quot;]
+    D --&gt; E[Fine-tuned Navigation Policy]
+    E --&gt; F[Waypoint / 局部运动目标]
+    F --&gt; G[Local Planner &amp; Controller]
+    G --&gt; H[连续室内环境]
+    H --&gt; I[&quot;RGB-D、位姿、碰撞与执行反馈&quot;]
+    I --&gt; B
+</code></pre>
+
+<p>可以重点关注长期空间记忆、动态子目标规划、失败恢复、Skill 学习、安全验证和 Agent Loop 效率。实验可比较 4B 端到端模型、Training-free MLLM + Harness、4B Navigation Policy + Harness。除 SR 和 SPL 外，还应报告任务完成时间、恢复成功率、平均决策次数、模型调用成本和跨场景泛化能力。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/agent-framework/concepts/harness">Agent Harness (Microsoft Learn)</a></li>
+<li><a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/agents/concepts/agent-harnesses">Understand Agent Harnesses (Visual Studio Code)</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.anthropic.com/research/building-effective-agents">Building Effective Agents (Anthropic)</a></li>
+<li><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/specification/2026-07-28">Model Context Protocol Specification (MCP)</a></li>
+<li><a target="_blank" rel="noopener" href="https://openai.com/index/harness-engineering/">Harness Engineering: Leveraging Codex in an Agent-First World (OpenAI, 2026)</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.15195">HarnessVLN: Unifying Training-Free Embodied Navigation through an Agent Harness (arXiv, 2026)</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2610.12126">SuperNav: An Agentic Navigation System for Any Task in Any Scene (arXiv, 2026)</a></li>
+<li><a target="_blank" rel="noopener" href="https://amap-cvlab.github.io/ABot-Navigation/ABot-N0/">ABot-N0: A Unified VLA Foundation Model for Versatile Embodied Navigation (Project Page)</a></li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%A4%A7%E6%A8%A1%E5%9E%8B/" class="category-chain-item">大模型</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/Harness/" class="print-no-link">#Harness</a>
+      
+        <a href="/tags/VLN/" class="print-no-link">#VLN</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>VLN中的Harness</div>
+      <div>https://mian221.top/2026/11/02/VLN中的Harness/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Mian</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年11月2日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/10/23/12.1_MP3D%EF%BC%8CR2R%E4%B8%8ERxR/" title="12.1_MP3D，R2R与RxR">
+                        <span class="hidden-mobile">12.1_MP3D，R2R与RxR</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"default"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        全站独立访客：
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+
+  
+
+</div>
+
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="/js/visitor-counter/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/navbar-search.js"></script>
+<script src="/js/code-blocks.js?v=98216c7.js"></script>
+<script src="/js/toc-scroll.js?v=20261017.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
