@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "id": "e1d8d7e7-5907-40a5-ab3f-77a4766b236c",
+  "id": "df87c6a8-6cbf-4568-9de5-f2fc6975abf1",
   "site": {
     "old": 203,
     "checkpoint": 0
@@ -171,6 +171,10 @@
       "checkpoint": 0
     },
     "/2026/11/02/VLN中的Harness": {
+      "old": 0,
+      "checkpoint": 0
+    },
+    "/2026/10/28/DAgger-理论学习": {
       "old": 0,
       "checkpoint": 0
     }
